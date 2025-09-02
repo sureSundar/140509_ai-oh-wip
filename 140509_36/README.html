@@ -1,0 +1,761 @@
+<h1 id="md---ai-bias-detection-and-mitigation-platform">140509_36.md - AI Bias Detection and Mitigation Platform</h1>
+<h2 id="readme">README</h2>
+<p><strong>Summary:</strong> Develop a comprehensive platform that detects, measures, and mitigates bias in AI models across different domains and protected characteristics.</p>
+<p><strong>Problem Statement:</strong> AI systems can perpetuate or amplify existing biases, leading to unfair outcomes. Your task is to create a platform that systematically detects bias in AI models, quantifies fairness metrics, and provides mitigation strategies. The system should work across different model types, support various fairness definitions, and provide actionable recommendations for bias reduction while maintaining model performance.</p>
+<p><strong>Steps:</strong> - Design bias detection algorithms for different types of discrimination (statistical, individual, counterfactual) - Implement fairness metrics calculation and monitoring across protected groups - Create bias mitigation techniques including pre-processing, in-processing, and post-processing methods - Build explanation tools showing sources and impacts of detected bias - Develop continuous monitoring and alerting for bias drift in production models - Include regulatory compliance checking and documentation generation</p>
+<p><strong>Suggested Data Requirements:</strong> - Datasets with protected attribute labels for bias testing - Fairness evaluation benchmarks and ground truth data - Regulatory guidelines and compliance requirements - Historical bias detection and mitigation case studies</p>
+<p><strong>Themes:</strong> Responsible AI, AI design that assures Security, Legal and Privacy requirements</p>
+<hr />
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision">Product Vision</h3>
+<p>Create a comprehensive AI bias detection and mitigation platform that ensures fair and equitable AI systems across all protected characteristics while maintaining model performance and regulatory compliance.</p>
+<h3 id="target-users">Target Users</h3>
+<ul>
+<li><strong>Primary:</strong> AI Engineers, ML Operations, Compliance Officers</li>
+<li><strong>Secondary:</strong> Data Scientists, Legal Teams, Product Managers</li>
+<li><strong>Tertiary:</strong> Auditors, Regulators, Ethics Committees</li>
+</ul>
+<h3 id="core-value-propositions">Core Value Propositions</h3>
+<ol type="1">
+<li><strong>Comprehensive Bias Detection:</strong> Multi-dimensional bias analysis across all protected characteristics</li>
+<li><strong>Automated Mitigation:</strong> Intelligent bias reduction with minimal performance impact</li>
+<li><strong>Regulatory Compliance:</strong> Built-in compliance with global fairness regulations</li>
+<li><strong>Explainable Results:</strong> Clear explanations of bias sources and mitigation actions</li>
+<li><strong>Continuous Monitoring:</strong> Real-time bias drift detection in production systems</li>
+</ol>
+<h3 id="key-features">Key Features</h3>
+<ol type="1">
+<li><strong>Multi-Type Bias Detection:</strong> Statistical, individual, and counterfactual bias detection</li>
+<li><strong>Fairness Metrics Suite:</strong> 20+ fairness metrics with customizable thresholds</li>
+<li><strong>Automated Mitigation Pipeline:</strong> Pre/in/post-processing bias reduction techniques</li>
+<li><strong>Explainability Dashboard:</strong> Visual bias impact analysis and source identification</li>
+<li><strong>Production Monitoring:</strong> Real-time bias drift alerts and automated responses</li>
+<li><strong>Compliance Reporting:</strong> Automated documentation for regulatory requirements</li>
+</ol>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li>Bias detection accuracy: &gt;95% for known biased datasets</li>
+<li>Mitigation effectiveness: &gt;80% bias reduction with &lt;5% performance loss</li>
+<li>Compliance coverage: 100% coverage for major fairness regulations</li>
+<li>Detection speed: &lt;1 hour for bias assessment of typical models</li>
+<li>User adoption: 70% of AI teams using platform within 6 months</li>
+</ul>
+<hr />
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<h3 id="core-functional-requirements">Core Functional Requirements</h3>
+<h4 id="f1-multi-dimensional-bias-detection">F1: Multi-Dimensional Bias Detection</h4>
+<ul>
+<li><strong>F1.1:</strong> Statistical bias detection using demographic parity, equalized odds</li>
+<li><strong>F1.2:</strong> Individual bias detection through counterfactual analysis</li>
+<li><strong>F1.3:</strong> Intersectional bias detection across multiple protected attributes</li>
+<li><strong>F1.4:</strong> Temporal bias detection for model drift over time</li>
+<li><strong>F1.5:</strong> Context-aware bias detection for domain-specific applications</li>
+</ul>
+<h4 id="f2-comprehensive-fairness-metrics">F2: Comprehensive Fairness Metrics</h4>
+<ul>
+<li><strong>F2.1:</strong> Group fairness metrics (demographic parity, equal opportunity)</li>
+<li><strong>F2.2:</strong> Individual fairness metrics (counterfactual fairness, consistency)</li>
+<li><strong>F2.3:</strong> Causal fairness metrics (path-specific effects, natural direct effects)</li>
+<li><strong>F2.4:</strong> Distributive fairness metrics (Rawlsian, utilitarian approaches)</li>
+<li><strong>F2.5:</strong> Custom fairness metric definition and implementation</li>
+</ul>
+<h4 id="f3-automated-bias-mitigation">F3: Automated Bias Mitigation</h4>
+<ul>
+<li><strong>F3.1:</strong> Pre-processing: Data augmentation, re-sampling, feature selection</li>
+<li><strong>F3.2:</strong> In-processing: Adversarial debiasing, fairness constraints</li>
+<li><strong>F3.3:</strong> Post-processing: Threshold optimization, output calibration</li>
+<li><strong>F3.4:</strong> Multi-objective optimization balancing fairness and performance</li>
+<li><strong>F3.5:</strong> Mitigation strategy recommendation and automated application</li>
+</ul>
+<h4 id="f4-bias-explainability-and-visualization">F4: Bias Explainability and Visualization</h4>
+<ul>
+<li><strong>F4.1:</strong> Bias source identification and attribution analysis</li>
+<li><strong>F4.2:</strong> Protected attribute influence quantification</li>
+<li><strong>F4.3:</strong> Interactive bias visualization dashboards</li>
+<li><strong>F4.4:</strong> Counterfactual explanation generation</li>
+<li><strong>F4.5:</strong> Bias impact assessment on different demographic groups</li>
+</ul>
+<h4 id="f5-production-monitoring-and-alerting">F5: Production Monitoring and Alerting</h4>
+<ul>
+<li><strong>F5.1:</strong> Real-time bias metric monitoring in production</li>
+<li><strong>F5.2:</strong> Automated bias drift detection and alerting</li>
+<li><strong>F5.3:</strong> Model performance vs fairness trade-off tracking</li>
+<li><strong>F5.4:</strong> Continuous fairness evaluation on new data</li>
+<li><strong>F5.5:</strong> Automated mitigation triggering based on thresholds</li>
+</ul>
+<h4 id="f6-regulatory-compliance-management">F6: Regulatory Compliance Management</h4>
+<ul>
+<li><strong>F6.1:</strong> Built-in compliance with GDPR, CCPA, AI Act requirements</li>
+<li><strong>F6.2:</strong> Automated fairness documentation generation</li>
+<li><strong>F6.3:</strong> Audit trail maintenance for all bias-related decisions</li>
+<li><strong>F6.4:</strong> Regulatory reporting templates and automated generation</li>
+<li><strong>F6.5:</strong> Legal risk assessment and recommendation system</li>
+</ul>
+<hr />
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li><strong>NFR-P1:</strong> Bias detection completion: &lt;1 hour for models with 1M+ parameters</li>
+<li><strong>NFR-P2:</strong> Real-time monitoring latency: &lt;100ms for bias metric updates</li>
+<li><strong>NFR-P3:</strong> Mitigation processing time: &lt;30 minutes for standard techniques</li>
+<li><strong>NFR-P4:</strong> Dashboard response time: &lt;3 seconds for bias visualization loading</li>
+<li><strong>NFR-P5:</strong> Batch processing: Handle 10,000+ predictions per second for bias analysis</li>
+</ul>
+<h3 id="accuracy-requirements">Accuracy Requirements</h3>
+<ul>
+<li><strong>NFR-A1:</strong> Bias detection accuracy: &gt;95% for synthetic biased datasets</li>
+<li><strong>NFR-A2:</strong> False positive rate: &lt;5% for bias alerts in production</li>
+<li><strong>NFR-A3:</strong> Fairness metric calculation precision: ±0.01 for all metrics</li>
+<li><strong>NFR-A4:</strong> Mitigation effectiveness: &gt;80% bias reduction guaranteed</li>
+<li><strong>NFR-A5:</strong> Performance preservation: &lt;5% accuracy loss after mitigation</li>
+</ul>
+<h3 id="scalability-requirements">Scalability Requirements</h3>
+<ul>
+<li><strong>NFR-S1:</strong> Support models from 1K to 1B+ parameters</li>
+<li><strong>NFR-S2:</strong> Handle datasets up to 100M samples for bias analysis</li>
+<li><strong>NFR-S3:</strong> Concurrent bias assessments: 100+ simultaneous evaluations</li>
+<li><strong>NFR-S4:</strong> Multi-tenant support: 1000+ organizations with data isolation</li>
+<li><strong>NFR-S5:</strong> Global deployment: Support across all major cloud regions</li>
+</ul>
+<h3 id="security-privacy-requirements">Security &amp; Privacy Requirements</h3>
+<ul>
+<li><strong>NFR-SE1:</strong> End-to-end encryption for all sensitive data processing</li>
+<li><strong>NFR-SE2:</strong> Differential privacy for bias analysis on sensitive datasets</li>
+<li><strong>NFR-SE3:</strong> Zero-trust security model with least privilege access</li>
+<li><strong>NFR-SE4:</strong> GDPR Article 25 compliance (privacy by design)</li>
+<li><strong>NFR-SE5:</strong> Secure multi-party computation for collaborative bias analysis</li>
+</ul>
+<hr />
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<pre class="mermaid"><code>graph TB
+    subgraph &quot;Client Layer&quot;
+        WEB[Web Dashboard]
+        API[REST APIs]
+        SDK[Python/R SDKs]
+        CLI[Command Line Tools]
+    end
+    
+    subgraph &quot;API Gateway &amp; Security&quot;
+        GATEWAY[API Gateway]
+        AUTH[Authentication Service]
+        AUTHZ[Authorization Service]
+    end
+    
+    subgraph &quot;Core Bias Services&quot;
+        DETECT[Bias Detection Engine]
+        METRICS[Fairness Metrics Calculator]
+        MITIGATE[Bias Mitigation Engine]
+        EXPLAIN[Explainability Service]
+        MONITOR[Production Monitor]
+    end
+    
+    subgraph &quot;Specialized Engines&quot;
+        STATISTICAL[Statistical Bias Detector]
+        INDIVIDUAL[Individual Bias Detector]
+        COUNTERFACTUAL[Counterfactual Generator]
+        CAUSAL[Causal Analysis Engine]
+        INTERSECTIONAL[Intersectional Analyzer]
+    end
+    
+    subgraph &quot;Mitigation Techniques&quot;
+        PREPROCESS[Pre-processing Pipeline]
+        INPROCESS[In-processing Constraints]
+        POSTPROCESS[Post-processing Calibrator]
+        ADVERSARIAL[Adversarial Debiasing]
+        OPTIMIZATION[Multi-objective Optimizer]
+    end
+    
+    subgraph &quot;Data &amp; Storage&quot;
+        POSTGRES[PostgreSQL - Metadata]
+        TIMESERIES[InfluxDB - Metrics]
+        MONGODB[MongoDB - Results]
+        REDIS[Redis - Cache]
+        S3[Object Storage - Models/Data]
+    end
+    
+    subgraph &quot;External Integrations&quot;
+        ML_PLATFORMS[ML Platforms]
+        COMPLIANCE[Compliance Systems]
+        AUDIT[Audit Tools]
+        ALERTS[Alerting Systems]
+    end
+    
+    WEB --&gt; GATEWAY
+    API --&gt; GATEWAY
+    SDK --&gt; GATEWAY
+    CLI --&gt; GATEWAY
+    
+    GATEWAY --&gt; AUTH
+    GATEWAY --&gt; AUTHZ
+    
+    GATEWAY --&gt; DETECT
+    GATEWAY --&gt; METRICS
+    GATEWAY --&gt; MITIGATE
+    GATEWAY --&gt; EXPLAIN
+    GATEWAY --&gt; MONITOR
+    
+    DETECT --&gt; STATISTICAL
+    DETECT --&gt; INDIVIDUAL
+    DETECT --&gt; COUNTERFACTUAL
+    DETECT --&gt; CAUSAL
+    DETECT --&gt; INTERSECTIONAL
+    
+    MITIGATE --&gt; PREPROCESS
+    MITIGATE --&gt; INPROCESS
+    MITIGATE --&gt; POSTPROCESS
+    MITIGATE --&gt; ADVERSARIAL
+    MITIGATE --&gt; OPTIMIZATION
+    
+    DETECT --&gt; POSTGRES
+    METRICS --&gt; TIMESERIES
+    EXPLAIN --&gt; MONGODB
+    MONITOR --&gt; REDIS
+    MITIGATE --&gt; S3
+    
+    MONITOR --&gt; ML_PLATFORMS
+    EXPLAIN --&gt; COMPLIANCE
+    DETECT --&gt; AUDIT
+    MONITOR --&gt; ALERTS</code></pre>
+<hr />
+<h2 id="hld-high-level-design">HLD (High Level Design)</h2>
+<h3 id="bias-detection-engine-architecture">Bias Detection Engine Architecture</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">class</span> BiasDetectionEngine:</a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-3" title="3">        <span class="va">self</span>.statistical_detector <span class="op">=</span> StatisticalBiasDetector()</a>
+<a class="sourceLine" id="cb2-4" title="4">        <span class="va">self</span>.individual_detector <span class="op">=</span> IndividualBiasDetector()</a>
+<a class="sourceLine" id="cb2-5" title="5">        <span class="va">self</span>.intersectional_analyzer <span class="op">=</span> IntersectionalBiasAnalyzer()</a>
+<a class="sourceLine" id="cb2-6" title="6">        <span class="va">self</span>.causal_analyzer <span class="op">=</span> CausalBiasAnalyzer()</a>
+<a class="sourceLine" id="cb2-7" title="7">        <span class="va">self</span>.metrics_calculator <span class="op">=</span> FairnessMetricsCalculator()</a>
+<a class="sourceLine" id="cb2-8" title="8">        </a>
+<a class="sourceLine" id="cb2-9" title="9">    <span class="cf">async</span> <span class="kw">def</span> comprehensive_bias_assessment(<span class="va">self</span>, model, dataset, protected_attributes):</a>
+<a class="sourceLine" id="cb2-10" title="10">        assessment_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb2-11" title="11">        </a>
+<a class="sourceLine" id="cb2-12" title="12">        <span class="co"># Statistical bias detection</span></a>
+<a class="sourceLine" id="cb2-13" title="13">        statistical_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.statistical_detector.detect_bias(</a>
+<a class="sourceLine" id="cb2-14" title="14">            model, dataset, protected_attributes</a>
+<a class="sourceLine" id="cb2-15" title="15">        )</a>
+<a class="sourceLine" id="cb2-16" title="16">        assessment_results[<span class="st">&#39;statistical&#39;</span>] <span class="op">=</span> statistical_results</a>
+<a class="sourceLine" id="cb2-17" title="17">        </a>
+<a class="sourceLine" id="cb2-18" title="18">        <span class="co"># Individual bias detection</span></a>
+<a class="sourceLine" id="cb2-19" title="19">        individual_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.individual_detector.detect_bias(</a>
+<a class="sourceLine" id="cb2-20" title="20">            model, dataset, protected_attributes</a>
+<a class="sourceLine" id="cb2-21" title="21">        )</a>
+<a class="sourceLine" id="cb2-22" title="22">        assessment_results[<span class="st">&#39;individual&#39;</span>] <span class="op">=</span> individual_results</a>
+<a class="sourceLine" id="cb2-23" title="23">        </a>
+<a class="sourceLine" id="cb2-24" title="24">        <span class="co"># Intersectional analysis</span></a>
+<a class="sourceLine" id="cb2-25" title="25">        intersectional_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.intersectional_analyzer.analyze_intersectional_bias(</a>
+<a class="sourceLine" id="cb2-26" title="26">            model, dataset, protected_attributes</a>
+<a class="sourceLine" id="cb2-27" title="27">        )</a>
+<a class="sourceLine" id="cb2-28" title="28">        assessment_results[<span class="st">&#39;intersectional&#39;</span>] <span class="op">=</span> intersectional_results</a>
+<a class="sourceLine" id="cb2-29" title="29">        </a>
+<a class="sourceLine" id="cb2-30" title="30">        <span class="co"># Causal analysis</span></a>
+<a class="sourceLine" id="cb2-31" title="31">        causal_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.causal_analyzer.analyze_causal_bias(</a>
+<a class="sourceLine" id="cb2-32" title="32">            model, dataset, protected_attributes</a>
+<a class="sourceLine" id="cb2-33" title="33">        )</a>
+<a class="sourceLine" id="cb2-34" title="34">        assessment_results[<span class="st">&#39;causal&#39;</span>] <span class="op">=</span> causal_results</a>
+<a class="sourceLine" id="cb2-35" title="35">        </a>
+<a class="sourceLine" id="cb2-36" title="36">        <span class="co"># Calculate comprehensive fairness metrics</span></a>
+<a class="sourceLine" id="cb2-37" title="37">        fairness_metrics <span class="op">=</span> <span class="va">self</span>.metrics_calculator.calculate_all_metrics(</a>
+<a class="sourceLine" id="cb2-38" title="38">            assessment_results, dataset, protected_attributes</a>
+<a class="sourceLine" id="cb2-39" title="39">        )</a>
+<a class="sourceLine" id="cb2-40" title="40">        </a>
+<a class="sourceLine" id="cb2-41" title="41">        <span class="cf">return</span> BiasAssessmentReport(</a>
+<a class="sourceLine" id="cb2-42" title="42">            statistical_bias<span class="op">=</span>statistical_results,</a>
+<a class="sourceLine" id="cb2-43" title="43">            individual_bias<span class="op">=</span>individual_results,</a>
+<a class="sourceLine" id="cb2-44" title="44">            intersectional_bias<span class="op">=</span>intersectional_results,</a>
+<a class="sourceLine" id="cb2-45" title="45">            causal_bias<span class="op">=</span>causal_results,</a>
+<a class="sourceLine" id="cb2-46" title="46">            fairness_metrics<span class="op">=</span>fairness_metrics,</a>
+<a class="sourceLine" id="cb2-47" title="47">            overall_bias_score<span class="op">=</span><span class="va">self</span>.calculate_overall_bias_score(assessment_results),</a>
+<a class="sourceLine" id="cb2-48" title="48">            recommendations<span class="op">=</span><span class="va">self</span>.generate_mitigation_recommendations(assessment_results)</a>
+<a class="sourceLine" id="cb2-49" title="49">        )</a>
+<a class="sourceLine" id="cb2-50" title="50"></a>
+<a class="sourceLine" id="cb2-51" title="51"><span class="kw">class</span> StatisticalBiasDetector:</a>
+<a class="sourceLine" id="cb2-52" title="52">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-53" title="53">        <span class="va">self</span>.demographic_parity <span class="op">=</span> DemographicParityDetector()</a>
+<a class="sourceLine" id="cb2-54" title="54">        <span class="va">self</span>.equalized_odds <span class="op">=</span> EqualizedOddsDetector()</a>
+<a class="sourceLine" id="cb2-55" title="55">        <span class="va">self</span>.calibration <span class="op">=</span> CalibrationDetector()</a>
+<a class="sourceLine" id="cb2-56" title="56">        </a>
+<a class="sourceLine" id="cb2-57" title="57">    <span class="cf">async</span> <span class="kw">def</span> detect_bias(<span class="va">self</span>, model, dataset, protected_attributes):</a>
+<a class="sourceLine" id="cb2-58" title="58">        results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb2-59" title="59">        </a>
+<a class="sourceLine" id="cb2-60" title="60">        <span class="cf">for</span> protected_attr <span class="kw">in</span> protected_attributes:</a>
+<a class="sourceLine" id="cb2-61" title="61">            <span class="co"># Demographic parity analysis</span></a>
+<a class="sourceLine" id="cb2-62" title="62">            dp_result <span class="op">=</span> <span class="va">self</span>.demographic_parity.analyze(model, dataset, protected_attr)</a>
+<a class="sourceLine" id="cb2-63" title="63">            results[<span class="ss">f&#39;</span><span class="sc">{</span>protected_attr<span class="sc">}</span><span class="ss">_demographic_parity&#39;</span>] <span class="op">=</span> dp_result</a>
+<a class="sourceLine" id="cb2-64" title="64">            </a>
+<a class="sourceLine" id="cb2-65" title="65">            <span class="co"># Equalized odds analysis</span></a>
+<a class="sourceLine" id="cb2-66" title="66">            eo_result <span class="op">=</span> <span class="va">self</span>.equalized_odds.analyze(model, dataset, protected_attr)</a>
+<a class="sourceLine" id="cb2-67" title="67">            results[<span class="ss">f&#39;</span><span class="sc">{</span>protected_attr<span class="sc">}</span><span class="ss">_equalized_odds&#39;</span>] <span class="op">=</span> eo_result</a>
+<a class="sourceLine" id="cb2-68" title="68">            </a>
+<a class="sourceLine" id="cb2-69" title="69">            <span class="co"># Calibration analysis</span></a>
+<a class="sourceLine" id="cb2-70" title="70">            cal_result <span class="op">=</span> <span class="va">self</span>.calibration.analyze(model, dataset, protected_attr)</a>
+<a class="sourceLine" id="cb2-71" title="71">            results[<span class="ss">f&#39;</span><span class="sc">{</span>protected_attr<span class="sc">}</span><span class="ss">_calibration&#39;</span>] <span class="op">=</span> cal_result</a>
+<a class="sourceLine" id="cb2-72" title="72">            </a>
+<a class="sourceLine" id="cb2-73" title="73">        <span class="cf">return</span> StatisticalBiasResults(</a>
+<a class="sourceLine" id="cb2-74" title="74">            bias_detected<span class="op">=</span><span class="bu">any</span>(result.is_biased <span class="cf">for</span> result <span class="kw">in</span> results.values()),</a>
+<a class="sourceLine" id="cb2-75" title="75">            detailed_results<span class="op">=</span>results,</a>
+<a class="sourceLine" id="cb2-76" title="76">            summary<span class="op">=</span><span class="va">self</span>.summarize_statistical_bias(results)</a>
+<a class="sourceLine" id="cb2-77" title="77">        )</a>
+<a class="sourceLine" id="cb2-78" title="78"></a>
+<a class="sourceLine" id="cb2-79" title="79"><span class="kw">class</span> BiasMetricsCalculator:</a>
+<a class="sourceLine" id="cb2-80" title="80">    <span class="kw">def</span> calculate_all_metrics(<span class="va">self</span>, predictions, labels, protected_attributes):</a>
+<a class="sourceLine" id="cb2-81" title="81">        metrics <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb2-82" title="82">        </a>
+<a class="sourceLine" id="cb2-83" title="83">        <span class="cf">for</span> attr <span class="kw">in</span> protected_attributes:</a>
+<a class="sourceLine" id="cb2-84" title="84">            attr_values <span class="op">=</span> protected_attributes[attr]</a>
+<a class="sourceLine" id="cb2-85" title="85">            </a>
+<a class="sourceLine" id="cb2-86" title="86">            <span class="co"># Group fairness metrics</span></a>
+<a class="sourceLine" id="cb2-87" title="87">            metrics[<span class="ss">f&#39;</span><span class="sc">{</span>attr<span class="sc">}</span><span class="ss">_demographic_parity&#39;</span>] <span class="op">=</span> <span class="va">self</span>.demographic_parity(</a>
+<a class="sourceLine" id="cb2-88" title="88">                predictions, protected_attributes[attr]</a>
+<a class="sourceLine" id="cb2-89" title="89">            )</a>
+<a class="sourceLine" id="cb2-90" title="90">            metrics[<span class="ss">f&#39;</span><span class="sc">{</span>attr<span class="sc">}</span><span class="ss">_equalized_opportunity&#39;</span>] <span class="op">=</span> <span class="va">self</span>.equalized_opportunity(</a>
+<a class="sourceLine" id="cb2-91" title="91">                predictions, labels, protected_attributes[attr]</a>
+<a class="sourceLine" id="cb2-92" title="92">            )</a>
+<a class="sourceLine" id="cb2-93" title="93">            metrics[<span class="ss">f&#39;</span><span class="sc">{</span>attr<span class="sc">}</span><span class="ss">_calibration&#39;</span>] <span class="op">=</span> <span class="va">self</span>.calibration_metric(</a>
+<a class="sourceLine" id="cb2-94" title="94">                predictions, labels, protected_attributes[attr]</a>
+<a class="sourceLine" id="cb2-95" title="95">            )</a>
+<a class="sourceLine" id="cb2-96" title="96">            </a>
+<a class="sourceLine" id="cb2-97" title="97">            <span class="co"># Individual fairness metrics</span></a>
+<a class="sourceLine" id="cb2-98" title="98">            metrics[<span class="ss">f&#39;</span><span class="sc">{</span>attr<span class="sc">}</span><span class="ss">_individual_fairness&#39;</span>] <span class="op">=</span> <span class="va">self</span>.individual_fairness(</a>
+<a class="sourceLine" id="cb2-99" title="99">                predictions, protected_attributes[attr]</a>
+<a class="sourceLine" id="cb2-100" title="100">            )</a>
+<a class="sourceLine" id="cb2-101" title="101">            </a>
+<a class="sourceLine" id="cb2-102" title="102">        <span class="cf">return</span> FairnessMetrics(metrics)</a>
+<a class="sourceLine" id="cb2-103" title="103">    </a>
+<a class="sourceLine" id="cb2-104" title="104">    <span class="kw">def</span> demographic_parity(<span class="va">self</span>, predictions, protected_attr):</a>
+<a class="sourceLine" id="cb2-105" title="105">        <span class="co">&quot;&quot;&quot;Calculate demographic parity difference&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-106" title="106">        groups <span class="op">=</span> np.unique(protected_attr)</a>
+<a class="sourceLine" id="cb2-107" title="107">        positive_rates <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb2-108" title="108">        </a>
+<a class="sourceLine" id="cb2-109" title="109">        <span class="cf">for</span> group <span class="kw">in</span> groups:</a>
+<a class="sourceLine" id="cb2-110" title="110">            group_mask <span class="op">=</span> protected_attr <span class="op">==</span> group</a>
+<a class="sourceLine" id="cb2-111" title="111">            group_positive_rate <span class="op">=</span> np.mean(predictions[group_mask])</a>
+<a class="sourceLine" id="cb2-112" title="112">            positive_rates.append(group_positive_rate)</a>
+<a class="sourceLine" id="cb2-113" title="113">            </a>
+<a class="sourceLine" id="cb2-114" title="114">        <span class="cf">return</span> <span class="bu">max</span>(positive_rates) <span class="op">-</span> <span class="bu">min</span>(positive_rates)</a></code></pre></div>
+<h3 id="automated-bias-mitigation-pipeline">Automated Bias Mitigation Pipeline</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">class</span> BiasMitigationEngine:</a>
+<a class="sourceLine" id="cb3-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb3-3" title="3">        <span class="va">self</span>.preprocessing <span class="op">=</span> PreprocessingMitigation()</a>
+<a class="sourceLine" id="cb3-4" title="4">        <span class="va">self</span>.inprocessing <span class="op">=</span> InprocessingMitigation()  </a>
+<a class="sourceLine" id="cb3-5" title="5">        <span class="va">self</span>.postprocessing <span class="op">=</span> PostprocessingMitigation()</a>
+<a class="sourceLine" id="cb3-6" title="6">        <span class="va">self</span>.strategy_optimizer <span class="op">=</span> MitigationStrategyOptimizer()</a>
+<a class="sourceLine" id="cb3-7" title="7">        </a>
+<a class="sourceLine" id="cb3-8" title="8">    <span class="cf">async</span> <span class="kw">def</span> mitigate_bias(<span class="va">self</span>, model, dataset, bias_assessment, mitigation_config):</a>
+<a class="sourceLine" id="cb3-9" title="9">        <span class="co"># Determine optimal mitigation strategy</span></a>
+<a class="sourceLine" id="cb3-10" title="10">        optimal_strategy <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.strategy_optimizer.optimize_strategy(</a>
+<a class="sourceLine" id="cb3-11" title="11">            bias_assessment, mitigation_config.constraints</a>
+<a class="sourceLine" id="cb3-12" title="12">        )</a>
+<a class="sourceLine" id="cb3-13" title="13">        </a>
+<a class="sourceLine" id="cb3-14" title="14">        mitigation_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb3-15" title="15">        </a>
+<a class="sourceLine" id="cb3-16" title="16">        <span class="co"># Apply preprocessing techniques if recommended</span></a>
+<a class="sourceLine" id="cb3-17" title="17">        <span class="cf">if</span> <span class="st">&#39;preprocessing&#39;</span> <span class="kw">in</span> optimal_strategy.techniques:</a>
+<a class="sourceLine" id="cb3-18" title="18">            preprocessing_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.preprocessing.apply_mitigation(</a>
+<a class="sourceLine" id="cb3-19" title="19">                dataset, optimal_strategy.preprocessing_config</a>
+<a class="sourceLine" id="cb3-20" title="20">            )</a>
+<a class="sourceLine" id="cb3-21" title="21">            mitigation_results[<span class="st">&#39;preprocessing&#39;</span>] <span class="op">=</span> preprocessing_result</a>
+<a class="sourceLine" id="cb3-22" title="22">            dataset <span class="op">=</span> preprocessing_result.processed_dataset</a>
+<a class="sourceLine" id="cb3-23" title="23">            </a>
+<a class="sourceLine" id="cb3-24" title="24">        <span class="co"># Apply in-processing techniques if recommended  </span></a>
+<a class="sourceLine" id="cb3-25" title="25">        <span class="cf">if</span> <span class="st">&#39;inprocessing&#39;</span> <span class="kw">in</span> optimal_strategy.techniques:</a>
+<a class="sourceLine" id="cb3-26" title="26">            inprocessing_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.inprocessing.apply_mitigation(</a>
+<a class="sourceLine" id="cb3-27" title="27">                model, dataset, optimal_strategy.inprocessing_config</a>
+<a class="sourceLine" id="cb3-28" title="28">            )</a>
+<a class="sourceLine" id="cb3-29" title="29">            mitigation_results[<span class="st">&#39;inprocessing&#39;</span>] <span class="op">=</span> inprocessing_result</a>
+<a class="sourceLine" id="cb3-30" title="30">            model <span class="op">=</span> inprocessing_result.modified_model</a>
+<a class="sourceLine" id="cb3-31" title="31">            </a>
+<a class="sourceLine" id="cb3-32" title="32">        <span class="co"># Apply post-processing techniques if recommended</span></a>
+<a class="sourceLine" id="cb3-33" title="33">        <span class="cf">if</span> <span class="st">&#39;postprocessing&#39;</span> <span class="kw">in</span> optimal_strategy.techniques:</a>
+<a class="sourceLine" id="cb3-34" title="34">            postprocessing_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.postprocessing.apply_mitigation(</a>
+<a class="sourceLine" id="cb3-35" title="35">                model, dataset, optimal_strategy.postprocessing_config</a>
+<a class="sourceLine" id="cb3-36" title="36">            )</a>
+<a class="sourceLine" id="cb3-37" title="37">            mitigation_results[<span class="st">&#39;postprocessing&#39;</span>] <span class="op">=</span> postprocessing_result</a>
+<a class="sourceLine" id="cb3-38" title="38">            </a>
+<a class="sourceLine" id="cb3-39" title="39">        <span class="co"># Evaluate mitigation effectiveness</span></a>
+<a class="sourceLine" id="cb3-40" title="40">        post_mitigation_assessment <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.evaluate_mitigation_effectiveness(</a>
+<a class="sourceLine" id="cb3-41" title="41">            model, dataset, bias_assessment, mitigation_results</a>
+<a class="sourceLine" id="cb3-42" title="42">        )</a>
+<a class="sourceLine" id="cb3-43" title="43">        </a>
+<a class="sourceLine" id="cb3-44" title="44">        <span class="cf">return</span> MitigationResult(</a>
+<a class="sourceLine" id="cb3-45" title="45">            strategy_applied<span class="op">=</span>optimal_strategy,</a>
+<a class="sourceLine" id="cb3-46" title="46">            mitigation_results<span class="op">=</span>mitigation_results,</a>
+<a class="sourceLine" id="cb3-47" title="47">            effectiveness_assessment<span class="op">=</span>post_mitigation_assessment,</a>
+<a class="sourceLine" id="cb3-48" title="48">            final_model<span class="op">=</span>model,</a>
+<a class="sourceLine" id="cb3-49" title="49">            final_dataset<span class="op">=</span>dataset</a>
+<a class="sourceLine" id="cb3-50" title="50">        )</a>
+<a class="sourceLine" id="cb3-51" title="51"></a>
+<a class="sourceLine" id="cb3-52" title="52"><span class="kw">class</span> PreprocessingMitigation:</a>
+<a class="sourceLine" id="cb3-53" title="53">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb3-54" title="54">        <span class="va">self</span>.resampling <span class="op">=</span> ResamplingTechniques()</a>
+<a class="sourceLine" id="cb3-55" title="55">        <span class="va">self</span>.data_augmentation <span class="op">=</span> BiasAwareDataAugmentation()</a>
+<a class="sourceLine" id="cb3-56" title="56">        <span class="va">self</span>.feature_selection <span class="op">=</span> FairFeatureSelection()</a>
+<a class="sourceLine" id="cb3-57" title="57">        </a>
+<a class="sourceLine" id="cb3-58" title="58">    <span class="cf">async</span> <span class="kw">def</span> apply_mitigation(<span class="va">self</span>, dataset, config):</a>
+<a class="sourceLine" id="cb3-59" title="59">        processed_dataset <span class="op">=</span> dataset.copy()</a>
+<a class="sourceLine" id="cb3-60" title="60">        applied_techniques <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb3-61" title="61">        </a>
+<a class="sourceLine" id="cb3-62" title="62">        <span class="co"># Apply resampling if configured</span></a>
+<a class="sourceLine" id="cb3-63" title="63">        <span class="cf">if</span> config.enable_resampling:</a>
+<a class="sourceLine" id="cb3-64" title="64">            resampling_result <span class="op">=</span> <span class="va">self</span>.resampling.balance_dataset(</a>
+<a class="sourceLine" id="cb3-65" title="65">                processed_dataset, config.protected_attributes</a>
+<a class="sourceLine" id="cb3-66" title="66">            )</a>
+<a class="sourceLine" id="cb3-67" title="67">            processed_dataset <span class="op">=</span> resampling_result.balanced_dataset</a>
+<a class="sourceLine" id="cb3-68" title="68">            applied_techniques.append(<span class="st">&#39;resampling&#39;</span>)</a>
+<a class="sourceLine" id="cb3-69" title="69">            </a>
+<a class="sourceLine" id="cb3-70" title="70">        <span class="co"># Apply data augmentation if configured</span></a>
+<a class="sourceLine" id="cb3-71" title="71">        <span class="cf">if</span> config.enable_augmentation:</a>
+<a class="sourceLine" id="cb3-72" title="72">            augmentation_result <span class="op">=</span> <span class="va">self</span>.data_augmentation.augment_underrepresented_groups(</a>
+<a class="sourceLine" id="cb3-73" title="73">                processed_dataset, config.protected_attributes</a>
+<a class="sourceLine" id="cb3-74" title="74">            )</a>
+<a class="sourceLine" id="cb3-75" title="75">            processed_dataset <span class="op">=</span> augmentation_result.augmented_dataset</a>
+<a class="sourceLine" id="cb3-76" title="76">            applied_techniques.append(<span class="st">&#39;augmentation&#39;</span>)</a>
+<a class="sourceLine" id="cb3-77" title="77">            </a>
+<a class="sourceLine" id="cb3-78" title="78">        <span class="co"># Apply fair feature selection if configured</span></a>
+<a class="sourceLine" id="cb3-79" title="79">        <span class="cf">if</span> config.enable_feature_selection:</a>
+<a class="sourceLine" id="cb3-80" title="80">            selection_result <span class="op">=</span> <span class="va">self</span>.feature_selection.select_fair_features(</a>
+<a class="sourceLine" id="cb3-81" title="81">                processed_dataset, config.protected_attributes, config.fairness_constraints</a>
+<a class="sourceLine" id="cb3-82" title="82">            )</a>
+<a class="sourceLine" id="cb3-83" title="83">            processed_dataset <span class="op">=</span> selection_result.selected_dataset</a>
+<a class="sourceLine" id="cb3-84" title="84">            applied_techniques.append(<span class="st">&#39;feature_selection&#39;</span>)</a>
+<a class="sourceLine" id="cb3-85" title="85">            </a>
+<a class="sourceLine" id="cb3-86" title="86">        <span class="cf">return</span> PreprocessingResult(</a>
+<a class="sourceLine" id="cb3-87" title="87">            processed_dataset<span class="op">=</span>processed_dataset,</a>
+<a class="sourceLine" id="cb3-88" title="88">            applied_techniques<span class="op">=</span>applied_techniques,</a>
+<a class="sourceLine" id="cb3-89" title="89">            bias_reduction_estimate<span class="op">=</span><span class="va">self</span>.estimate_bias_reduction(dataset, processed_dataset)</a>
+<a class="sourceLine" id="cb3-90" title="90">        )</a></code></pre></div>
+<hr />
+<h2 id="lld-low-level-design">LLD (Low Level Design)</h2>
+<h3 id="advanced-bias-detection-algorithms">Advanced Bias Detection Algorithms</h3>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">class</span> CounterfactualBiasDetector:</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb4-3" title="3">        <span class="va">self</span>.counterfactual_generator <span class="op">=</span> CounterfactualGenerator()</a>
+<a class="sourceLine" id="cb4-4" title="4">        <span class="va">self</span>.similarity_calculator <span class="op">=</span> SimilarityCalculator()</a>
+<a class="sourceLine" id="cb4-5" title="5">        </a>
+<a class="sourceLine" id="cb4-6" title="6">    <span class="kw">def</span> detect_individual_bias(<span class="va">self</span>, model, instances, protected_attributes):</a>
+<a class="sourceLine" id="cb4-7" title="7">        bias_scores <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb4-8" title="8">        </a>
+<a class="sourceLine" id="cb4-9" title="9">        <span class="cf">for</span> instance <span class="kw">in</span> instances:</a>
+<a class="sourceLine" id="cb4-10" title="10">            <span class="co"># Generate counterfactual instances</span></a>
+<a class="sourceLine" id="cb4-11" title="11">            counterfactuals <span class="op">=</span> <span class="va">self</span>.generate_counterfactuals(instance, protected_attributes)</a>
+<a class="sourceLine" id="cb4-12" title="12">            </a>
+<a class="sourceLine" id="cb4-13" title="13">            <span class="co"># Calculate bias score for this instance</span></a>
+<a class="sourceLine" id="cb4-14" title="14">            instance_bias_score <span class="op">=</span> <span class="va">self</span>.calculate_instance_bias_score(</a>
+<a class="sourceLine" id="cb4-15" title="15">                model, instance, counterfactuals</a>
+<a class="sourceLine" id="cb4-16" title="16">            )</a>
+<a class="sourceLine" id="cb4-17" title="17">            bias_scores.append(instance_bias_score)</a>
+<a class="sourceLine" id="cb4-18" title="18">            </a>
+<a class="sourceLine" id="cb4-19" title="19">        <span class="cf">return</span> IndividualBiasResult(</a>
+<a class="sourceLine" id="cb4-20" title="20">            instance_bias_scores<span class="op">=</span>bias_scores,</a>
+<a class="sourceLine" id="cb4-21" title="21">            average_bias_score<span class="op">=</span>np.mean(bias_scores),</a>
+<a class="sourceLine" id="cb4-22" title="22">            bias_distribution<span class="op">=</span><span class="va">self</span>.analyze_bias_distribution(bias_scores)</a>
+<a class="sourceLine" id="cb4-23" title="23">        )</a>
+<a class="sourceLine" id="cb4-24" title="24">    </a>
+<a class="sourceLine" id="cb4-25" title="25">    <span class="kw">def</span> generate_counterfactuals(<span class="va">self</span>, instance, protected_attributes):</a>
+<a class="sourceLine" id="cb4-26" title="26">        counterfactuals <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb4-27" title="27">        </a>
+<a class="sourceLine" id="cb4-28" title="28">        <span class="cf">for</span> attr <span class="kw">in</span> protected_attributes:</a>
+<a class="sourceLine" id="cb4-29" title="29">            current_value <span class="op">=</span> instance[attr]</a>
+<a class="sourceLine" id="cb4-30" title="30">            possible_values <span class="op">=</span> protected_attributes[attr].possible_values</a>
+<a class="sourceLine" id="cb4-31" title="31">            </a>
+<a class="sourceLine" id="cb4-32" title="32">            <span class="cf">for</span> new_value <span class="kw">in</span> possible_values:</a>
+<a class="sourceLine" id="cb4-33" title="33">                <span class="cf">if</span> new_value <span class="op">!=</span> current_value:</a>
+<a class="sourceLine" id="cb4-34" title="34">                    counterfactual <span class="op">=</span> instance.copy()</a>
+<a class="sourceLine" id="cb4-35" title="35">                    counterfactual[attr] <span class="op">=</span> new_value</a>
+<a class="sourceLine" id="cb4-36" title="36">                    counterfactuals.append(counterfactual)</a>
+<a class="sourceLine" id="cb4-37" title="37">                    </a>
+<a class="sourceLine" id="cb4-38" title="38">        <span class="cf">return</span> counterfactuals</a>
+<a class="sourceLine" id="cb4-39" title="39">    </a>
+<a class="sourceLine" id="cb4-40" title="40">    <span class="kw">def</span> calculate_instance_bias_score(<span class="va">self</span>, model, original_instance, counterfactuals):</a>
+<a class="sourceLine" id="cb4-41" title="41">        original_prediction <span class="op">=</span> model.predict(original_instance)</a>
+<a class="sourceLine" id="cb4-42" title="42">        prediction_differences <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb4-43" title="43">        </a>
+<a class="sourceLine" id="cb4-44" title="44">        <span class="cf">for</span> counterfactual <span class="kw">in</span> counterfactuals:</a>
+<a class="sourceLine" id="cb4-45" title="45">            <span class="co"># Only consider similar counterfactuals to ensure valid comparison</span></a>
+<a class="sourceLine" id="cb4-46" title="46">            <span class="cf">if</span> <span class="va">self</span>.similarity_calculator.are_similar(original_instance, counterfactual):</a>
+<a class="sourceLine" id="cb4-47" title="47">                cf_prediction <span class="op">=</span> model.predict(counterfactual)</a>
+<a class="sourceLine" id="cb4-48" title="48">                difference <span class="op">=</span> <span class="bu">abs</span>(original_prediction <span class="op">-</span> cf_prediction)</a>
+<a class="sourceLine" id="cb4-49" title="49">                prediction_differences.append(difference)</a>
+<a class="sourceLine" id="cb4-50" title="50">                </a>
+<a class="sourceLine" id="cb4-51" title="51">        <span class="cf">return</span> <span class="bu">max</span>(prediction_differences) <span class="cf">if</span> prediction_differences <span class="cf">else</span> <span class="fl">0.0</span></a>
+<a class="sourceLine" id="cb4-52" title="52"></a>
+<a class="sourceLine" id="cb4-53" title="53"><span class="kw">class</span> IntersectionalBiasAnalyzer:</a>
+<a class="sourceLine" id="cb4-54" title="54">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb4-55" title="55">        <span class="va">self</span>.subgroup_analyzer <span class="op">=</span> SubgroupAnalyzer()</a>
+<a class="sourceLine" id="cb4-56" title="56">        <span class="va">self</span>.statistical_tests <span class="op">=</span> StatisticalTests()</a>
+<a class="sourceLine" id="cb4-57" title="57">        </a>
+<a class="sourceLine" id="cb4-58" title="58">    <span class="kw">def</span> analyze_intersectional_bias(<span class="va">self</span>, model, dataset, protected_attributes):</a>
+<a class="sourceLine" id="cb4-59" title="59">        <span class="co"># Generate all possible intersectional subgroups</span></a>
+<a class="sourceLine" id="cb4-60" title="60">        intersectional_groups <span class="op">=</span> <span class="va">self</span>.generate_intersectional_groups(protected_attributes)</a>
+<a class="sourceLine" id="cb4-61" title="61">        </a>
+<a class="sourceLine" id="cb4-62" title="62">        subgroup_analyses <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb4-63" title="63">        </a>
+<a class="sourceLine" id="cb4-64" title="64">        <span class="cf">for</span> group_combination <span class="kw">in</span> intersectional_groups:</a>
+<a class="sourceLine" id="cb4-65" title="65">            <span class="co"># Filter dataset for this specific subgroup</span></a>
+<a class="sourceLine" id="cb4-66" title="66">            subgroup_data <span class="op">=</span> <span class="va">self</span>.filter_dataset_for_subgroup(dataset, group_combination)</a>
+<a class="sourceLine" id="cb4-67" title="67">            </a>
+<a class="sourceLine" id="cb4-68" title="68">            <span class="cf">if</span> <span class="bu">len</span>(subgroup_data) <span class="op">&lt;</span> <span class="dv">30</span>:  <span class="co"># Skip small subgroups</span></a>
+<a class="sourceLine" id="cb4-69" title="69">                <span class="cf">continue</span></a>
+<a class="sourceLine" id="cb4-70" title="70">                </a>
+<a class="sourceLine" id="cb4-71" title="71">            <span class="co"># Analyze bias for this subgroup</span></a>
+<a class="sourceLine" id="cb4-72" title="72">            subgroup_analysis <span class="op">=</span> <span class="va">self</span>.subgroup_analyzer.analyze_subgroup_bias(</a>
+<a class="sourceLine" id="cb4-73" title="73">                model, subgroup_data, group_combination</a>
+<a class="sourceLine" id="cb4-74" title="74">            )</a>
+<a class="sourceLine" id="cb4-75" title="75">            </a>
+<a class="sourceLine" id="cb4-76" title="76">            subgroup_analyses[group_combination] <span class="op">=</span> subgroup_analysis</a>
+<a class="sourceLine" id="cb4-77" title="77">            </a>
+<a class="sourceLine" id="cb4-78" title="78">        <span class="co"># Identify the most biased intersectional groups</span></a>
+<a class="sourceLine" id="cb4-79" title="79">        most_biased_groups <span class="op">=</span> <span class="va">self</span>.identify_most_biased_groups(subgroup_analyses)</a>
+<a class="sourceLine" id="cb4-80" title="80">        </a>
+<a class="sourceLine" id="cb4-81" title="81">        <span class="cf">return</span> IntersectionalBiasResult(</a>
+<a class="sourceLine" id="cb4-82" title="82">            subgroup_analyses<span class="op">=</span>subgroup_analyses,</a>
+<a class="sourceLine" id="cb4-83" title="83">            most_biased_groups<span class="op">=</span>most_biased_groups,</a>
+<a class="sourceLine" id="cb4-84" title="84">            intersectional_bias_score<span class="op">=</span><span class="va">self</span>.calculate_intersectional_bias_score(subgroup_analyses)</a>
+<a class="sourceLine" id="cb4-85" title="85">        )</a>
+<a class="sourceLine" id="cb4-86" title="86">    </a>
+<a class="sourceLine" id="cb4-87" title="87">    <span class="kw">def</span> generate_intersectional_groups(<span class="va">self</span>, protected_attributes):</a>
+<a class="sourceLine" id="cb4-88" title="88">        <span class="co">&quot;&quot;&quot;Generate all combinations of protected attribute values&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb4-89" title="89">        <span class="im">from</span> itertools <span class="im">import</span> product</a>
+<a class="sourceLine" id="cb4-90" title="90">        </a>
+<a class="sourceLine" id="cb4-91" title="91">        attr_names <span class="op">=</span> <span class="bu">list</span>(protected_attributes.keys())</a>
+<a class="sourceLine" id="cb4-92" title="92">        attr_values <span class="op">=</span> [protected_attributes[attr].possible_values <span class="cf">for</span> attr <span class="kw">in</span> attr_names]</a>
+<a class="sourceLine" id="cb4-93" title="93">        </a>
+<a class="sourceLine" id="cb4-94" title="94">        intersectional_groups <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb4-95" title="95">        <span class="cf">for</span> combination <span class="kw">in</span> product(<span class="op">*</span>attr_values):</a>
+<a class="sourceLine" id="cb4-96" title="96">            group_dict <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(attr_names, combination))</a>
+<a class="sourceLine" id="cb4-97" title="97">            intersectional_groups.append(group_dict)</a>
+<a class="sourceLine" id="cb4-98" title="98">            </a>
+<a class="sourceLine" id="cb4-99" title="99">        <span class="cf">return</span> intersectional_groups</a>
+<a class="sourceLine" id="cb4-100" title="100"></a>
+<a class="sourceLine" id="cb4-101" title="101"><span class="kw">class</span> AdversarialDebiasing:</a>
+<a class="sourceLine" id="cb4-102" title="102">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb4-103" title="103">        <span class="va">self</span>.discriminator <span class="op">=</span> BiasDiscriminator()</a>
+<a class="sourceLine" id="cb4-104" title="104">        <span class="va">self</span>.adversarial_trainer <span class="op">=</span> AdversarialTrainer()</a>
+<a class="sourceLine" id="cb4-105" title="105">        </a>
+<a class="sourceLine" id="cb4-106" title="106">    <span class="kw">def</span> apply_adversarial_debiasing(<span class="va">self</span>, model, dataset, protected_attributes, config):</a>
+<a class="sourceLine" id="cb4-107" title="107">        <span class="co">&quot;&quot;&quot;Apply adversarial training to reduce bias&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb4-108" title="108">        </a>
+<a class="sourceLine" id="cb4-109" title="109">        <span class="co"># Initialize discriminator to detect protected attributes from predictions</span></a>
+<a class="sourceLine" id="cb4-110" title="110">        discriminator <span class="op">=</span> <span class="va">self</span>.discriminator.build_discriminator(</a>
+<a class="sourceLine" id="cb4-111" title="111">            input_dim<span class="op">=</span>model.output_dim,</a>
+<a class="sourceLine" id="cb4-112" title="112">            protected_attributes<span class="op">=</span>protected_attributes</a>
+<a class="sourceLine" id="cb4-113" title="113">        )</a>
+<a class="sourceLine" id="cb4-114" title="114">        </a>
+<a class="sourceLine" id="cb4-115" title="115">        <span class="co"># Set up adversarial training</span></a>
+<a class="sourceLine" id="cb4-116" title="116">        adversarial_loss <span class="op">=</span> AdversarialLoss(</a>
+<a class="sourceLine" id="cb4-117" title="117">            prediction_loss_weight<span class="op">=</span>config.prediction_loss_weight,</a>
+<a class="sourceLine" id="cb4-118" title="118">            adversarial_loss_weight<span class="op">=</span>config.adversarial_loss_weight</a>
+<a class="sourceLine" id="cb4-119" title="119">        )</a>
+<a class="sourceLine" id="cb4-120" title="120">        </a>
+<a class="sourceLine" id="cb4-121" title="121">        <span class="co"># Training loop</span></a>
+<a class="sourceLine" id="cb4-122" title="122">        <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(config.num_epochs):</a>
+<a class="sourceLine" id="cb4-123" title="123">            epoch_results <span class="op">=</span> <span class="va">self</span>.adversarial_trainer.train_epoch(</a>
+<a class="sourceLine" id="cb4-124" title="124">                model<span class="op">=</span>model,</a>
+<a class="sourceLine" id="cb4-125" title="125">                discriminator<span class="op">=</span>discriminator,</a>
+<a class="sourceLine" id="cb4-126" title="126">                dataset<span class="op">=</span>dataset,</a>
+<a class="sourceLine" id="cb4-127" title="127">                protected_attributes<span class="op">=</span>protected_attributes,</a>
+<a class="sourceLine" id="cb4-128" title="128">                loss_function<span class="op">=</span>adversarial_loss</a>
+<a class="sourceLine" id="cb4-129" title="129">            )</a>
+<a class="sourceLine" id="cb4-130" title="130">            </a>
+<a class="sourceLine" id="cb4-131" title="131">            <span class="co"># Monitor bias reduction progress</span></a>
+<a class="sourceLine" id="cb4-132" title="132">            <span class="cf">if</span> epoch <span class="op">%</span> config.eval_frequency <span class="op">==</span> <span class="dv">0</span>:</a>
+<a class="sourceLine" id="cb4-133" title="133">                bias_metrics <span class="op">=</span> <span class="va">self</span>.evaluate_bias_metrics(model, dataset, protected_attributes)</a>
+<a class="sourceLine" id="cb4-134" title="134">                <span class="bu">print</span>(<span class="ss">f&quot;Epoch </span><span class="sc">{</span>epoch<span class="sc">}</span><span class="ss">: Bias Score = </span><span class="sc">{</span>bias_metrics<span class="sc">.</span>overall_bias_score<span class="sc">}</span><span class="ss">&quot;</span>)</a>
+<a class="sourceLine" id="cb4-135" title="135">                </a>
+<a class="sourceLine" id="cb4-136" title="136">        <span class="cf">return</span> AdversarialDebiasedModel(</a>
+<a class="sourceLine" id="cb4-137" title="137">            model<span class="op">=</span>model,</a>
+<a class="sourceLine" id="cb4-138" title="138">            discriminator<span class="op">=</span>discriminator,</a>
+<a class="sourceLine" id="cb4-139" title="139">            training_history<span class="op">=</span><span class="va">self</span>.adversarial_trainer.get_training_history(),</a>
+<a class="sourceLine" id="cb4-140" title="140">            final_bias_metrics<span class="op">=</span><span class="va">self</span>.evaluate_bias_metrics(model, dataset, protected_attributes)</a>
+<a class="sourceLine" id="cb4-141" title="141">        )</a>
+<a class="sourceLine" id="cb4-142" title="142"></a>
+<a class="sourceLine" id="cb4-143" title="143"><span class="kw">class</span> FairnesConstrainedOptimization:</a>
+<a class="sourceLine" id="cb4-144" title="144">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb4-145" title="145">        <span class="va">self</span>.constraint_formulator <span class="op">=</span> FairnessConstraintFormulator()</a>
+<a class="sourceLine" id="cb4-146" title="146">        <span class="va">self</span>.constrained_optimizer <span class="op">=</span> ConstrainedOptimizer()</a>
+<a class="sourceLine" id="cb4-147" title="147">        </a>
+<a class="sourceLine" id="cb4-148" title="148">    <span class="kw">def</span> optimize_with_fairness_constraints(<span class="va">self</span>, model, dataset, fairness_constraints):</a>
+<a class="sourceLine" id="cb4-149" title="149">        <span class="co"># Formulate fairness constraints as mathematical constraints</span></a>
+<a class="sourceLine" id="cb4-150" title="150">        mathematical_constraints <span class="op">=</span> <span class="va">self</span>.constraint_formulator.formulate_constraints(</a>
+<a class="sourceLine" id="cb4-151" title="151">            fairness_constraints</a>
+<a class="sourceLine" id="cb4-152" title="152">        )</a>
+<a class="sourceLine" id="cb4-153" title="153">        </a>
+<a class="sourceLine" id="cb4-154" title="154">        <span class="co"># Set up constrained optimization problem</span></a>
+<a class="sourceLine" id="cb4-155" title="155">        optimization_problem <span class="op">=</span> OptimizationProblem(</a>
+<a class="sourceLine" id="cb4-156" title="156">            objective<span class="op">=</span>model.loss_function,</a>
+<a class="sourceLine" id="cb4-157" title="157">            constraints<span class="op">=</span>mathematical_constraints,</a>
+<a class="sourceLine" id="cb4-158" title="158">            variables<span class="op">=</span>model.parameters</a>
+<a class="sourceLine" id="cb4-159" title="159">        )</a>
+<a class="sourceLine" id="cb4-160" title="160">        </a>
+<a class="sourceLine" id="cb4-161" title="161">        <span class="co"># Solve constrained optimization</span></a>
+<a class="sourceLine" id="cb4-162" title="162">        solution <span class="op">=</span> <span class="va">self</span>.constrained_optimizer.solve(optimization_problem)</a>
+<a class="sourceLine" id="cb4-163" title="163">        </a>
+<a class="sourceLine" id="cb4-164" title="164">        <span class="co"># Update model parameters with solution</span></a>
+<a class="sourceLine" id="cb4-165" title="165">        model.update_parameters(solution.optimal_parameters)</a>
+<a class="sourceLine" id="cb4-166" title="166">        </a>
+<a class="sourceLine" id="cb4-167" title="167">        <span class="cf">return</span> FairnessConstrainedResult(</a>
+<a class="sourceLine" id="cb4-168" title="168">            optimized_model<span class="op">=</span>model,</a>
+<a class="sourceLine" id="cb4-169" title="169">            constraint_satisfaction<span class="op">=</span>solution.constraint_satisfaction,</a>
+<a class="sourceLine" id="cb4-170" title="170">            optimization_metrics<span class="op">=</span>solution.optimization_metrics</a>
+<a class="sourceLine" id="cb4-171" title="171">        )</a>
+<a class="sourceLine" id="cb4-172" title="172"></a>
+<a class="sourceLine" id="cb4-173" title="173"><span class="co"># Database Schema</span></a>
+<a class="sourceLine" id="cb4-174" title="174"><span class="kw">class</span> BiasAssessmentSchema:</a>
+<a class="sourceLine" id="cb4-175" title="175">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb4-176" title="176">        <span class="va">self</span>.assessment_table <span class="op">=</span> <span class="st">&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb4-177" title="177"><span class="st">        CREATE TABLE bias_assessments (</span></a>
+<a class="sourceLine" id="cb4-178" title="178"><span class="st">            id UUID PRIMARY KEY,</span></a>
+<a class="sourceLine" id="cb4-179" title="179"><span class="st">            model_id UUID NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-180" title="180"><span class="st">            dataset_id UUID NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-181" title="181"><span class="st">            assessment_timestamp TIMESTAMP DEFAULT NOW(),</span></a>
+<a class="sourceLine" id="cb4-182" title="182"><span class="st">            assessment_type VARCHAR(50) NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-183" title="183"><span class="st">            protected_attributes JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-184" title="184"><span class="st">            bias_detected BOOLEAN NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-185" title="185"><span class="st">            overall_bias_score FLOAT NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-186" title="186"><span class="st">            fairness_metrics JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-187" title="187"><span class="st">            statistical_results JSONB,</span></a>
+<a class="sourceLine" id="cb4-188" title="188"><span class="st">            individual_results JSONB,</span></a>
+<a class="sourceLine" id="cb4-189" title="189"><span class="st">            intersectional_results JSONB,</span></a>
+<a class="sourceLine" id="cb4-190" title="190"><span class="st">            causal_results JSONB,</span></a>
+<a class="sourceLine" id="cb4-191" title="191"><span class="st">            mitigation_recommendations JSONB,</span></a>
+<a class="sourceLine" id="cb4-192" title="192"><span class="st">            created_by UUID NOT NULL</span></a>
+<a class="sourceLine" id="cb4-193" title="193"><span class="st">        );</span></a>
+<a class="sourceLine" id="cb4-194" title="194"><span class="st">        </span></a>
+<a class="sourceLine" id="cb4-195" title="195"><span class="st">        CREATE TABLE mitigation_results (</span></a>
+<a class="sourceLine" id="cb4-196" title="196"><span class="st">            id UUID PRIMARY KEY,</span></a>
+<a class="sourceLine" id="cb4-197" title="197"><span class="st">            assessment_id UUID REFERENCES bias_assessments(id),</span></a>
+<a class="sourceLine" id="cb4-198" title="198"><span class="st">            mitigation_strategy VARCHAR(100) NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-199" title="199"><span class="st">            techniques_applied JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-200" title="200"><span class="st">            effectiveness_score FLOAT NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-201" title="201"><span class="st">            performance_impact JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-202" title="202"><span class="st">            before_metrics JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-203" title="203"><span class="st">            after_metrics JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-204" title="204"><span class="st">            mitigation_timestamp TIMESTAMP DEFAULT NOW()</span></a>
+<a class="sourceLine" id="cb4-205" title="205"><span class="st">        );</span></a>
+<a class="sourceLine" id="cb4-206" title="206"><span class="st">        </span></a>
+<a class="sourceLine" id="cb4-207" title="207"><span class="st">        CREATE TABLE production_monitoring (</span></a>
+<a class="sourceLine" id="cb4-208" title="208"><span class="st">            id UUID PRIMARY KEY,</span></a>
+<a class="sourceLine" id="cb4-209" title="209"><span class="st">            model_deployment_id UUID NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-210" title="210"><span class="st">            monitoring_timestamp TIMESTAMP DEFAULT NOW(),</span></a>
+<a class="sourceLine" id="cb4-211" title="211"><span class="st">            bias_metrics JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-212" title="212"><span class="st">            drift_detected BOOLEAN NOT NULL,</span></a>
+<a class="sourceLine" id="cb4-213" title="213"><span class="st">            drift_magnitude FLOAT,</span></a>
+<a class="sourceLine" id="cb4-214" title="214"><span class="st">            affected_groups JSONB,</span></a>
+<a class="sourceLine" id="cb4-215" title="215"><span class="st">            alert_triggered BOOLEAN DEFAULT FALSE,</span></a>
+<a class="sourceLine" id="cb4-216" title="216"><span class="st">            mitigation_triggered BOOLEAN DEFAULT FALSE</span></a>
+<a class="sourceLine" id="cb4-217" title="217"><span class="st">        );</span></a>
+<a class="sourceLine" id="cb4-218" title="218"><span class="st">        &quot;&quot;&quot;</span></a></code></pre></div>
+<hr />
+<h2 id="pseudocode">Pseudocode</h2>
+<h3 id="comprehensive-bias-detection-workflow">Comprehensive Bias Detection Workflow</h3>
+<p>``` ALGORITHM ComprehensiveBiasDetection INPUT: model, dataset, protected_attributes, detection_config OUTPUT: bias_assessment_report</p>
+<p>BEGIN // Initialize detection engines statistical_detector = StatisticalBiasDetector() individual_detector = IndividualBiasDetector() intersectional_analyzer = IntersectionalBiasAnalyzer() causal_analyzer = CausalBiasAnalyzer() metrics_calculator = FairnessMetricsCalculator()</p>
+<pre><code>// Validate inputs
+IF NOT VALIDATE_INPUTS(model, dataset, protected_attributes) THEN
+    RETURN ERROR(&quot;Invalid inputs for bias detection&quot;)
+END IF
+
+// Generate predictions for analysis
+predictions = model.predict(dataset.features)
+
+assessment_results = {}
+
+// Statistical bias detection
+statistical_results = statistical_detector.detect_statistical_bias(
+    predictions, dataset.labels, protected_attributes
+)
+assessment_results[&#39;statistical&#39;] = statistical_results
+
+// Individual bias detection through counterfactuals
+individual_results = individual_detector.detect_individual_bias(
+    model, dataset, protected_attributes
+)
+assessment_results[&#39;individual&#39;] = individual_results
+
+// Intersectional bias analysis
+intersectional_results = intersectional_analyzer.analyze_intersectional_bias(
+    predictions, dataset, protected_attributes
+)
+assessment_results[&#39;intersectional&#39;] = intersectional_results
+
+// Causal bias analysis
+causal_results = causal_analyzer.analyze_causal_bias(
+    model, dataset, protected_attributes, detection_config.causal_graph
+)
+assessment_results[&#39;causal&#39;] = causal_results
+
+// Calculate comprehensive fairness metrics
+fairness_metrics = metrics_calculator.calculate_all_metrics(
+    predictions, dataset.labels, protected_attributes
+)
+
+// Generate overall bias assessment
+overall_bias_score = CALCULATE_OVERALL_BIAS_SCORE(assessment_results)
+bias_detected = overall_bias_score &gt; detection_config.bias_threshold
+
+// Generate mitigation recommendations
+mitigation_recommendations = GENERATE_MITIGATION_RECOMMENDATIONS(
+    assessment_results, fairness_metrics, detection_config.constraints
+)
+
+// Create comprehensive report
+report = BiasAssessmentReport(
+    model_id = model.id,
+    assessment_timestamp = CURRENT_TIMESTAMP(),
+    bias_detected = bias_detected,
+    overall_bias_score = overall_bias_score,
+    statistical_bias = statistical_results,
+    individual_bias = individual_results,
+    intersectional_bias = intersectional_results,
+    causal_bias = causal_results,
+    fairness_metrics = fairness_metrics,
+    mitigation_recommendations = mitigation_recommendations
+)
+
+// Save assessment results
+SAVE_BIAS_ASSESSMENT(report)
+
+// Trigger alerts if bias detected
+IF bias_detected THEN
+    TRIGGER_BIAS_ALERTS(report, detection_config.alert_config)
+END IF
+
+RETURN report</code></pre>
+<p>END</p>
+<p>FUNCTION DETECT_STATISTICAL_BIAS(predictions, labels, protected_attributes) BEGIN bias_results = {}</p>
+<pre><code>FOR attr_name, attr_values IN protected_attributes DO
+    attr_bias_results = {}
+    
+    // Demographic Parity
+    demographic_parity_diff = CALCULATE_DEMOGRAPHIC_PARITY_DIFFERENCE(
+        predictions, attr_values
+    )
+    attr_bias_results[&#39;demographic_parity&#39;] = {
+        &#39;difference&#39;: demographic_parity_diff,
+        &#39;is_biased&#39;: demographic_parity_diff &gt; DEMOGRAPHIC_PARITY_THRESHOLD,
+        &#39;groups_analysis&#39;: ANALYZE_DEMOGRAPHIC_PARITY_BY_GROUP(predictions, attr_values)
+    }
+    
+    // Equalized Opportunity
+    equalized_opportunity_diff = CALCULATE_EQUALIZED_OPPORTUNITY_DIFFERENCE(
+        predictions, labels, attr_values
+    )
+    attr_bias_results[&#39;equalized_opportunity&#39;] = {
+        &#39;difference&#39;: equalized_opportunity_diff,
+        &#39;is_biased&#39;: equalized_opportunity_diff &gt; EQUALIZED_OPPORTUNITY_THRESHOLD,
+        &#39;groups_analysis&#39;: ANALYZE_EQUALIZED_OPPORTUNITY_BY_GROUP(predictions, labels, attr_values)
+    }
+    
+    // Calibration
+    calibration_results = ANALYZE_CALIBRATION_BIAS(predictions, labels, attr_values)
+    attr_bias_results[&#39;calibration&#39;] = calibration_results
+    
+    bias_results[attr_name] = attr_bias_results
+END FOR
+
+RETURN StatisticalBiasResults(
+    per_attribute_results = bias_results,
+    overall_statistical_bias = ANY_ATTRIBUTE_BIASED(bias_results)
+)</code></pre>
+<p>END</p>
+<p>FUNCTION AUTOMATED_BIAS_MITIGATION(model, dataset, bias_assessment, mitigation_config) BEGIN // Determine optimal mitigation strategy strategy_</p>

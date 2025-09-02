@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🤖 REAL AI-Powered Inventory Optimization - Live Demo</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: white;
+        }
+        .glass-card {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.37);
+            padding: 20px;
+            margin: 10px 0;
+        }
+        .kpi-card {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 12px;
+            padding: 20px;
+            margin: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            color: #333;
+            transition: transform 0.3s ease;
+        }
+        .kpi-card:hover {
+            transform: translateY(-5px);
+        }
+        .status-green { color: white; font-weight: 600; }
+        .status-orange { color: #fd7e14; }
+        .btn-ai {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            border: none;
+            color: white;
+            padding: 12px 24px;
+            border-radius: 25px;
+            transition: all 0.3s ease;
+        }
+        .btn-ai:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+            color: white;
+        }
+        .loading {
+            display: inline-block;
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        .json-display {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 15px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.85em;
+            white-space: pre-wrap;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+        .alert-success {
+            background: rgba(40, 167, 69, 0.1);
+            border: 1px solid rgba(40, 167, 69, 0.3);
+            color: #28a745;
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid py-4">
+        <!-- Header -->
+        <div class="text-center mb-4">
+            <h1 class="display-4 mb-3">🤖 REAL AI-Powered Inventory Optimization</h1>
+            <p class="lead">Live demonstration with 538,036+ actual sales transactions</p>
+            <div class="alert alert-success d-inline-block">
+                ✅ Using REAL ML algorithms: ARIMA, Linear Regression, Seasonal Decomposition
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card">
+                    <h3><i class="fas fa-heartbeat"></i> System Health</h3>
+                    <div id="systemStatus">
+                        <button class="btn btn-ai" onclick="checkSystemHealth()">
+                            <i class="fas fa-sync-alt"></i> Check System Health
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real KPIs from 538K+ Transactions -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card">
+                    <h3><i class="fas fa-chart-line"></i> Real Business KPIs (Calculated from Actual Data)</h3>
+                    <button class="btn btn-ai mb-3" onclick="loadRealKPIs()">
+                        <i class="fas fa-calculator"></i> Calculate Real KPIs from 538K+ Transactions
+                    </button>
+                    <div id="kpiContainer" class="row"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Real ML Forecasting -->
+        <div class="row mb-4">
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <h3><i class="fas fa-crystal-ball"></i> Real ML Demand Forecasting</h3>
+                    <p>Generate actual forecasts using trained ARIMA, Linear Regression, and Seasonal models</p>
+                    <div class="mb-3">
+                        <label>Product ID:</label>
+                        <input type="text" id="forecastProductId" class="form-control" value="PROD_0464" placeholder="Product ID">
+                    </div>
+                    <div class="mb-3">
+                        <label>Store ID:</label>
+                        <input type="text" id="forecastStoreId" class="form-control" value="STORE_001" placeholder="Store ID">
+                    </div>
+                    <button class="btn btn-ai" onclick="generateRealForecast()">
+                        <i class="fas fa-brain"></i> Generate Real ML Forecast
+                    </button>
+                    <div id="forecastResults" class="mt-3"></div>
+                </div>
+            </div>
+            
+            <div class="col-md-6">
+                <div class="glass-card">
+                    <h3><i class="fas fa-cogs"></i> Real Inventory Optimization</h3>
+                    <p>Calculate optimal EOQ, safety stock, and reorder points using actual sales data</p>
+                    <div class="mb-3">
+                        <label>Product ID:</label>
+                        <input type="text" id="optimizeProductId" class="form-control" value="PROD_0464" placeholder="Product ID">
+                    </div>
+                    <div class="mb-3">
+                        <label>Store ID:</label>
+                        <input type="text" id="optimizeStoreId" class="form-control" value="STORE_001" placeholder="Store ID">
+                    </div>
+                    <button class="btn btn-ai" onclick="runRealOptimization()">
+                        <i class="fas fa-calculator"></i> Optimize Inventory
+                    </button>
+                    <div id="optimizationResults" class="mt-3"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demo Analysis -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="glass-card">
+                    <h3><i class="fas fa-chart-bar"></i> Comprehensive AI Analysis</h3>
+                    <p>Run complete ML analysis on top-selling products with real transaction data</p>
+                    <button class="btn btn-ai btn-lg" onclick="runComprehensiveAnalysis()">
+                        <i class="fas fa-robot"></i> Run Complete AI Analysis
+                    </button>
+                    <div id="analysisResults" class="mt-4"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8001';
+        
+        // Check system health
+        async function checkSystemHealth() {
+            const statusDiv = document.getElementById('systemStatus');
+            statusDiv.innerHTML = '<i class="fas fa-spinner loading"></i> Checking system health...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/health`);
+                const data = await response.json();
+                
+                statusDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-check-circle"></i> System Status: ${data.status}</h5>
+                        <p><strong>Database:</strong> <span style="color: white; font-weight: bold;">${data.database_status}</span></p>
+                        <p><strong>Models Loaded:</strong> ${data.models_loaded}</p>
+                        <p><strong>Timestamp:</strong> ${data.timestamp}</p>
+                    </div>
+                `;
+            } catch (error) {
+                statusDiv.innerHTML = `<div class="alert alert-danger">❌ System health check failed: ${error.message}</div>`;
+            }
+        }
+        
+        // Load real KPIs
+        async function loadRealKPIs() {
+            const container = document.getElementById('kpiContainer');
+            container.innerHTML = '<div class="col-12"><i class="fas fa-spinner loading"></i> Calculating KPIs from 538,036+ transactions...</div>';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/kpis`);
+                const data = await response.json();
+                
+                container.innerHTML = `
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <h4><i class="fas fa-dollar-sign text-primary"></i> Total Revenue</h4>
+                            <h2 style="color: #333; font-weight: bold;">$${data.revenue.total_revenue.toLocaleString()}</h2>
+                            <small class="text-muted">From actual sales data</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <h4><i class="fas fa-chart-line text-primary"></i> Daily Revenue</h4>
+                            <h2 style="color: #333; font-weight: bold;">$${data.revenue.avg_daily_revenue.toLocaleString()}</h2>
+                            <small class="text-muted">Average per day</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <h4><i class="fas fa-boxes text-primary"></i> Transactions</h4>
+                            <h2 style="color: #333; font-weight: bold;">${data.operational.total_transactions.toLocaleString()}</h2>
+                            <small class="text-muted">Total processed</small>
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <div class="kpi-card">
+                            <h4><i class="fas fa-brain text-primary"></i> ML Accuracy</h4>
+                            <h2 style="color: #333; font-weight: bold;">${data.forecasting.avg_forecast_accuracy}</h2>
+                            <small class="text-muted">Forecast accuracy</small>
+                        </div>
+                    </div>
+                `;
+            } catch (error) {
+                container.innerHTML = `<div class="col-12 alert alert-danger">❌ Failed to load KPIs: ${error.message}</div>`;
+            }
+        }
+        
+        // Generate real forecast
+        async function generateRealForecast() {
+            const productId = document.getElementById('forecastProductId').value;
+            const storeId = document.getElementById('forecastStoreId').value;
+            const resultsDiv = document.getElementById('forecastResults');
+            
+            if (!productId || !storeId) {
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Please enter Product ID and Store ID</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<i class="fas fa-spinner loading"></i> Training ML models and generating forecast...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/forecast`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        store_id: storeId,
+                        forecast_horizon: 30
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
+                    return;
+                }
+                
+                const totalForecast = data.ensemble_forecast.reduce((a, b) => a + b, 0);
+                
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-check-circle"></i> Real ML Forecast Generated</h5>
+                        <p><strong>Models Used:</strong> ${data.models_used.join(', ')}</p>
+                        <p><strong>Next 7 Days:</strong> ${data.ensemble_forecast.slice(0, 7).reduce((a, b) => a + b, 0).toFixed(1)} units</p>
+                        <p><strong>Next 30 Days:</strong> ${totalForecast.toFixed(1)} units</p>
+                        <p><strong>Daily Average:</strong> ${(totalForecast / 30).toFixed(1)} units</p>
+                        <p><strong>Forecast Date:</strong> ${data.forecast_date}</p>
+                        <details>
+                            <summary>View Model Performance</summary>
+                            <div class="json-display">${JSON.stringify(data.forecast_accuracy_estimates, null, 2)}</div>
+                        </details>
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger">❌ Forecast failed: ${error.message}</div>`;
+            }
+        }
+        
+        // Run real optimization
+        async function runRealOptimization() {
+            const productId = document.getElementById('optimizeProductId').value;
+            const storeId = document.getElementById('optimizeStoreId').value;
+            const resultsDiv = document.getElementById('optimizationResults');
+            
+            if (!productId || !storeId) {
+                resultsDiv.innerHTML = '<div class="alert alert-warning">Please enter Product ID and Store ID</div>';
+                return;
+            }
+            
+            resultsDiv.innerHTML = '<i class="fas fa-spinner loading"></i> Optimizing inventory using real sales data...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/optimize`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        product_id: productId,
+                        store_id: storeId,
+                        service_level: 0.95
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.error) {
+                    resultsDiv.innerHTML = `<div class="alert alert-danger">❌ ${data.error}</div>`;
+                    return;
+                }
+                
+                resultsDiv.innerHTML = `
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-check-circle"></i> Inventory Optimization Complete</h5>
+                        <p><strong>EOQ:</strong> ${data.inventory_policy.order_quantity} units</p>
+                        <p><strong>Safety Stock:</strong> ${data.inventory_policy.safety_stock} units</p>
+                        <p><strong>Reorder Point:</strong> ${data.inventory_policy.reorder_point} units</p>
+                        <p><strong>Annual Cost:</strong> $${data.financial_impact.annual_inventory_cost.toLocaleString()}</p>
+                        <p><strong>Inventory Turnover:</strong> ${data.performance_metrics.inventory_turnover}x/year</p>
+                        <details>
+                            <summary>View Demand Analysis</summary>
+                            <div class="json-display">Average Daily Demand: ${data.demand_analysis.avg_daily_demand.toFixed(2)} units
+Demand Variability (CV): ${data.demand_analysis.demand_cv.toFixed(2)}
+Current Fill Rate: ${(data.demand_analysis.current_fill_rate * 100).toFixed(1)}%</div>
+                        </details>
+                    </div>
+                `;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger">❌ Optimization failed: ${error.message}</div>`;
+            }
+        }
+        
+        // Run comprehensive analysis
+        async function runComprehensiveAnalysis() {
+            const resultsDiv = document.getElementById('analysisResults');
+            resultsDiv.innerHTML = '<i class="fas fa-spinner loading"></i> Running comprehensive AI analysis on top products...';
+            
+            try {
+                const response = await fetch(`${API_BASE}/api/demo/run-analysis`);
+                const data = await response.json();
+                
+                let analysisHtml = `
+                    <div class="alert alert-success">
+                        <h5><i class="fas fa-robot"></i> Comprehensive AI Analysis Complete</h5>
+                        <p><strong>Products Analyzed:</strong> ${data.total_analyzed}</p>
+                        <p><strong>Successful Analyses:</strong> ${data.successful_analyses}</p>
+                        <p><strong>Analysis Date:</strong> ${data.analysis_timestamp}</p>
+                    </div>
+                `;
+                
+                data.results.forEach((result, index) => {
+                    if (result.status === 'success') {
+                        const forecast = result.forecast;
+                        const optimization = result.optimization;
+                        const totalForecast = forecast.ensemble_forecast.reduce((a, b) => a + b, 0);
+                        
+                        analysisHtml += `
+                            <div class="kpi-card">
+                                <h5>Product ${result.product_id} at Store ${result.store_id}</h5>
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-crystal-ball"></i> ML Forecast</h6>
+                                        <p>30-day demand: ${totalForecast.toFixed(1)} units</p>
+                                        <p>Models: ${forecast.models_used.join(', ')}</p>
+                                    </div>
+                                    <div class="col-md-6">
+                                        <h6><i class="fas fa-cogs"></i> Optimization</h6>
+                                        <p>EOQ: ${optimization.inventory_policy.order_quantity} units</p>
+                                        <p>Annual Cost: $${optimization.financial_impact.annual_inventory_cost.toLocaleString()}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    }
+                });
+                
+                resultsDiv.innerHTML = analysisHtml;
+            } catch (error) {
+                resultsDiv.innerHTML = `<div class="alert alert-danger">❌ Analysis failed: ${error.message}</div>`;
+            }
+        }
+        
+        // Auto-check system health on load
+        window.onload = function() {
+            checkSystemHealth();
+        };
+    </script>
+</body>
+</html>

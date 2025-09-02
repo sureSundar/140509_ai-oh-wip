@@ -1,0 +1,159 @@
+FRAUDGUARD AI — COMPLETE HACKATHON SUBMISSION
+=============================================
+
+🏆 REAL‑TIME BANKING FRAUD DETECTION MVP (Problem 03)
+Team: 140509_03 | Theme: AI for Industry (Financial Services)
+
+🎯 EXECUTIVE SUMMARY
+--------------------
+FraudGuard AI is a real‑time fraud detection MVP for banking payments that combines an efficient ML ensemble with a rule engine and rolling behavioral features to deliver sub‑100ms risk decisions. The MVP exposes a clean ingestion API, a rule management surface, metrics, and optional PostgreSQL persistence. It demonstrates how to balance ML‑based anomaly detection with explainable, auditable rules that fraud analysts can tune live.
+
+✅ KEY CAPABILITIES
+-------------------
+• Real‑time decisioning API with per‑request explanations (ML + rules + features)
+• Lightweight ML ensemble (heuristics for RF/IF/NN/XGB) suitable for demo speed and clarity
+• Rule engine with live CRUD and metrics; YAML‑backed with safe expression evaluation
+• Rolling feature store (velocity/amounts) with optional Redis backend
+• Optional Postgres persistence of transactions/decisions + recent decisions endpoint
+• Prometheus metrics and health probes for observability
+
+🚀 ARCHITECTURE OVERVIEW
+------------------------
+
+┌───────────────────────────────────────────────────────────────────────────┐
+│ Ingestion API (FastAPI, :8000)                                            │
+│  • POST /api/v1/transactions → Decision (APPROVE/REVIEW/DECLINE)          │
+│  • GET  /decisions/recent  → Last decisions (DB or in‑memory cache)       │
+│  • GET  /rules (+CRUD, metrics) → Live rules management                    │
+│  • GET  /metrics, /healthz, /stats/summary, /demo (static)                │
+└───────────────┬───────────────────────────────┬──────────────────────────┘
+                │                               │
+        Feature Store                     Decision Service
+  (InMemory or Redis)                   (ML Ensemble + Rules)
+   • Velocity score 1h                  • Weighted ML probability (0..1)
+   • 7‑day avg/std amount               • Rule engine score (0..200)
+                                        • Composite risk (0..1000)
+
+Optional persistence: PostgreSQL (:5432)
+• Upserts transactions + decisions; query recent decisions
+
+🧠 DECISIONING LOGIC
+--------------------
+1) Feature extraction (rolling aggregates per customer)
+2) ML ensemble (heuristics for RF/IF/NN/XGB) over normalized signals → prob 0..1
+3) Rules engine (YAML rules over features, e.g., z_score ≥ 3, velocity ≥ 10) → points
+4) Composite risk: int(prob*800) + rule_points (capped at 1000)
+5) Thresholds (configurable): ≤350 APPROVE, ≥700 DECLINE, else REVIEW
+6) Explanation payload includes per‑model scores, rule flags, features
+
+📦 REPO LAYOUT (src/)
+---------------------
+• ingestion_service/main.py    — FastAPI app, endpoints, static demo
+• decision_service/service.py  — Feature store (in‑mem/Redis), ensemble, rule engine, thresholds
+• ml_serving/service.py        — Heuristic ensemble (RF/IF/NN/XGB‑like)
+• rule_engine/engine.py        — YAML rules loader + CRUD + metrics, safe eval of expressions
+• feature_store/service.py     — Rolling aggregates (velocity, 7‑day avg/std amount)
+• common/models.py             — Pydantic models (TransactionRequest, DecisionResponse, enums)
+• common/config.py             — Weights and decision thresholds
+• persistence/models.py        — SQLAlchemy ORM models
+• persistence/repository.py    — Upsert/query helpers; create tables
+• requirements.txt             — FastAPI, SQLAlchemy, psycopg2, alembic, redis client, metrics
+
+🔌 API SURFACE (Judge‑Friendly)
+-------------------------------
+Base: http://localhost:8000
+
+Health & Metrics
+• GET /healthz             → {status, db, uptimeSec, version}
+• GET /metrics             → Prometheus exposition
+• GET /stats/summary       → {totalRecent, byDecision}
+
+Decisioning
+• POST /api/v1/transactions (TransactionRequest)
+  → DecisionResponse {decision, riskScore, explanation{ml, rules, features}, processingMs}
+• GET  /decisions/recent?limit=20 (DB if enabled; fallback to in‑memory recent cache)
+
+Rules (live tuning)
+• GET    /rules                      → {version, rules{aml|fraud:[{name,condition,points}]}}
+• POST   /rules                      → add rule {category, name, condition, points}
+• PUT    /rules/{category}/{name}    → update rule condition/points
+• DELETE /rules/{category}/{name}    → remove rule
+• GET    /rules/metrics              → per‑rule hit counts
+• POST   /rules/metrics/reset        → clear metrics
+
+🧪 CURL EXAMPLES
+----------------
+1) Health
+  curl -s localhost:8000/healthz | jq
+
+2) Decision (APPROVE/REVIEW/DECLINE with explanation)
+  curl -s -X POST localhost:8000/api/v1/transactions \
+    -H 'Content-Type: application/json' \
+    -d '{
+      "customerId": "CUST_001",
+      "amount": 129.99,
+      "currency": "USD",
+      "merchantId": "M0001",
+      "timestamp": "2025-08-30T12:00:00Z",
+      "channel": "CARD",
+      "location": {"latitude":40.7,"longitude":-74.0,"country":"US","city":"NYC"},
+      "deviceFingerprint": "dev-abc123"
+    }' | jq
+
+3) Rules — add a high‑velocity fraud rule
+  curl -s -X POST localhost:8000/rules -H 'Content-Type: application/json' \
+    -d '{"category":"fraud","name":"HighVelocity","condition":"velocity_score_1h>=10","points":40}' | jq
+
+4) Recent decisions (DB or cache)
+  curl -s localhost:8000/decisions/recent | jq
+
+📊 OBSERVABILITY
+----------------
+• Prometheus metrics at /metrics (http_requests_total, latency_seconds, decisions_total)
+• Healthz shows API uptime and DB connectivity
+
+🗄️ PERSISTENCE (Optional, via docker‑compose)
+--------------------------------------------
+• Postgres 15 (:5432), volume‑backed
+• Set env DATABASE_URL=postgresql://fraud:fraud@db:5432/fraud to enable persistence
+• Repository ensures idempotent table creation and upsert logic; recent decisions endpoint joins decision + transaction data
+
+🚢 RUN & DEMO (One‑Click)
+-------------------------
+Using Docker Compose:
+1) cd 140509_03
+2) docker compose up --build -d
+3) Open:
+   - API Health:   http://localhost:8000/healthz
+   - Demo UI:      http://localhost:8000/demo/
+   - Metrics:      http://localhost:8000/metrics
+   - Recent:       http://localhost:8000/decisions/recent
+
+Local dev:
+• uvicorn ingestion_service.main:app --reload --app-dir 140509_03/src
+
+🔒 EXPLAINABILITY & COMPLIANCE
+------------------------------
+• Per‑decision explanation details ML components, rule flags, and feature values
+• Rules are auditable and editable via CRUD endpoints; changes tracked by version
+• Safe evaluation of rule conditions (restricted context) for MVP; can be replaced by a DSL in production
+
+📈 ROADMAP (Beyond MVP)
+-----------------------
+• Replace heuristic ensemble with trained RF/XGB/NN pipelines (same interface)
+• Kafka ingestion + Flink/Spark streaming features at high TPS
+• Full Redis feature store for cross‑instance sharing
+• Advanced rules DSL with versioning, A/B tests, and performance analytics
+• Model monitoring (drift, PSI), canary deployments, automated retraining
+• Analyst console (case management, feedback loops) and alerting workflows
+
+🎤 JUDGE EXPERIENCE CHECKLIST
+-----------------------------
+• End‑to‑end run: POST transaction → decision, score, explanation under ~100ms
+• Live rules tuning: add/update/delete a rule and observe decision changes
+• Observability: metrics + healthz visible; recent decisions list populates
+• Persistence: enable DATABASE_URL and verify decisions persisted in Postgres
+• Explainability: ML per‑model scores + rule flags visible per decision
+
+— End of FraudGuard AI MVP Submission —
+

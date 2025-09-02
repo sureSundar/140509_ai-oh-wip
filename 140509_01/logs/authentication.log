@@ -1,0 +1,31 @@
+/home/vboxuser/Documents/140509_ai-oh-wip/140509_01/production/auth_service_production.py:61: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+  @validator('username')
+/home/vboxuser/Documents/140509_ai-oh-wip/140509_01/production/auth_service_production.py:74: PydanticDeprecatedSince20: Pydantic V1 style `@validator` validators are deprecated. You should migrate to Pydantic V2 style `@field_validator` validators, see the migration guide for more details. Deprecated in Pydantic V2.0 to be removed in V3.0. See Pydantic V2 Migration Guide at https://errors.pydantic.dev/2.10/migration/
+  @validator('password')
+/home/vboxuser/Documents/140509_ai-oh-wip/140509_01/production/auth_service_production.py:247: DeprecationWarning: 
+        on_event is deprecated, use lifespan event handlers instead.
+
+        Read more about it in the
+        [FastAPI docs for Lifespan Events](https://fastapi.tiangolo.com/advanced/events/).
+        
+  @app.on_event("startup")
+2025-08-29 05:46:41,817 - __main__ - INFO - 🚀 Starting Production Authentication Service on port 8004...
+INFO:     Started server process [169863]
+INFO:     Waiting for application startup.
+2025-08-29 05:46:41,848 - __main__ - INFO - 🚀 Starting Production Authentication System...
+2025-08-29 05:46:42,060 - __main__ - INFO - ✅ Initialized 4 production users for 140509_01
+2025-08-29 05:46:42,060 - __main__ - INFO - ✅ Production Authentication System Ready
+INFO:     Application startup complete.
+INFO:     Uvicorn running on http://0.0.0.0:8004 (Press CTRL+C to quit)
+INFO:     127.0.0.1:49524 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:54972 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49106 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34490 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33716 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:34232 - "GET /api/auth/users HTTP/1.1" 200 OK
+INFO:     127.0.0.1:33618 - "GET /health HTTP/1.1" 200 OK
+INFO:     127.0.0.1:49412 - "GET /health HTTP/1.1" 200 OK
+INFO:     Shutting down
+INFO:     Waiting for application shutdown.
+INFO:     Application shutdown complete.
+INFO:     Finished server process [169863]

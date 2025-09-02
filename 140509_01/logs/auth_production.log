@@ -1,0 +1,63 @@
+2025-08-29 00:47:27,011 - __main__ - INFO - 🚀 Starting Production Authentication Service on port 8004...
+2025-08-29 00:47:27,047 - __main__ - INFO - 🚀 Starting Production Authentication System...
+2025-08-29 00:47:27,368 - __main__ - INFO - ✅ Initialized 4 production users for 140509_01
+2025-08-29 00:47:27,382 - __main__ - INFO - ✅ Production Authentication System Ready
+2025-08-29 00:47:55,793 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 00:47:55,793 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 00:47:55,913 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: manager_140509_001 - IP: 127.0.0.1
+2025-08-29 00:47:55,918 - __main__ - INFO - ✅ Production login successful: manager from 127.0.0.1
+2025-08-29 00:47:56,016 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: analyst_140509_001 - IP: 127.0.0.1
+2025-08-29 00:47:56,016 - __main__ - INFO - ✅ Production login successful: analyst from 127.0.0.1
+2025-08-29 00:47:56,118 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: demo_140509_001 - IP: 127.0.0.1
+2025-08-29 00:47:56,118 - __main__ - INFO - ✅ Production login successful: demo from 127.0.0.1
+2025-08-29 00:50:42,637 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 00:50:42,637 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 00:50:42,731 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: manager_140509_001 - IP: 127.0.0.1
+2025-08-29 00:50:42,731 - __main__ - INFO - ✅ Production login successful: manager from 127.0.0.1
+2025-08-29 00:50:42,826 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: analyst_140509_001 - IP: 127.0.0.1
+2025-08-29 00:50:42,827 - __main__ - INFO - ✅ Production login successful: analyst from 127.0.0.1
+2025-08-29 00:50:42,924 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: demo_140509_001 - IP: 127.0.0.1
+2025-08-29 00:50:42,926 - __main__ - INFO - ✅ Production login successful: demo from 127.0.0.1
+2025-08-29 00:51:13,194 - __main__ - INFO - 🚀 Starting Production Authentication Service on port 8004...
+2025-08-29 00:51:13,233 - __main__ - INFO - 🚀 Starting Production Authentication System...
+2025-08-29 00:51:13,566 - __main__ - INFO - ✅ Initialized 4 production users for 140509_01
+2025-08-29 00:51:13,566 - __main__ - INFO - ✅ Production Authentication System Ready
+2025-08-29 00:51:33,700 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 00:51:33,701 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 00:51:33,796 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: manager_140509_001 - IP: 127.0.0.1
+2025-08-29 00:51:33,796 - __main__ - INFO - ✅ Production login successful: manager from 127.0.0.1
+2025-08-29 00:51:33,894 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: analyst_140509_001 - IP: 127.0.0.1
+2025-08-29 00:51:33,895 - __main__ - INFO - ✅ Production login successful: analyst from 127.0.0.1
+2025-08-29 00:51:33,989 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: demo_140509_001 - IP: 127.0.0.1
+2025-08-29 00:51:33,990 - __main__ - INFO - ✅ Production login successful: demo from 127.0.0.1
+2025-08-29 00:59:34,760 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 00:59:34,760 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 01:00:30,597 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 01:00:30,597 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 01:01:46,842 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 01:01:46,843 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 01:15:05,130 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: manager_140509_001 - IP: 127.0.0.1
+2025-08-29 01:15:05,131 - __main__ - INFO - ✅ Production login successful: manager from 127.0.0.1
+2025-08-29 01:16:03,325 - __main__ - INFO - AUDIT: LOGIN_FAILED - User: analyst - IP: 127.0.0.1
+2025-08-29 01:16:17,557 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: analyst_140509_001 - IP: 127.0.0.1
+2025-08-29 01:16:17,558 - __main__ - INFO - ✅ Production login successful: analyst from 127.0.0.1
+2025-08-29 01:16:53,085 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: demo_140509_001 - IP: 127.0.0.1
+2025-08-29 01:16:53,086 - __main__ - INFO - ✅ Production login successful: demo from 127.0.0.1
+2025-08-29 01:19:27,842 - __main__ - INFO - 🚀 Starting Production Authentication Service on port 8004...
+2025-08-29 01:19:27,869 - __main__ - INFO - 🚀 Starting Production Authentication System...
+2025-08-29 01:19:28,099 - __main__ - INFO - ✅ Initialized 4 production users for 140509_01
+2025-08-29 01:19:28,100 - __main__ - INFO - ✅ Production Authentication System Ready
+2025-08-29 01:25:36,598 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 01:25:36,598 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 01:29:28,256 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 01:29:28,256 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 01:37:26,156 - __main__ - INFO - AUDIT: LOGIN_SUCCESS - User: admin_140509_001 - IP: 127.0.0.1
+2025-08-29 01:37:26,157 - __main__ - INFO - ✅ Production login successful: admin from 127.0.0.1
+2025-08-29 05:46:41,817 - __main__ - INFO - 🚀 Starting Production Authentication Service on port 8004...
+2025-08-29 05:46:41,848 - __main__ - INFO - 🚀 Starting Production Authentication System...
+2025-08-29 05:46:42,060 - __main__ - INFO - ✅ Initialized 4 production users for 140509_01
+2025-08-29 05:46:42,060 - __main__ - INFO - ✅ Production Authentication System Ready
+2025-08-29 06:49:00,134 - __main__ - INFO - 🚀 Starting Production Authentication Service on port 8004...
+2025-08-29 06:49:00,187 - __main__ - INFO - 🚀 Starting Production Authentication System...
+2025-08-29 06:49:00,397 - __main__ - INFO - ✅ Initialized 4 production users for 140509_01
+2025-08-29 06:49:00,397 - __main__ - INFO - ✅ Production Authentication System Ready

@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>FraudGuard MVP Demo</title>
+    <style>
+      body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 20px; }
+      h1 { margin-bottom: 0; }
+      .muted { color: #666; font-size: 0.9em; }
+      table { border-collapse: collapse; width: 100%; margin-top: 10px; }
+      th, td { border: 1px solid #ddd; padding: 8px; font-size: 0.95em; }
+      th { background: #f7f7f7; text-align: left; }
+      .pill { padding: 2px 8px; border-radius: 12px; color: #fff; font-weight: 600; }
+      .APPROVE { background: #2e7d32; }
+      .REVIEW { background: #f9a825; }
+      .DECLINE { background: #c62828; }
+      .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+      .card { border: 1px solid #ddd; border-radius: 6px; padding: 12px; }
+      pre { white-space: pre-wrap; word-break: break-word; }
+    </style>
+  </head>
+  <body>
+    <h1>FraudGuard MVP Demo</h1>
+    <div class="muted">Health: <span id="health">…</span> | Uptime: <span id="uptime">…</span></div>
+
+    <div class="grid" style="margin-top:16px;">
+      <div class="card">
+        <h3>Summary</h3>
+        <div id="summary">Loading…</div>
+      </div>
+      <div class="card">
+        <h3>How to use</h3>
+        <div class="muted">
+          POST transactions to <code>/api/v1/transactions</code>.<br>
+          Use the demo client or curl from the README.
+        </div>
+      </div>
+    </div>
+
+    <h3 style="margin-top:20px;">Recent Decisions</h3>
+    <table id="table">
+      <thead>
+        <tr>
+          <th>Decision</th>
+          <th>Risk</th>
+          <th>Customer</th>
+          <th>Amount</th>
+          <th>Merchant</th>
+          <th>Time</th>
+          <th>Flags</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+
+    <script>
+      async function fetchJSON(url) {
+        const r = await fetch(url);
+        if (!r.ok) throw new Error(`${url} -> ${r.status}`);
+        return r.json();
+      }
+
+      function el(tag, cls, text) {
+        const e = document.createElement(tag);
+        if (cls) e.className = cls;
+        if (text !== undefined) e.textContent = text;
+        return e;
+      }
+
+      async function refresh() {
+        try {
+          const [health, recent, summary] = await Promise.all([
+            fetchJSON('/healthz'),
+            fetchJSON('/decisions/recent?limit=25'),
+            fetchJSON('/stats/summary')
+          ]);
+          document.getElementById('health').textContent = `${health.status} (db: ${health.db})`;
+          document.getElementById('uptime').textContent = `${health.uptimeSec}s`;
+
+          const sEl = document.getElementById('summary');
+          sEl.textContent = '';
+          sEl.append(el('div', null, `Recent total: ${summary.totalRecent}`));
+          sEl.append(el('div', null, `Approve: ${summary.byDecision.APPROVE || 0}`));
+          sEl.append(el('div', null, `Review: ${summary.byDecision.REVIEW || 0}`));
+          sEl.append(el('div', null, `Decline: ${summary.byDecision.DECLINE || 0}`));
+
+          const tbody = document.querySelector('#table tbody');
+          tbody.innerHTML = '';
+          for (const it of recent) {
+            const tr = el('tr');
+            const pill = el('span', `pill ${it.decision}`, it.decision);
+            const dtd = el('td'); dtd.append(pill); tr.append(dtd);
+            tr.append(el('td', null, it.riskScore));
+            tr.append(el('td', null, it.customerId));
+            tr.append(el('td', null, `${it.amount} ${it.currency}`));
+            tr.append(el('td', null, it.merchantId));
+            tr.append(el('td', null, new Date(it.timestamp).toLocaleString()));
+            const flags = (it.explanation && it.explanation.rules && it.explanation.rules.flags) || [];
+            tr.append(el('td', null, flags.join(', ')));
+            tbody.append(tr);
+          }
+        } catch (e) {
+          console.error(e);
+        }
+      }
+
+      refresh();
+      setInterval(refresh, 2000);
+    </script>
+  </body>
+  </html>
+

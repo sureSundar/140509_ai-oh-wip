@@ -1,0 +1,481 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailAI - Enhanced AI Features Demo</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        .feature-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 10px 0;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+        }
+        .ai-highlight {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            font-weight: bold;
+        }
+        .sustainability-card {
+            background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+            color: white;
+        }
+        .bias-detection-card {
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 100%);
+            color: #333;
+        }
+        .competitive-card {
+            background: linear-gradient(135deg, #a8edea 0%, #fed6e3 100%);
+            color: #333;
+        }
+        .metric-box {
+            background: rgba(255,255,255,0.1);
+            border-radius: 10px;
+            padding: 15px;
+            margin: 10px 0;
+            backdrop-filter: blur(10px);
+        }
+        .chart-container {
+            background: white;
+            border-radius: 10px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 4px 16px rgba(0,0,0,0.1);
+        }
+    </style>
+</head>
+<body class="bg-light">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-robot me-2"></i>RetailAI Enhanced
+            </a>
+            <div class="navbar-nav ms-auto">
+                <span class="navbar-text">
+                    <i class="fas fa-shield-alt me-1"></i>AI Ethics Compliant
+                </span>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <!-- Header -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <h1 class="text-center">
+                    <span class="ai-highlight">Next-Generation AI Features</span>
+                </h1>
+                <p class="text-center lead">Reinforcement Learning • AI Bias Detection • ESG Compliance • Competitive Intelligence</p>
+            </div>
+        </div>
+
+        <!-- Feature Overview Cards -->
+        <div class="row mb-4">
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <i class="fas fa-brain fa-3x mb-3"></i>
+                    <h5>RL Dynamic Pricing</h5>
+                    <p>Q-Learning optimization</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <i class="fas fa-balance-scale fa-3x mb-3"></i>
+                    <h5>AI Bias Detection</h5>
+                    <p>Fairness monitoring</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <i class="fas fa-leaf fa-3x mb-3"></i>
+                    <h5>ESG Tracking</h5>
+                    <p>Sustainability metrics</p>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="feature-card text-center">
+                    <i class="fas fa-chess fa-3x mb-3"></i>
+                    <h5>Competitive Moat</h5>
+                    <p>Strategic analysis</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Reinforcement Learning Dynamic Pricing -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header bg-primary text-white">
+                        <h4><i class="fas fa-brain me-2"></i>Reinforcement Learning Dynamic Pricing</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <h5>Product Pricing Optimization</h5>
+                                <div class="mb-3">
+                                    <label>Product ID:</label>
+                                    <input type="number" id="productId" class="form-control" value="1">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Base Price ($):</label>
+                                    <input type="number" id="basePrice" class="form-control" value="100" step="0.01">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Demand Forecast:</label>
+                                    <input type="number" id="demandForecast" class="form-control" value="50">
+                                </div>
+                                <div class="mb-3">
+                                    <label>Inventory Level:</label>
+                                    <input type="number" id="inventoryLevel" class="form-control" value="25">
+                                </div>
+                                <button class="btn btn-primary" onclick="getDynamicPricing()">
+                                    <i class="fas fa-calculator me-2"></i>Get RL Pricing
+                                </button>
+                            </div>
+                            <div class="col-md-6">
+                                <div id="pricingResults" class="metric-box">
+                                    <h6>AI Pricing Recommendation</h6>
+                                    <div id="pricingData">Click "Get RL Pricing" to see results</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- AI Bias Detection -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card bias-detection-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-balance-scale me-2"></i>AI Bias Detection & Fairness</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button class="btn btn-warning mb-3" onclick="getBiasAnalysis()">
+                                    <i class="fas fa-search me-2"></i>Run Bias Analysis
+                                </button>
+                                <div id="biasResults">
+                                    <p>Comprehensive bias detection across:</p>
+                                    <ul>
+                                        <li>Pricing fairness by customer segment</li>
+                                        <li>Inventory allocation equity</li>
+                                        <li>Demographic parity analysis</li>
+                                        <li>Algorithmic transparency</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="biasChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Sustainability & ESG -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card sustainability-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-leaf me-2"></i>Sustainability & ESG Metrics</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-4">
+                                <button class="btn btn-success mb-3" onclick="getCarbonFootprint()">
+                                    <i class="fas fa-cloud me-2"></i>Carbon Footprint
+                                </button>
+                                <button class="btn btn-info mb-3" onclick="getESGMetrics()">
+                                    <i class="fas fa-chart-line me-2"></i>ESG Dashboard
+                                </button>
+                                <div id="sustainabilityResults">
+                                    <div class="metric-box">
+                                        <h6>Environmental Impact</h6>
+                                        <div id="carbonData">Loading...</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-8">
+                                <div class="chart-container">
+                                    <canvas id="esgChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Competitive Analysis -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="card competitive-card">
+                    <div class="card-header">
+                        <h4><i class="fas fa-chess me-2"></i>Competitive Moat Analysis</h4>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <button class="btn btn-primary mb-3" onclick="getCompetitiveAnalysis()">
+                                    <i class="fas fa-shield-alt me-2"></i>Analyze Competitive Position
+                                </button>
+                                <div id="competitiveResults">
+                                    <h6>Strategic Advantages:</h6>
+                                    <ul>
+                                        <li>Network effects from multi-tenant data</li>
+                                        <li>Proprietary AI algorithms</li>
+                                        <li>Regulatory compliance moat</li>
+                                        <li>High switching costs</li>
+                                    </ul>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="chart-container">
+                                    <canvas id="moatChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- GDPR Compliance Status -->
+        <div class="row mb-4">
+            <div class="col-12">
+                <div class="alert alert-success">
+                    <h5><i class="fas fa-shield-alt me-2"></i>GDPR & AI Ethics Compliance</h5>
+                    <div class="row">
+                        <div class="col-md-3">
+                            <strong>Data Minimization:</strong> ✅ Compliant
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Right to Explanation:</strong> ✅ Available
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Bias Detection:</strong> ✅ Active
+                        </div>
+                        <div class="col-md-3">
+                            <strong>Consent Management:</strong> ✅ Implemented
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:8000/api';
+
+        async function getDynamicPricing() {
+            const productId = document.getElementById('productId').value;
+            const basePrice = document.getElementById('basePrice').value;
+            const demandForecast = document.getElementById('demandForecast').value;
+            const inventoryLevel = document.getElementById('inventoryLevel').value;
+
+            try {
+                const response = await fetch(`${API_BASE}/ai/dynamic-pricing/${productId}?base_price=${basePrice}&demand_forecast=${demandForecast}&inventory_level=${inventoryLevel}`);
+                const data = await response.json();
+
+                const pricing = data.pricing_recommendation;
+                document.getElementById('pricingData').innerHTML = `
+                    <div class="row">
+                        <div class="col-6">
+                            <strong>Current Price:</strong> $${pricing.current_price}<br>
+                            <strong>Optimal Price:</strong> $${pricing.optimal_price}<br>
+                            <strong>Price Change:</strong> ${pricing.price_change_pct}%
+                        </div>
+                        <div class="col-6">
+                            <strong>Demand Impact:</strong> ${pricing.expected_demand_impact}%<br>
+                            <strong>Profit Impact:</strong> ${pricing.expected_profit_impact}%<br>
+                            <strong>Confidence:</strong> ${pricing.confidence_score}%
+                        </div>
+                    </div>
+                    <div class="mt-2">
+                        <span class="badge ${pricing.recommendation === 'increase' ? 'bg-success' : pricing.recommendation === 'decrease' ? 'bg-warning' : 'bg-info'}">
+                            ${pricing.recommendation.toUpperCase()} PRICE
+                        </span>
+                    </div>
+                `;
+            } catch (error) {
+                document.getElementById('pricingData').innerHTML = `<div class="text-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function getBiasAnalysis() {
+            try {
+                const response = await fetch(`${API_BASE}/ai/bias-detection`);
+                const data = await response.json();
+
+                const bias = data.bias_analysis;
+                document.getElementById('biasResults').innerHTML = `
+                    <h6>Bias Analysis Results:</h6>
+                    <div class="metric-box">
+                        <strong>Pricing Bias Score:</strong> ${bias.pricing_fairness.overall_bias_score}%<br>
+                        <strong>Allocation Equity:</strong> ${bias.inventory_fairness.equity_status}<br>
+                        <strong>Compliance Status:</strong> 
+                        <span class="badge ${bias.overall_compliance === 'COMPLIANT' ? 'bg-success' : 'bg-warning'}">
+                            ${bias.overall_compliance}
+                        </span>
+                    </div>
+                `;
+
+                // Update bias chart
+                updateBiasChart(bias);
+            } catch (error) {
+                document.getElementById('biasResults').innerHTML = `<div class="text-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function getCarbonFootprint() {
+            try {
+                const response = await fetch(`${API_BASE}/sustainability/carbon-footprint`);
+                const data = await response.json();
+
+                const carbon = data.carbon_footprint;
+                const sustainability = data.sustainability_metrics;
+                
+                document.getElementById('carbonData').innerHTML = `
+                    <strong>Total Emissions:</strong> ${carbon.total_emissions} kg CO2<br>
+                    <strong>Sustainability Score:</strong> ${sustainability.overall_sustainability_score}/100<br>
+                    <strong>Grade:</strong> <span class="badge bg-success">${sustainability.sustainability_grade}</span>
+                `;
+            } catch (error) {
+                document.getElementById('carbonData').innerHTML = `<div class="text-danger">Error loading carbon data</div>`;
+            }
+        }
+
+        async function getESGMetrics() {
+            try {
+                const response = await fetch(`${API_BASE}/sustainability/esg-metrics`);
+                const data = await response.json();
+
+                const esg = data.esg_analysis;
+                updateESGChart(esg);
+            } catch (error) {
+                console.error('ESG metrics error:', error);
+            }
+        }
+
+        async function getCompetitiveAnalysis() {
+            try {
+                const response = await fetch(`${API_BASE}/strategy/competitive-moat`);
+                const data = await response.json();
+
+                const competitive = data.competitive_analysis;
+                document.getElementById('competitiveResults').innerHTML = `
+                    <h6>Competitive Position:</h6>
+                    <div class="metric-box">
+                        <strong>Moat Score:</strong> ${competitive.overall_moat_score}/100<br>
+                        <strong>Market Position:</strong> ${competitive.competitive_position.market_position}<br>
+                        <strong>Defensibility:</strong> ${competitive.competitive_position.defensibility}<br>
+                    </div>
+                    <h6>Top Differentiators:</h6>
+                    <ul>
+                        ${competitive.top_differentiators.map(d => `<li>${d.description} (${d.score}%)</li>`).join('')}
+                    </ul>
+                `;
+
+                updateMoatChart(competitive);
+            } catch (error) {
+                document.getElementById('competitiveResults').innerHTML = `<div class="text-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        function updateBiasChart(biasData) {
+            const ctx = document.getElementById('biasChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Fair Pricing', 'Biased Pricing'],
+                    datasets: [{
+                        data: [100 - biasData.pricing_fairness.overall_bias_score, biasData.pricing_fairness.overall_bias_score],
+                        backgroundColor: ['#28a745', '#dc3545']
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: 'Pricing Fairness Analysis'
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateESGChart(esgData) {
+            const ctx = document.getElementById('esgChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'radar',
+                data: {
+                    labels: ['Environmental', 'Social', 'Governance'],
+                    datasets: [{
+                        label: 'ESG Score',
+                        data: [esgData.environmental_score, esgData.social_score, esgData.governance_score],
+                        backgroundColor: 'rgba(40, 167, 69, 0.2)',
+                        borderColor: 'rgba(40, 167, 69, 1)',
+                        pointBackgroundColor: 'rgba(40, 167, 69, 1)'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        r: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateMoatChart(competitiveData) {
+            const ctx = document.getElementById('moatChart').getContext('2d');
+            const factors = competitiveData.moat_factors;
+            
+            new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: Object.keys(factors).map(k => k.replace('_', ' ').toUpperCase()),
+                    datasets: [{
+                        label: 'Moat Strength',
+                        data: Object.values(factors).map(f => f.score),
+                        backgroundColor: 'rgba(54, 162, 235, 0.8)',
+                        borderColor: 'rgba(54, 162, 235, 1)',
+                        borderWidth: 1
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+        }
+
+        // Auto-load initial data
+        window.onload = function() {
+            getCarbonFootprint();
+            getESGMetrics();
+        };
+    </script>
+</body>
+</html>

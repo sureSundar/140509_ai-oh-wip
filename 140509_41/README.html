@@ -1,0 +1,661 @@
+<h1 id="md---ai-powered-data-quality-and-cleaning-platform">140509_40.md - AI-Powered Data Quality and Cleaning Platform</h1>
+<h2 id="readme">README</h2>
+<p><strong>Summary:</strong> Build an intelligent data quality platform that automatically detects, diagnoses, and corrects data quality issues using machine learning techniques.</p>
+<p><strong>Problem Statement:</strong> Data quality issues significantly impact AI model performance and business decisions. Your task is to create an AI-powered platform that automatically identifies data quality problems (missing values, outliers, inconsistencies, duplicates), diagnoses root causes, and provides intelligent correction suggestions. The system should learn from data patterns, adapt to domain-specific requirements, and provide transparent quality improvement processes.</p>
+<p><strong>Steps:</strong> - Design automated data profiling and quality assessment algorithms - Implement ML-based anomaly detection and outlier identification - Create intelligent data imputation and correction mechanisms - Build data lineage tracking and quality issue root cause analysis - Develop domain-specific data validation rules and quality metrics - Include data quality monitoring and alerting for production pipelines</p>
+<p><strong>Suggested Data Requirements:</strong> - Datasets with known quality issues and correction examples - Domain-specific data quality rules and validation criteria - Historical data quality improvement cases and outcomes - Data lineage information and processing pipeline metadata</p>
+<p><strong>Themes:</strong> AI for Data &amp; Data for AI, Using AI for Data cleaning</p>
+<hr />
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision">Product Vision</h3>
+<p>Create an AI-powered data quality platform that automatically detects, diagnoses, and resolves data quality issues at scale, ensuring high-quality data for analytics and machine learning applications.</p>
+<h3 id="target-users">Target Users</h3>
+<ul>
+<li><strong>Primary:</strong> Data Engineers, Data Scientists, Analytics Teams</li>
+<li><strong>Secondary:</strong> Data Stewards, Business Analysts, ML Engineers</li>
+<li><strong>Tertiary:</strong> Data Governance Teams, Quality Assurance, Compliance Officers</li>
+</ul>
+<h3 id="core-value-propositions">Core Value Propositions</h3>
+<ol type="1">
+<li><strong>Automated Quality Detection:</strong> ML-powered identification of quality issues across all data types</li>
+<li><strong>Intelligent Remediation:</strong> Smart correction suggestions with confidence scoring</li>
+<li><strong>Root Cause Analysis:</strong> Deep diagnostics to identify systemic data quality problems</li>
+<li><strong>Continuous Monitoring:</strong> Real-time quality monitoring for production data pipelines</li>
+<li><strong>Domain Adaptation:</strong> Customizable rules and quality metrics for specific domains</li>
+</ol>
+<h3 id="key-features">Key Features</h3>
+<ol type="1">
+<li><strong>Comprehensive Quality Assessment:</strong> Multi-dimensional quality profiling and scoring</li>
+<li><strong>ML-Based Anomaly Detection:</strong> Advanced outlier and inconsistency detection</li>
+<li><strong>Intelligent Data Imputation:</strong> Context-aware missing value imputation</li>
+<li><strong>Duplicate Detection and Resolution:</strong> Fuzzy matching and record linkage</li>
+<li><strong>Data Lineage and Root Cause Analysis:</strong> Complete traceability and issue diagnosis</li>
+<li><strong>Production Pipeline Integration:</strong> Seamless integration with data processing workflows</li>
+</ol>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li>Quality detection accuracy: &gt;95% precision in identifying data quality issues</li>
+<li>Remediation effectiveness: &gt;90% improvement in data quality scores after correction</li>
+<li>Processing speed: Handle 1TB datasets within 2 hours</li>
+<li>False positive rate: &lt;5% for quality issue alerts</li>
+<li>User adoption: 80% of data teams using platform within 12 months</li>
+</ul>
+<hr />
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<h3 id="core-functional-requirements">Core Functional Requirements</h3>
+<h4 id="f1-comprehensive-data-quality-assessment">F1: Comprehensive Data Quality Assessment</h4>
+<ul>
+<li><strong>F1.1:</strong> Multi-dimensional quality profiling (completeness, validity, consistency, accuracy)</li>
+<li><strong>F1.2:</strong> Statistical anomaly detection using unsupervised learning</li>
+<li><strong>F1.3:</strong> Pattern-based validation rule discovery and application</li>
+<li><strong>F1.4:</strong> Cross-column and cross-table consistency checking</li>
+<li><strong>F1.5:</strong> Temporal quality analysis for time-series data</li>
+</ul>
+<h4 id="f2-intelligent-anomaly-detection">F2: Intelligent Anomaly Detection</h4>
+<ul>
+<li><strong>F2.1:</strong> Isolation Forest and Local Outlier Factor for numerical anomalies</li>
+<li><strong>F2.2:</strong> Text anomaly detection using NLP and embedding techniques</li>
+<li><strong>F2.3:</strong> Categorical outlier detection using frequency and entropy analysis</li>
+<li><strong>F2.4:</strong> Multivariate anomaly detection considering variable relationships</li>
+<li><strong>F2.5:</strong> Contextual anomaly detection based on business rules and domain knowledge</li>
+</ul>
+<h4 id="f3-advanced-data-imputation-and-correction">F3: Advanced Data Imputation and Correction</h4>
+<ul>
+<li><strong>F3.1:</strong> Multiple imputation techniques (mean, median, mode, KNN, MICE)</li>
+<li><strong>F3.2:</strong> ML-based imputation using Random Forest, XGBoost, and neural networks</li>
+<li><strong>F3.3:</strong> Time-series aware imputation with seasonality and trend consideration</li>
+<li><strong>F3.4:</strong> Contextual imputation using related columns and external data sources</li>
+<li><strong>F3.5:</strong> Confidence scoring and uncertainty quantification for corrections</li>
+</ul>
+<h4 id="f4-duplicate-detection-and-entity-resolution">F4: Duplicate Detection and Entity Resolution</h4>
+<ul>
+<li><strong>F4.1:</strong> Fuzzy string matching using phonetic and edit distance algorithms</li>
+<li><strong>F4.2:</strong> ML-based record linkage with similarity learning</li>
+<li><strong>F4.3:</strong> Blocking and indexing techniques for scalable duplicate detection</li>
+<li><strong>F4.4:</strong> Active learning for improving matching accuracy over time</li>
+<li><strong>F4.5:</strong> Hierarchical clustering for entity resolution and deduplication</li>
+</ul>
+<h4 id="f5-data-lineage-and-root-cause-analysis">F5: Data Lineage and Root Cause Analysis</h4>
+<ul>
+<li><strong>F5.1:</strong> End-to-end data lineage tracking from source to consumption</li>
+<li><strong>F5.2:</strong> Impact analysis for quality issues across downstream systems</li>
+<li><strong>F5.3:</strong> Root cause identification using causal inference techniques</li>
+<li><strong>F5.4:</strong> Quality issue propagation analysis and containment strategies</li>
+<li><strong>F5.5:</strong> Historical quality trend analysis and predictive quality modeling</li>
+</ul>
+<h4 id="f6-production-integration-and-monitoring">F6: Production Integration and Monitoring</h4>
+<ul>
+<li><strong>F6.1:</strong> Real-time data quality monitoring with configurable thresholds</li>
+<li><strong>F6.2:</strong> Integration with popular data processing frameworks (Spark, Airflow, Kafka)</li>
+<li><strong>F6.3:</strong> Automated quality gates and pipeline validation</li>
+<li><strong>F6.4:</strong> Quality SLA monitoring and breach alerting</li>
+<li><strong>F6.5:</strong> Quality dashboard and reporting for stakeholders</li>
+</ul>
+<hr />
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li><strong>NFR-P1:</strong> Quality assessment speed: Process 1M records per minute</li>
+<li><strong>NFR-P2:</strong> Real-time monitoring latency: &lt;30 seconds for quality alerts</li>
+<li><strong>NFR-P3:</strong> Imputation processing time: &lt;1 hour for datasets up to 10M records</li>
+<li><strong>NFR-P4:</strong> Duplicate detection performance: Handle 100M record comparisons in &lt;4 hours</li>
+<li><strong>NFR-P5:</strong> Dashboard response time: &lt;3 seconds for quality metric queries</li>
+</ul>
+<h3 id="accuracy-requirements">Accuracy Requirements</h3>
+<ul>
+<li><strong>NFR-A1:</strong> Anomaly detection precision: &gt;95% with &lt;5% false positive rate</li>
+<li><strong>NFR-A2:</strong> Imputation accuracy: &gt;90% for numerical values, &gt;85% for categorical</li>
+<li><strong>NFR-A3:</strong> Duplicate detection recall: &gt;95% for true duplicates</li>
+<li><strong>NFR-A4:</strong> Quality score consistency: ±2% variance across repeated assessments</li>
+<li><strong>NFR-A5:</strong> Root cause identification accuracy: &gt;80% for traceable quality issues</li>
+</ul>
+<h3 id="scalability-requirements">Scalability Requirements</h3>
+<ul>
+<li><strong>NFR-S1:</strong> Handle datasets up to 1TB in size with distributed processing</li>
+<li><strong>NFR-S2:</strong> Support 1000+ concurrent quality assessment jobs</li>
+<li><strong>NFR-S3:</strong> Scale to monitor 10,000+ production data pipelines</li>
+<li><strong>NFR-S4:</strong> Multi-tenant architecture supporting 500+ organizations</li>
+<li><strong>NFR-S5:</strong> Horizontal scaling across cloud and on-premise infrastructure</li>
+</ul>
+<h3 id="integration-requirements">Integration Requirements</h3>
+<ul>
+<li><strong>NFR-I1:</strong> API-first architecture with comprehensive REST and GraphQL APIs</li>
+<li><strong>NFR-I2:</strong> Native integration with major data platforms (Snowflake, Databricks, BigQuery)</li>
+<li><strong>NFR-I3:</strong> Support for 20+ data formats and protocols</li>
+<li><strong>NFR-I4:</strong> Real-time streaming integration with Kafka, Kinesis, Pub/Sub</li>
+<li><strong>NFR-I5:</strong> MLOps integration with MLflow, Kubeflow, SageMaker</li>
+</ul>
+<hr />
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<pre class="mermaid"><code>graph TB
+    subgraph &quot;User Interfaces&quot;
+        WEB_UI[Web Dashboard]
+        API[REST/GraphQL APIs]
+        CLI[CLI Tools]
+        NOTEBOOKS[Jupyter Integration]
+    end
+    
+    subgraph &quot;API Gateway &amp; Security&quot;
+        GATEWAY[API Gateway]
+        AUTH[Authentication]
+        RATE_LIMIT[Rate Limiter]
+        AUDIT[Audit Logger]
+    end
+    
+    subgraph &quot;Core Quality Services&quot;
+        PROFILER[Data Profiler]
+        QUALITY_ASSESSOR[Quality Assessor]
+        ANOMALY_DETECTOR[Anomaly Detector]
+        IMPUTATION_ENGINE[Imputation Engine]
+        DEDUP_ENGINE[Deduplication Engine]
+        LINEAGE_TRACKER[Lineage Tracker]
+    end
+    
+    subgraph &quot;ML &amp; Analytics Engines&quot;
+        OUTLIER_DETECTION[Outlier Detection ML]
+        PATTERN_LEARNING[Pattern Learning]
+        IMPUTATION_ML[ML Imputation Models]
+        SIMILARITY_ENGINE[Similarity Engine]
+        CAUSAL_INFERENCE[Causal Analysis]
+        PREDICTIVE_QUALITY[Quality Prediction]
+    end
+    
+    subgraph &quot;Processing Infrastructure&quot;
+        SPARK_CLUSTER[Apache Spark Cluster]
+        TASK_SCHEDULER[Task Scheduler]
+        DISTRIBUTED_COMPUTE[Distributed Computing]
+        GPU_ACCELERATOR[GPU Acceleration]
+        STREAMING_PROCESSOR[Stream Processor]
+    end
+    
+    subgraph &quot;Data Storage&quot;
+        METADATA_DB[PostgreSQL - Metadata]
+        QUALITY_METRICS[InfluxDB - Quality Metrics]
+        LINEAGE_GRAPH[Neo4j - Data Lineage]
+        RULES_STORE[MongoDB - Quality Rules]
+        CACHE_LAYER[Redis - Caching]
+        OBJECT_STORAGE[S3 - Data &amp; Models]
+    end
+    
+    subgraph &quot;External Integrations&quot;
+        DATA_SOURCES[Data Sources]
+        DATA_PLATFORMS[Data Platforms]
+        PIPELINE_TOOLS[Pipeline Tools]
+        MONITORING[Monitoring Systems]
+        NOTIFICATIONS[Alert Systems]
+    end
+    
+    WEB_UI --&gt; GATEWAY
+    API --&gt; GATEWAY
+    CLI --&gt; GATEWAY
+    NOTEBOOKS --&gt; GATEWAY
+    
+    GATEWAY --&gt; AUTH
+    GATEWAY --&gt; RATE_LIMIT
+    GATEWAY --&gt; AUDIT
+    
+    GATEWAY --&gt; PROFILER
+    GATEWAY --&gt; QUALITY_ASSESSOR
+    GATEWAY --&gt; ANOMALY_DETECTOR
+    GATEWAY --&gt; IMPUTATION_ENGINE
+    GATEWAY --&gt; DEDUP_ENGINE
+    GATEWAY --&gt; LINEAGE_TRACKER
+    
+    ANOMALY_DETECTOR --&gt; OUTLIER_DETECTION
+    QUALITY_ASSESSOR --&gt; PATTERN_LEARNING
+    IMPUTATION_ENGINE --&gt; IMPUTATION_ML
+    DEDUP_ENGINE --&gt; SIMILARITY_ENGINE
+    LINEAGE_TRACKER --&gt; CAUSAL_INFERENCE
+    PROFILER --&gt; PREDICTIVE_QUALITY
+    
+    PROFILER --&gt; SPARK_CLUSTER
+    QUALITY_ASSESSOR --&gt; TASK_SCHEDULER
+    ANOMALY_DETECTOR --&gt; DISTRIBUTED_COMPUTE
+    IMPUTATION_ENGINE --&gt; GPU_ACCELERATOR
+    LINEAGE_TRACKER --&gt; STREAMING_PROCESSOR
+    
+    PROFILER --&gt; METADATA_DB
+    QUALITY_ASSESSOR --&gt; QUALITY_METRICS
+    LINEAGE_TRACKER --&gt; LINEAGE_GRAPH
+    ANOMALY_DETECTOR --&gt; RULES_STORE
+    IMPUTATION_ENGINE --&gt; CACHE_LAYER
+    DEDUP_ENGINE --&gt; OBJECT_STORAGE
+    
+    PROFILER --&gt; DATA_SOURCES
+    LINEAGE_TRACKER --&gt; DATA_PLATFORMS
+    QUALITY_ASSESSOR --&gt; PIPELINE_TOOLS
+    ANOMALY_DETECTOR --&gt; MONITORING
+    QUALITY_ASSESSOR --&gt; NOTIFICATIONS</code></pre>
+<hr />
+<h2 id="hld-high-level-design">HLD (High Level Design)</h2>
+<h3 id="core-data-quality-architecture">Core Data Quality Architecture</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">class</span> DataQualityPlatform:</a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-3" title="3">        <span class="va">self</span>.profiler <span class="op">=</span> DataProfiler()</a>
+<a class="sourceLine" id="cb2-4" title="4">        <span class="va">self</span>.quality_assessor <span class="op">=</span> QualityAssessor()</a>
+<a class="sourceLine" id="cb2-5" title="5">        <span class="va">self</span>.anomaly_detector <span class="op">=</span> AnomalyDetector()</a>
+<a class="sourceLine" id="cb2-6" title="6">        <span class="va">self</span>.imputation_engine <span class="op">=</span> ImputationEngine()</a>
+<a class="sourceLine" id="cb2-7" title="7">        <span class="va">self</span>.deduplication_engine <span class="op">=</span> DeduplicationEngine()</a>
+<a class="sourceLine" id="cb2-8" title="8">        <span class="va">self</span>.lineage_tracker <span class="op">=</span> LineageTracker()</a>
+<a class="sourceLine" id="cb2-9" title="9">        <span class="va">self</span>.root_cause_analyzer <span class="op">=</span> RootCauseAnalyzer()</a>
+<a class="sourceLine" id="cb2-10" title="10">        </a>
+<a class="sourceLine" id="cb2-11" title="11">    <span class="cf">async</span> <span class="kw">def</span> comprehensive_quality_assessment(<span class="va">self</span>, dataset, assessment_config):</a>
+<a class="sourceLine" id="cb2-12" title="12">        <span class="co"># Step 1: Profile the dataset</span></a>
+<a class="sourceLine" id="cb2-13" title="13">        data_profile <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.profiler.profile_dataset(dataset)</a>
+<a class="sourceLine" id="cb2-14" title="14">        </a>
+<a class="sourceLine" id="cb2-15" title="15">        <span class="co"># Step 2: Assess data quality across multiple dimensions</span></a>
+<a class="sourceLine" id="cb2-16" title="16">        quality_assessment <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.quality_assessor.assess_quality(</a>
+<a class="sourceLine" id="cb2-17" title="17">            dataset, data_profile, assessment_config</a>
+<a class="sourceLine" id="cb2-18" title="18">        )</a>
+<a class="sourceLine" id="cb2-19" title="19">        </a>
+<a class="sourceLine" id="cb2-20" title="20">        <span class="co"># Step 3: Detect anomalies and outliers</span></a>
+<a class="sourceLine" id="cb2-21" title="21">        anomalies <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.anomaly_detector.detect_anomalies(</a>
+<a class="sourceLine" id="cb2-22" title="22">            dataset, data_profile</a>
+<a class="sourceLine" id="cb2-23" title="23">        )</a>
+<a class="sourceLine" id="cb2-24" title="24">        </a>
+<a class="sourceLine" id="cb2-25" title="25">        <span class="co"># Step 4: Identify duplicates</span></a>
+<a class="sourceLine" id="cb2-26" title="26">        duplicates <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.deduplication_engine.find_duplicates(dataset)</a>
+<a class="sourceLine" id="cb2-27" title="27">        </a>
+<a class="sourceLine" id="cb2-28" title="28">        <span class="co"># Step 5: Analyze missing values</span></a>
+<a class="sourceLine" id="cb2-29" title="29">        missing_analysis <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.analyze_missing_patterns(dataset)</a>
+<a class="sourceLine" id="cb2-30" title="30">        </a>
+<a class="sourceLine" id="cb2-31" title="31">        <span class="co"># Step 6: Root cause analysis</span></a>
+<a class="sourceLine" id="cb2-32" title="32">        root_causes <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.root_cause_analyzer.analyze_issues(</a>
+<a class="sourceLine" id="cb2-33" title="33">            quality_assessment, anomalies, duplicates, missing_analysis</a>
+<a class="sourceLine" id="cb2-34" title="34">        )</a>
+<a class="sourceLine" id="cb2-35" title="35">        </a>
+<a class="sourceLine" id="cb2-36" title="36">        <span class="co"># Step 7: Generate remediation recommendations</span></a>
+<a class="sourceLine" id="cb2-37" title="37">        recommendations <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.generate_remediation_plan(</a>
+<a class="sourceLine" id="cb2-38" title="38">            quality_assessment, anomalies, duplicates, missing_analysis, root_causes</a>
+<a class="sourceLine" id="cb2-39" title="39">        )</a>
+<a class="sourceLine" id="cb2-40" title="40">        </a>
+<a class="sourceLine" id="cb2-41" title="41">        <span class="cf">return</span> ComprehensiveQualityReport(</a>
+<a class="sourceLine" id="cb2-42" title="42">            data_profile<span class="op">=</span>data_profile,</a>
+<a class="sourceLine" id="cb2-43" title="43">            quality_assessment<span class="op">=</span>quality_assessment,</a>
+<a class="sourceLine" id="cb2-44" title="44">            anomalies<span class="op">=</span>anomalies,</a>
+<a class="sourceLine" id="cb2-45" title="45">            duplicates<span class="op">=</span>duplicates,</a>
+<a class="sourceLine" id="cb2-46" title="46">            missing_analysis<span class="op">=</span>missing_analysis,</a>
+<a class="sourceLine" id="cb2-47" title="47">            root_causes<span class="op">=</span>root_causes,</a>
+<a class="sourceLine" id="cb2-48" title="48">            recommendations<span class="op">=</span>recommendations</a>
+<a class="sourceLine" id="cb2-49" title="49">        )</a>
+<a class="sourceLine" id="cb2-50" title="50"></a>
+<a class="sourceLine" id="cb2-51" title="51"><span class="kw">class</span> QualityAssessor:</a>
+<a class="sourceLine" id="cb2-52" title="52">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-53" title="53">        <span class="va">self</span>.completeness_checker <span class="op">=</span> CompletenessChecker()</a>
+<a class="sourceLine" id="cb2-54" title="54">        <span class="va">self</span>.validity_checker <span class="op">=</span> ValidityChecker()</a>
+<a class="sourceLine" id="cb2-55" title="55">        <span class="va">self</span>.consistency_checker <span class="op">=</span> ConsistencyChecker()</a>
+<a class="sourceLine" id="cb2-56" title="56">        <span class="va">self</span>.accuracy_checker <span class="op">=</span> AccuracyChecker()</a>
+<a class="sourceLine" id="cb2-57" title="57">        <span class="va">self</span>.uniqueness_checker <span class="op">=</span> UniquenessChecker()</a>
+<a class="sourceLine" id="cb2-58" title="58">        </a>
+<a class="sourceLine" id="cb2-59" title="59">    <span class="cf">async</span> <span class="kw">def</span> assess_quality(<span class="va">self</span>, dataset, data_profile, config):</a>
+<a class="sourceLine" id="cb2-60" title="60">        quality_dimensions <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb2-61" title="61">        </a>
+<a class="sourceLine" id="cb2-62" title="62">        <span class="co"># Completeness assessment</span></a>
+<a class="sourceLine" id="cb2-63" title="63">        completeness_score <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.completeness_checker.assess(dataset)</a>
+<a class="sourceLine" id="cb2-64" title="64">        quality_dimensions[<span class="st">&#39;completeness&#39;</span>] <span class="op">=</span> completeness_score</a>
+<a class="sourceLine" id="cb2-65" title="65">        </a>
+<a class="sourceLine" id="cb2-66" title="66">        <span class="co"># Validity assessment</span></a>
+<a class="sourceLine" id="cb2-67" title="67">        validity_score <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.validity_checker.assess(dataset, data_profile)</a>
+<a class="sourceLine" id="cb2-68" title="68">        quality_dimensions[<span class="st">&#39;validity&#39;</span>] <span class="op">=</span> validity_score</a>
+<a class="sourceLine" id="cb2-69" title="69">        </a>
+<a class="sourceLine" id="cb2-70" title="70">        <span class="co"># Consistency assessment</span></a>
+<a class="sourceLine" id="cb2-71" title="71">        consistency_score <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.consistency_checker.assess(dataset, config.consistency_rules)</a>
+<a class="sourceLine" id="cb2-72" title="72">        quality_dimensions[<span class="st">&#39;consistency&#39;</span>] <span class="op">=</span> consistency_score</a>
+<a class="sourceLine" id="cb2-73" title="73">        </a>
+<a class="sourceLine" id="cb2-74" title="74">        <span class="co"># Accuracy assessment (if reference data available)</span></a>
+<a class="sourceLine" id="cb2-75" title="75">        <span class="cf">if</span> config.reference_data:</a>
+<a class="sourceLine" id="cb2-76" title="76">            accuracy_score <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.accuracy_checker.assess(dataset, config.reference_data)</a>
+<a class="sourceLine" id="cb2-77" title="77">            quality_dimensions[<span class="st">&#39;accuracy&#39;</span>] <span class="op">=</span> accuracy_score</a>
+<a class="sourceLine" id="cb2-78" title="78">        </a>
+<a class="sourceLine" id="cb2-79" title="79">        <span class="co"># Uniqueness assessment</span></a>
+<a class="sourceLine" id="cb2-80" title="80">        uniqueness_score <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.uniqueness_checker.assess(dataset)</a>
+<a class="sourceLine" id="cb2-81" title="81">        quality_dimensions[<span class="st">&#39;uniqueness&#39;</span>] <span class="op">=</span> uniqueness_score</a>
+<a class="sourceLine" id="cb2-82" title="82">        </a>
+<a class="sourceLine" id="cb2-83" title="83">        <span class="co"># Calculate overall quality score</span></a>
+<a class="sourceLine" id="cb2-84" title="84">        overall_score <span class="op">=</span> <span class="va">self</span>.calculate_weighted_quality_score(</a>
+<a class="sourceLine" id="cb2-85" title="85">            quality_dimensions, config.dimension_weights</a>
+<a class="sourceLine" id="cb2-86" title="86">        )</a>
+<a class="sourceLine" id="cb2-87" title="87">        </a>
+<a class="sourceLine" id="cb2-88" title="88">        <span class="cf">return</span> QualityAssessmentResult(</a>
+<a class="sourceLine" id="cb2-89" title="89">            overall_score<span class="op">=</span>overall_score,</a>
+<a class="sourceLine" id="cb2-90" title="90">            dimension_scores<span class="op">=</span>quality_dimensions,</a>
+<a class="sourceLine" id="cb2-91" title="91">            detailed_results<span class="op">=</span><span class="va">self</span>.generate_detailed_quality_report(quality_dimensions)</a>
+<a class="sourceLine" id="cb2-92" title="92">        )</a>
+<a class="sourceLine" id="cb2-93" title="93"></a>
+<a class="sourceLine" id="cb2-94" title="94"><span class="kw">class</span> AnomalyDetector:</a>
+<a class="sourceLine" id="cb2-95" title="95">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-96" title="96">        <span class="va">self</span>.numerical_detectors <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb2-97" title="97">            <span class="st">&#39;isolation_forest&#39;</span>: IsolationForest(),</a>
+<a class="sourceLine" id="cb2-98" title="98">            <span class="st">&#39;local_outlier_factor&#39;</span>: LocalOutlierFactor(),</a>
+<a class="sourceLine" id="cb2-99" title="99">            <span class="st">&#39;one_class_svm&#39;</span>: OneClassSVM()</a>
+<a class="sourceLine" id="cb2-100" title="100">        }</a>
+<a class="sourceLine" id="cb2-101" title="101">        <span class="va">self</span>.categorical_detector <span class="op">=</span> CategoricalAnomalyDetector()</a>
+<a class="sourceLine" id="cb2-102" title="102">        <span class="va">self</span>.text_detector <span class="op">=</span> TextAnomalyDetector()</a>
+<a class="sourceLine" id="cb2-103" title="103">        <span class="va">self</span>.multivariate_detector <span class="op">=</span> MultivariateAnomalyDetector()</a>
+<a class="sourceLine" id="cb2-104" title="104">        </a>
+<a class="sourceLine" id="cb2-105" title="105">    <span class="cf">async</span> <span class="kw">def</span> detect_anomalies(<span class="va">self</span>, dataset, data_profile):</a>
+<a class="sourceLine" id="cb2-106" title="106">        anomaly_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb2-107" title="107">        </a>
+<a class="sourceLine" id="cb2-108" title="108">        <span class="cf">for</span> column <span class="kw">in</span> dataset.columns:</a>
+<a class="sourceLine" id="cb2-109" title="109">            column_profile <span class="op">=</span> data_profile.column_profiles[column]</a>
+<a class="sourceLine" id="cb2-110" title="110">            </a>
+<a class="sourceLine" id="cb2-111" title="111">            <span class="cf">if</span> column_profile.data_type <span class="op">==</span> <span class="st">&#39;numerical&#39;</span>:</a>
+<a class="sourceLine" id="cb2-112" title="112">                anomalies <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.detect_numerical_anomalies(</a>
+<a class="sourceLine" id="cb2-113" title="113">                    dataset[column], column_profile</a>
+<a class="sourceLine" id="cb2-114" title="114">                )</a>
+<a class="sourceLine" id="cb2-115" title="115">            <span class="cf">elif</span> column_profile.data_type <span class="op">==</span> <span class="st">&#39;categorical&#39;</span>:</a>
+<a class="sourceLine" id="cb2-116" title="116">                anomalies <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.detect_categorical_anomalies(</a>
+<a class="sourceLine" id="cb2-117" title="117">                    dataset[column], column_profile</a>
+<a class="sourceLine" id="cb2-118" title="118">                )</a>
+<a class="sourceLine" id="cb2-119" title="119">            <span class="cf">elif</span> column_profile.data_type <span class="op">==</span> <span class="st">&#39;text&#39;</span>:</a>
+<a class="sourceLine" id="cb2-120" title="120">                anomalies <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.detect_text_anomalies(</a>
+<a class="sourceLine" id="cb2-121" title="121">                    dataset[column], column_profile</a>
+<a class="sourceLine" id="cb2-122" title="122">                )</a>
+<a class="sourceLine" id="cb2-123" title="123">            </a>
+<a class="sourceLine" id="cb2-124" title="124">            anomaly_results[column] <span class="op">=</span> anomalies</a>
+<a class="sourceLine" id="cb2-125" title="125">        </a>
+<a class="sourceLine" id="cb2-126" title="126">        <span class="co"># Multivariate anomaly detection</span></a>
+<a class="sourceLine" id="cb2-127" title="127">        multivariate_anomalies <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.multivariate_detector.detect(dataset)</a>
+<a class="sourceLine" id="cb2-128" title="128">        anomaly_results[<span class="st">&#39;multivariate&#39;</span>] <span class="op">=</span> multivariate_anomalies</a>
+<a class="sourceLine" id="cb2-129" title="129">        </a>
+<a class="sourceLine" id="cb2-130" title="130">        <span class="cf">return</span> AnomalyDetectionResult(</a>
+<a class="sourceLine" id="cb2-131" title="131">            column_anomalies<span class="op">=</span>anomaly_results,</a>
+<a class="sourceLine" id="cb2-132" title="132">            total_anomalies<span class="op">=</span><span class="bu">sum</span>(<span class="bu">len</span>(anomalies.outlier_indices) <span class="cf">for</span> anomalies <span class="kw">in</span> anomaly_results.values()),</a>
+<a class="sourceLine" id="cb2-133" title="133">            anomaly_summary<span class="op">=</span><span class="va">self</span>.summarize_anomalies(anomaly_results)</a>
+<a class="sourceLine" id="cb2-134" title="134">        )</a>
+<a class="sourceLine" id="cb2-135" title="135">    </a>
+<a class="sourceLine" id="cb2-136" title="136">    <span class="cf">async</span> <span class="kw">def</span> detect_numerical_anomalies(<span class="va">self</span>, column_data, column_profile):</a>
+<a class="sourceLine" id="cb2-137" title="137">        <span class="co">&quot;&quot;&quot;Ensemble approach for numerical anomaly detection&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-138" title="138">        anomaly_scores <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb2-139" title="139">        outlier_votes <span class="op">=</span> np.zeros(<span class="bu">len</span>(column_data))</a>
+<a class="sourceLine" id="cb2-140" title="140">        </a>
+<a class="sourceLine" id="cb2-141" title="141">        <span class="co"># Clean data (remove nulls for analysis)</span></a>
+<a class="sourceLine" id="cb2-142" title="142">        clean_data <span class="op">=</span> column_data.dropna().values.reshape(<span class="op">-</span><span class="dv">1</span>, <span class="dv">1</span>)</a>
+<a class="sourceLine" id="cb2-143" title="143">        clean_indices <span class="op">=</span> column_data.dropna().index</a>
+<a class="sourceLine" id="cb2-144" title="144">        </a>
+<a class="sourceLine" id="cb2-145" title="145">        <span class="cf">for</span> detector_name, detector <span class="kw">in</span> <span class="va">self</span>.numerical_detectors.items():</a>
+<a class="sourceLine" id="cb2-146" title="146">            <span class="co"># Fit detector and predict anomalies</span></a>
+<a class="sourceLine" id="cb2-147" title="147">            outliers <span class="op">=</span> detector.fit_predict(clean_data)</a>
+<a class="sourceLine" id="cb2-148" title="148">            </a>
+<a class="sourceLine" id="cb2-149" title="149">            <span class="co"># Map back to original indices</span></a>
+<a class="sourceLine" id="cb2-150" title="150">            <span class="cf">for</span> i, idx <span class="kw">in</span> <span class="bu">enumerate</span>(clean_indices):</a>
+<a class="sourceLine" id="cb2-151" title="151">                <span class="cf">if</span> outliers[i] <span class="op">==</span> <span class="dv">-1</span>:  <span class="co"># Anomaly detected</span></a>
+<a class="sourceLine" id="cb2-152" title="152">                    outlier_votes[idx] <span class="op">+=</span> <span class="dv">1</span></a>
+<a class="sourceLine" id="cb2-153" title="153">            </a>
+<a class="sourceLine" id="cb2-154" title="154">            <span class="co"># Get anomaly scores if available</span></a>
+<a class="sourceLine" id="cb2-155" title="155">            <span class="cf">if</span> <span class="bu">hasattr</span>(detector, <span class="st">&#39;decision_function&#39;</span>):</a>
+<a class="sourceLine" id="cb2-156" title="156">                scores <span class="op">=</span> detector.decision_function(clean_data)</a>
+<a class="sourceLine" id="cb2-157" title="157">                anomaly_scores[detector_name] <span class="op">=</span> <span class="bu">dict</span>(<span class="bu">zip</span>(clean_indices, scores))</a>
+<a class="sourceLine" id="cb2-158" title="158">        </a>
+<a class="sourceLine" id="cb2-159" title="159">        <span class="co"># Ensemble decision: majority vote</span></a>
+<a class="sourceLine" id="cb2-160" title="160">        outlier_threshold <span class="op">=</span> <span class="bu">len</span>(<span class="va">self</span>.numerical_detectors) <span class="op">/</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb2-161" title="161">        outlier_indices <span class="op">=</span> np.where(outlier_votes <span class="op">&gt;=</span> outlier_threshold)[<span class="dv">0</span>].tolist()</a>
+<a class="sourceLine" id="cb2-162" title="162">        </a>
+<a class="sourceLine" id="cb2-163" title="163">        <span class="cf">return</span> NumericalAnomalyResult(</a>
+<a class="sourceLine" id="cb2-164" title="164">            outlier_indices<span class="op">=</span>outlier_indices,</a>
+<a class="sourceLine" id="cb2-165" title="165">            anomaly_scores<span class="op">=</span>anomaly_scores,</a>
+<a class="sourceLine" id="cb2-166" title="166">            ensemble_votes<span class="op">=</span>outlier_votes.tolist(),</a>
+<a class="sourceLine" id="cb2-167" title="167">            detection_summary<span class="op">=</span><span class="ss">f&quot;Found </span><span class="sc">{</span><span class="bu">len</span>(outlier_indices)<span class="sc">}</span><span class="ss"> outliers using ensemble approach&quot;</span></a>
+<a class="sourceLine" id="cb2-168" title="168">        )</a>
+<a class="sourceLine" id="cb2-169" title="169"></a>
+<a class="sourceLine" id="cb2-170" title="170"><span class="kw">class</span> ImputationEngine:</a>
+<a class="sourceLine" id="cb2-171" title="171">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-172" title="172">        <span class="va">self</span>.imputers <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb2-173" title="173">            <span class="st">&#39;mean&#39;</span>: MeanImputer(),</a>
+<a class="sourceLine" id="cb2-174" title="174">            <span class="st">&#39;median&#39;</span>: MedianImputer(),</a>
+<a class="sourceLine" id="cb2-175" title="175">            <span class="st">&#39;mode&#39;</span>: ModeImputer(),</a>
+<a class="sourceLine" id="cb2-176" title="176">            <span class="st">&#39;knn&#39;</span>: KNNImputer(),</a>
+<a class="sourceLine" id="cb2-177" title="177">            <span class="st">&#39;mice&#39;</span>: MICEImputer(),</a>
+<a class="sourceLine" id="cb2-178" title="178">            <span class="st">&#39;ml_based&#39;</span>: MLBasedImputer(),</a>
+<a class="sourceLine" id="cb2-179" title="179">            <span class="st">&#39;time_series&#39;</span>: TimeSeriesImputer()</a>
+<a class="sourceLine" id="cb2-180" title="180">        }</a>
+<a class="sourceLine" id="cb2-181" title="181">        <span class="va">self</span>.imputation_selector <span class="op">=</span> ImputationMethodSelector()</a>
+<a class="sourceLine" id="cb2-182" title="182">        </a>
+<a class="sourceLine" id="cb2-183" title="183">    <span class="cf">async</span> <span class="kw">def</span> impute_missing_values(<span class="va">self</span>, dataset, imputation_config):</a>
+<a class="sourceLine" id="cb2-184" title="184">        imputation_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb2-185" title="185">        </a>
+<a class="sourceLine" id="cb2-186" title="186">        <span class="cf">for</span> column <span class="kw">in</span> dataset.columns:</a>
+<a class="sourceLine" id="cb2-187" title="187">            <span class="cf">if</span> dataset[column].isnull().<span class="bu">sum</span>() <span class="op">&gt;</span> <span class="dv">0</span>:</a>
+<a class="sourceLine" id="cb2-188" title="188">                <span class="co"># Select best imputation method for this column</span></a>
+<a class="sourceLine" id="cb2-189" title="189">                best_method <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.imputation_selector.select_method(</a>
+<a class="sourceLine" id="cb2-190" title="190">                    dataset, column, imputation_config</a>
+<a class="sourceLine" id="cb2-191" title="191">                )</a>
+<a class="sourceLine" id="cb2-192" title="192">                </a>
+<a class="sourceLine" id="cb2-193" title="193">                <span class="co"># Perform imputation</span></a>
+<a class="sourceLine" id="cb2-194" title="194">                imputed_values, confidence_scores <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.perform_imputation(</a>
+<a class="sourceLine" id="cb2-195" title="195">                    dataset, column, best_method, imputation_config</a>
+<a class="sourceLine" id="cb2-196" title="196">                )</a>
+<a class="sourceLine" id="cb2-197" title="197">                </a>
+<a class="sourceLine" id="cb2-198" title="198">                imputation_results[column] <span class="op">=</span> ImputationResult(</a>
+<a class="sourceLine" id="cb2-199" title="199">                    method_used<span class="op">=</span>best_method,</a>
+<a class="sourceLine" id="cb2-200" title="200">                    imputed_values<span class="op">=</span>imputed_values,</a>
+<a class="sourceLine" id="cb2-201" title="201">                    confidence_scores<span class="op">=</span>confidence_scores,</a>
+<a class="sourceLine" id="cb2-202" title="202">                    missing_count<span class="op">=</span>dataset[column].isnull().<span class="bu">sum</span>()</a>
+<a class="sourceLine" id="cb2-203" title="203">                )</a>
+<a class="sourceLine" id="cb2-204" title="204">        </a>
+<a class="sourceLine" id="cb2-205" title="205">        <span class="cf">return</span> ImputationResults(</a>
+<a class="sourceLine" id="cb2-206" title="206">            column_results<span class="op">=</span>imputation_results,</a>
+<a class="sourceLine" id="cb2-207" title="207">            overall_improvement<span class="op">=</span><span class="va">self</span>.calculate_imputation_improvement(dataset, imputation_results)</a>
+<a class="sourceLine" id="cb2-208" title="208">        )</a>
+<a class="sourceLine" id="cb2-209" title="209">    </a>
+<a class="sourceLine" id="cb2-210" title="210">    <span class="cf">async</span> <span class="kw">def</span> perform_imputation(<span class="va">self</span>, dataset, column, method, config):</a>
+<a class="sourceLine" id="cb2-211" title="211">        <span class="co">&quot;&quot;&quot;Perform imputation with confidence scoring&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb2-212" title="212">        imputer <span class="op">=</span> <span class="va">self</span>.imputers[method]</a>
+<a class="sourceLine" id="cb2-213" title="213">        </a>
+<a class="sourceLine" id="cb2-214" title="214">        <span class="co"># Prepare data for imputation</span></a>
+<a class="sourceLine" id="cb2-215" title="215">        missing_mask <span class="op">=</span> dataset[column].isnull()</a>
+<a class="sourceLine" id="cb2-216" title="216">        </a>
+<a class="sourceLine" id="cb2-217" title="217">        <span class="cf">if</span> method <span class="kw">in</span> [<span class="st">&#39;knn&#39;</span>, <span class="st">&#39;mice&#39;</span>, <span class="st">&#39;ml_based&#39;</span>]:</a>
+<a class="sourceLine" id="cb2-218" title="218">            <span class="co"># Use other columns as features</span></a>
+<a class="sourceLine" id="cb2-219" title="219">            feature_columns <span class="op">=</span> [col <span class="cf">for</span> col <span class="kw">in</span> dataset.columns <span class="cf">if</span> col <span class="op">!=</span> column]</a>
+<a class="sourceLine" id="cb2-220" title="220">            X <span class="op">=</span> dataset[feature_columns].fillna(dataset[feature_columns].mean())  <span class="co"># Simple preprocessing</span></a>
+<a class="sourceLine" id="cb2-221" title="221">            </a>
+<a class="sourceLine" id="cb2-222" title="222">            <span class="co"># Fit imputer</span></a>
+<a class="sourceLine" id="cb2-223" title="223">            imputed_values <span class="op">=</span> imputer.fit_transform(X, dataset[column])</a>
+<a class="sourceLine" id="cb2-224" title="224">            </a>
+<a class="sourceLine" id="cb2-225" title="225">            <span class="co"># Calculate confidence scores based on cross-validation</span></a>
+<a class="sourceLine" id="cb2-226" title="226">            confidence_scores <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.calculate_imputation_confidence(</a>
+<a class="sourceLine" id="cb2-227" title="227">                X, dataset[column], imputer, missing_mask</a>
+<a class="sourceLine" id="cb2-228" title="228">            )</a>
+<a class="sourceLine" id="cb2-229" title="229">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb2-230" title="230">            <span class="co"># Simple imputation methods</span></a>
+<a class="sourceLine" id="cb2-231" title="231">            imputed_values <span class="op">=</span> imputer.fit_transform(dataset[column])</a>
+<a class="sourceLine" id="cb2-232" title="232">            confidence_scores <span class="op">=</span> [<span class="fl">0.7</span>] <span class="op">*</span> missing_mask.<span class="bu">sum</span>()  <span class="co"># Fixed confidence for simple methods</span></a>
+<a class="sourceLine" id="cb2-233" title="233">        </a>
+<a class="sourceLine" id="cb2-234" title="234">        <span class="cf">return</span> imputed_values[missing_mask], confidence_scores</a>
+<a class="sourceLine" id="cb2-235" title="235"></a>
+<a class="sourceLine" id="cb2-236" title="236"><span class="kw">class</span> DeduplicationEngine:</a>
+<a class="sourceLine" id="cb2-237" title="237">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-238" title="238">        <span class="va">self</span>.similarity_calculator <span class="op">=</span> SimilarityCalculator()</a>
+<a class="sourceLine" id="cb2-239" title="239">        <span class="va">self</span>.blocking_engine <span class="op">=</span> BlockingEngine()</a>
+<a class="sourceLine" id="cb2-240" title="240">        <span class="va">self</span>.matching_engine <span class="op">=</span> MatchingEngine()</a>
+<a class="sourceLine" id="cb2-241" title="241">        <span class="va">self</span>.clustering_engine <span class="op">=</span> ClusteringEngine()</a>
+<a class="sourceLine" id="cb2-242" title="242">        </a>
+<a class="sourceLine" id="cb2-243" title="243">    <span class="cf">async</span> <span class="kw">def</span> find_duplicates(<span class="va">self</span>, dataset, dedup_config<span class="op">=</span><span class="va">None</span>):</a>
+<a class="sourceLine" id="cb2-244" title="244">        <span class="co"># Step 1: Generate blocking keys to reduce comparison space</span></a>
+<a class="sourceLine" id="cb2-245" title="245">        blocks <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.blocking_engine.create_blocks(dataset, dedup_config)</a>
+<a class="sourceLine" id="cb2-246" title="246">        </a>
+<a class="sourceLine" id="cb2-247" title="247">        <span class="co"># Step 2: Calculate similarities within blocks</span></a>
+<a class="sourceLine" id="cb2-248" title="248">        similarity_pairs <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb2-249" title="249">        </a>
+<a class="sourceLine" id="cb2-250" title="250">        <span class="cf">for</span> block_key, block_records <span class="kw">in</span> blocks.items():</a>
+<a class="sourceLine" id="cb2-251" title="251">            <span class="cf">if</span> <span class="bu">len</span>(block_records) <span class="op">&gt;</span> <span class="dv">1</span>:</a>
+<a class="sourceLine" id="cb2-252" title="252">                block_similarities <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.calculate_block_similarities(</a>
+<a class="sourceLine" id="cb2-253" title="253">                    dataset, block_records, dedup_config</a>
+<a class="sourceLine" id="cb2-254" title="254">                )</a>
+<a class="sourceLine" id="cb2-255" title="255">                similarity_pairs.extend(block_similarities)</a>
+<a class="sourceLine" id="cb2-256" title="256">        </a>
+<a class="sourceLine" id="cb2-257" title="257">        <span class="co"># Step 3: Apply matching threshold</span></a>
+<a class="sourceLine" id="cb2-258" title="258">        potential_matches <span class="op">=</span> [</a>
+<a class="sourceLine" id="cb2-259" title="259">            pair <span class="cf">for</span> pair <span class="kw">in</span> similarity_pairs </a>
+<a class="sourceLine" id="cb2-260" title="260">            <span class="cf">if</span> pair.similarity_score <span class="op">&gt;=</span> dedup_config.similarity_threshold</a>
+<a class="sourceLine" id="cb2-261" title="261">        ]</a>
+<a class="sourceLine" id="cb2-262" title="262">        </a>
+<a class="sourceLine" id="cb2-263" title="263">        <span class="co"># Step 4: Cluster similar records</span></a>
+<a class="sourceLine" id="cb2-264" title="264">        duplicate_clusters <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.clustering_engine.cluster_duplicates(</a>
+<a class="sourceLine" id="cb2-265" title="265">            potential_matches, dedup_config</a>
+<a class="sourceLine" id="cb2-266" title="266">        )</a>
+<a class="sourceLine" id="cb2-267" title="267">        </a>
+<a class="sourceLine" id="cb2-268" title="268">        <span class="co"># Step 5: Generate deduplication recommendations</span></a>
+<a class="sourceLine" id="cb2-269" title="269">        dedup_recommendations <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.generate_dedup_recommendations(</a>
+<a class="sourceLine" id="cb2-270" title="270">            duplicate_clusters, dataset</a>
+<a class="sourceLine" id="cb2-271" title="271">        )</a>
+<a class="sourceLine" id="cb2-272" title="272">        </a>
+<a class="sourceLine" id="cb2-273" title="273">        <span class="cf">return</span> DeduplicationResult(</a>
+<a class="sourceLine" id="cb2-274" title="274">            duplicate_clusters<span class="op">=</span>duplicate_clusters,</a>
+<a class="sourceLine" id="cb2-275" title="275">            total_duplicates<span class="op">=</span><span class="bu">sum</span>(<span class="bu">len</span>(cluster.record_ids) <span class="op">-</span> <span class="dv">1</span> <span class="cf">for</span> cluster <span class="kw">in</span> duplicate_clusters),</a>
+<a class="sourceLine" id="cb2-276" title="276">            recommendations<span class="op">=</span>dedup_recommendations,</a>
+<a class="sourceLine" id="cb2-277" title="277">            similarity_distribution<span class="op">=</span><span class="va">self</span>.analyze_similarity_distribution(similarity_pairs)</a>
+<a class="sourceLine" id="cb2-278" title="278">        )</a></code></pre></div>
+<hr />
+<h2 id="lld-low-level-design">LLD (Low Level Design)</h2>
+<h3 id="advanced-quality-assessment-algorithms">Advanced Quality Assessment Algorithms</h3>
+<p>```python class MLBasedQualityAssessor: def <strong>init</strong>(self): self.pattern_detector = PatternDetectionModel() self.quality_predictor = QualityPredictionModel() self.anomaly_explainer = AnomalyExplainer()</p>
+<pre><code>async def assess_data_quality_ml(self, dataset, historical_patterns):
+    &quot;&quot;&quot;Use ML to assess data quality based on learned patterns&quot;&quot;&quot;
+    
+    # Extract features for quality assessment
+    quality_features = self.extract_quality_features(dataset)
+    
+    # Detect known patterns and deviations
+    pattern_analysis = await self.pattern_detector.analyze_patterns(
+        quality_features, historical_patterns
+    )
+    
+    # Predict quality scores using trained model
+    predicted_quality = await self.quality_predictor.predict_quality(
+        quality_features, pattern_analysis
+    )
+    
+    # Generate explanations for quality issues
+    quality_explanations = await self.anomaly_explainer.explain_quality_issues(
+        dataset, quality_features, predicted_quality
+    )
+    
+    return MLQualityAssessment(
+        predicted_scores=predicted_quality,
+        pattern_analysis=pattern_analysis,
+        explanations=quality_explanations,
+        confidence_intervals=self.calculate_prediction_confidence(predicted_quality)
+    )
+
+def extract_quality_features(self, dataset):
+    &quot;&quot;&quot;Extract comprehensive features for quality assessment&quot;&quot;&quot;
+    features = {}
+    
+    for column in dataset.columns:
+        col_features = {}
+        
+        # Basic statistics
+        col_features[&#39;null_rate&#39;] = dataset[column].isnull().mean()
+        col_features[&#39;unique_rate&#39;] = dataset[column].nunique() / len(dataset)
+        
+        if dataset[column].dtype in [&#39;int64&#39;, &#39;float64&#39;]:
+            # Numerical features
+            col_features[&#39;mean&#39;] = dataset[column].mean()
+            col_features[&#39;std&#39;] = dataset[column].std()
+            col_features[&#39;skewness&#39;] = dataset[column].skew()
+            col_features[&#39;kurtosis&#39;] = dataset[column].kurtosis()
+            col_features[&#39;outlier_rate&#39;] = self.calculate_outlier_rate(dataset[column])
+            
+        elif dataset[column].dtype == &#39;object&#39;:
+            # Categorical/text features
+            col_features[&#39;mode_frequency&#39;] = dataset[column].value_counts().iloc[0] / len(dataset)
+            col_features[&#39;entropy&#39;] = self.calculate_entropy(dataset[column])
+            col_features[&#39;avg_length&#39;] = dataset[column].astype(str).str.len().mean()
+            
+        features[column] = col_features
+    
+    # Cross-column features
+    features[&#39;correlation_matrix&#39;] = dataset.select_dtypes(include=[np.number]).corr().values.flatten()
+    features[&#39;duplicate_rate&#39;] = dataset.duplicated().mean()
+    
+    return features</code></pre>
+<p>class AdvancedImputationEngine: def <strong>init</strong>(self): self.neural_imputer = NeuralNetworkImputer() self.collaborative_imputer = CollaborativeFilteringImputer() self.context_aware_imputer = ContextAwareImputer()</p>
+<pre><code>async def advanced_imputation(self, dataset, column, context_data=None):
+    &quot;&quot;&quot;Advanced ML-based imputation with multiple strategies&quot;&quot;&quot;
+    
+    # Strategy 1: Neural network imputation
+    nn_imputation = await self.neural_imputer.impute(dataset, column)
+    
+    # Strategy 2: Collaborative filtering (for user-item like data)
+    if self.is_collaborative_applicable(dataset, column):
+        cf_imputation = await self.collaborative_imputer.impute(dataset, column)
+    else:
+        cf_imputation = None
+        
+    # Strategy 3: Context-aware imputation using external data
+    if context_data:
+        context_imputation = await self.context_aware_imputer.impute(
+            dataset, column, context_data
+        )
+    else:
+        context_imputation = None
+        
+    # Ensemble the results
+    final_imputation = self.ensemble_imputations(
+        [nn_imputation, cf_imputation, context_imputation]
+    )
+    
+    return AdvancedImputationResult(
+        imputed_values=final_imputation.values,
+        confidence_scores=final_imputation.confidence,
+        method_contributions=final_imputation.method_weights,
+        uncertainty_estimates=final_imputation.uncertainty
+    )</code></pre>
+<p>class RealTimeQualityMonitor: def <strong>init</strong>(self): self.streaming_profiler = StreamingDataProfiler() self.quality_tracker = QualityMetricTracker() self.alert_manager = QualityAlertManager() self.drift_detector = QualityDriftDetector()</p>
+<pre><code>async def monitor_streaming_quality(self, data_stream, monitoring_config):
+    &quot;&quot;&quot;Monitor data quality in real-time streaming data&quot;&quot;&quot;
+    
+    async for batch in data_stream:
+        # Profile incoming batch
+        batch_profile = await self.streaming_profiler.profile_batch(batch)
+        
+        # Update quality metrics
+        current_metrics = await self.quality_tracker.update_metrics(
+            batch_profile, monitoring_config.baseline_metrics
+        )
+        
+        # Detect quality drift
+        drift_result = await self.drift_detector.detect_drift(
+            current_metrics, monitoring_config.drift_thresholds
+        )
+        
+        # Check for quality violations
+        violations = self.check_quality_violations(
+            current_metrics, monitoring_config.quality_slas
+        )
+        
+        # Trigger alerts if necessary
+        if violations or drift_result.significant_drift:
+            await self.alert_manager.trigger_quality_alert(
+                violations, drift_result, current_metrics
+            )
+        
+        # Store metrics for historical analysis
+        await self.store_quality_metrics(current_metrics, batch.timestamp)
+        
+    return StreamingQualityReport(
+        processed_batches=self.quality_tracker.total_batches,
+        quality_trends=self.quality_tracker.get_trend_analysis(),
+        alert_summary=self.alert_manager.get_alert_summary()
+    )</code></pre>
+<h1 id="database-schema">Database Schema</h1>
+<p>class DataQualitySchema: def <strong>init</strong>(self): self.tables = """ – Data quality assessments CREATE TABLE quality_assessments ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), dataset_id UUID NOT NULL, assessment_timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, overall_quality_score DECIMAL(5,4) NOT NULL, completeness_score DECIMAL(5,4), validity_score DECIMAL(5,4), consistency_score DECIMAL(5,4), accuracy_score DECIMAL(5,4), uniqueness_score DECIMAL(5,4), assessment_config JSONB NOT NULL, detailed_results JSONB NOT NULL, created_by UUID NOT NULL );</p>
+<pre><code>    -- Quality issues
+    CREATE TABLE quality_issues (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        assessment_id UUID REFERENCES quality_assessments(id) ON DELETE CASCADE,
+        issue_type VARCHAR(100) NOT NULL,
+        issue_severity VARCHAR(20) NOT NULL,
+        affected_columns TEXT[] NOT NULL,
+        affected_rows INTEGER[],
+        issue_description TEXT NOT NULL,
+        root_cause_analysis JSONB,
+        remediation_suggestions JSONB NOT NULL,
+        issue_status VARCHAR(50) DEFAULT &#39;open&#39;,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        resolved_at TIMESTAMP
+    );
+    
+    -- Anomaly det# 140509_40.md - AI-Powered Data Quality an</code></pre>

@@ -1,0 +1,280 @@
+<h1 id="md">140509_23.md</h1>
+<h2 id="readme">README</h2>
+<ol start="23" type="1">
+<li>Autonomous Data Analysis Agent</li>
+</ol>
+<p><strong>Summary</strong>: Develop an AI agent that automates exploratory data analysis (EDA), pattern detection, statistical testing, and visualization for diverse datasets.</p>
+<p><strong>Problem Statement</strong>: Exploratory data analysis is time-consuming and requires statistical expertise, limiting accessibility for non-experts. Your task is to create an autonomous AI agent that automates EDA by profiling datasets, detecting patterns, performing statistical tests, generating visualizations, and providing natural language insights. The system should adapt to various data types (numerical, categorical, time-series) and deliver actionable findings for data-driven decision-making.</p>
+<p><strong>Steps</strong>: - Design automated data profiling to summarize dataset characteristics. - Implement adaptive analysis strategies for pattern detection. - Create statistical testing and hypothesis generation mechanisms. - Build dynamic visualization tools with interactive charts. - Develop natural language explanations for insights. - Include ranking and prioritization of findings based on significance.</p>
+<p><strong>Suggested Data Requirements</strong>: - Diverse datasets (numerical, categorical, time-series) for testing. - Statistical test catalogs and benchmarks (e.g., NIST datasets). - Visualization templates and user feedback logs. - Domain-specific ontologies for contextual insights.</p>
+<p><strong>Themes</strong>: Agentic AI, Classical AI/ML</p>
+<p>The steps and data requirements outlined above are intended solely as reference points to assist you in conceptualizing your solution.</p>
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision-and-goals">Product Vision and Goals</h3>
+<p>The Autonomous Data Analysis Agent aims to democratize data analysis by automating EDA, reducing analysis time by 70% while delivering statistically significant insights accessible to non-experts. Goals include supporting diverse datasets (e.g., financial, healthcare, retail), generating interactive visualizations, and providing clear, narrative-driven insights, enabling faster decision-making for analysts, business users, and researchers.</p>
+<h3 id="target-audience-and-stakeholders">Target Audience and Stakeholders</h3>
+<ul>
+<li><strong>Primary Users</strong>: Data analysts, business intelligence professionals, researchers, non-expert data enthusiasts.</li>
+<li><strong>Stakeholders</strong>: Data scientists (for validation), business managers (for decision-making), educators (for teaching tools).</li>
+<li><strong>Personas</strong>:
+<ul>
+<li>A business analyst exploring sales trends to optimize pricing.</li>
+<li>A researcher analyzing patient data for clinical patterns.</li>
+</ul></li>
+</ul>
+<h3 id="key-features-and-functionality">Key Features and Functionality</h3>
+<ul>
+<li><strong>Data Profiling</strong>: Automatically summarize dataset (e.g., mean, variance, missing values).</li>
+<li><strong>Pattern Detection</strong>: Identify trends, outliers, and correlations adaptively.</li>
+<li><strong>Statistical Testing</strong>: Perform hypothesis tests (e.g., t-tests, ANOVA) based on data type.</li>
+<li><strong>Visualization</strong>: Generate interactive charts (e.g., histograms, scatter plots) with Plotly.</li>
+<li><strong>Narrative Generation</strong>: Produce natural language summaries of findings using LLMs.</li>
+<li><strong>Insight Ranking</strong>: Prioritize findings by statistical significance (e.g., p-value).</li>
+<li><strong>Export</strong>: Save insights and visuals as Markdown/PDF/HTML.</li>
+</ul>
+<h3 id="business-requirements">Business Requirements</h3>
+<ul>
+<li>Integration with data sources (CSV, SQL, APIs like Kaggle).</li>
+<li>Freemium model: Basic analysis free, premium for advanced stats and large datasets.</li>
+<li>Export compatibility with BI tools (e.g., Tableau, Power BI).</li>
+</ul>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li><strong>Efficiency</strong>: &lt;5min analysis for 100k-row datasets.</li>
+<li><strong>Accuracy</strong>: &gt;90% insight relevance (user-rated).</li>
+<li><strong>Engagement</strong>: &gt;10 insights generated per session.</li>
+<li><strong>User Satisfaction</strong>: NPS &gt;75.</li>
+</ul>
+<h3 id="assumptions-risks-and-dependencies">Assumptions, Risks, and Dependencies</h3>
+<ul>
+<li><strong>Assumptions</strong>: Access to open datasets (e.g., UCI, Kaggle) and ML libraries (Pandas, SciPy).</li>
+<li><strong>Risks</strong>: Overfitting to noisy data; mitigate with robust preprocessing.</li>
+<li><strong>Dependencies</strong>: Datasets like Titanic, Iris; libraries like Pandas, Plotly, Hugging Face.</li>
+</ul>
+<h3 id="out-of-scope">Out of Scope</h3>
+<ul>
+<li>Real-time streaming data analysis.</li>
+<li>Custom model training for predictions.</li>
+</ul>
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<h3 id="system-modules-and-requirements">System Modules and Requirements</h3>
+<ol type="1">
+<li><strong>Data Profiling Module (FR-001)</strong>:
+<ul>
+<li><strong>Input</strong>: Dataset (CSV, SQL, JSON).</li>
+<li><strong>Functionality</strong>: Compute summary statistics (mean, std, quartiles, missing values) using Pandas; detect data types (numerical, categorical).</li>
+<li><strong>Output</strong>: Profile report (e.g., JSON with stats, distributions).</li>
+<li><strong>Validation</strong>: Cross-check stats with manual calculations.</li>
+</ul></li>
+<li><strong>Pattern Detection Module (FR-002)</strong>:
+<ul>
+<li><strong>Input</strong>: Profile report.</li>
+<li><strong>Functionality</strong>: Identify trends (e.g., linear regression slopes), outliers (z-scores &gt;3), correlations (Pearson/Spearman).</li>
+<li><strong>Output</strong>: List of patterns (e.g., {“type”: “correlation”, “vars”: [“sales”, “price”], “value”: 0.85}).</li>
+<li><strong>Validation</strong>: Filter low-confidence patterns (e.g., correlation &lt;0.3).</li>
+</ul></li>
+<li><strong>Statistical Testing Module (FR-003)</strong>:
+<ul>
+<li><strong>Input</strong>: Patterns, dataset.</li>
+<li><strong>Functionality</strong>: Select tests (e.g., t-test for numerical, chi-square for categorical) based on data type; generate hypotheses (e.g., “means differ”).</li>
+<li><strong>Output</strong>: Test results with p-values, effect sizes.</li>
+<li><strong>Validation</strong>: Ensure p-values &lt;0.05 for significant findings.</li>
+</ul></li>
+<li><strong>Visualization Module (FR-004)</strong>:
+<ul>
+<li><strong>Input</strong>: Patterns, test results.</li>
+<li><strong>Functionality</strong>: Generate Plotly charts (e.g., histograms, heatmaps); support interactivity (zoom, hover).</li>
+<li><strong>Output</strong>: HTML/JSON visualizations.</li>
+<li><strong>Validation</strong>: Verify chart data matches raw stats.</li>
+</ul></li>
+<li><strong>Narrative Generation Module (FR-005)</strong>:
+<ul>
+<li><strong>Input</strong>: Patterns, test results.</li>
+<li><strong>Functionality</strong>: Use LLM to generate explanations (e.g., “Strong correlation between sales and price suggests…”).</li>
+<li><strong>Output</strong>: Natural language summaries in Markdown.</li>
+<li><strong>Validation</strong>: Check readability (Flesch score &gt;60).</li>
+</ul></li>
+<li><strong>Insight Ranking Module (FR-006)</strong>:
+<ul>
+<li><strong>Input</strong>: Patterns, test results.</li>
+<li><strong>Functionality</strong>: Rank by significance (p-value, effect size) or user-defined criteria (e.g., business impact).</li>
+<li><strong>Output</strong>: Prioritized list of insights.</li>
+<li><strong>Validation</strong>: Ensure top insights align with statistical significance.</li>
+</ul></li>
+</ol>
+<h3 id="interfaces-and-integrations">Interfaces and Integrations</h3>
+<ul>
+<li><strong>UI</strong>: Web-based dashboard (Streamlit) for data upload, insight review, and visualization.</li>
+<li><strong>API</strong>: RESTful endpoints (e.g., POST /analyze, GET /insights) with JSON payloads.</li>
+<li><strong>Data Flow</strong>: Upload data -&gt; Profile -&gt; Detect patterns -&gt; Test -&gt; Visualize -&gt; Narrate -&gt; Rank.</li>
+<li><strong>Integrations</strong>: Pandas for profiling, SciPy for stats, Plotly for visuals, Hugging Face for LLM.</li>
+</ul>
+<h3 id="error-handling-and-validation">Error Handling and Validation</h3>
+<ul>
+<li><strong>Invalid Data</strong>: Handle missing values with imputation (mean/median) or flag errors.</li>
+<li><strong>Statistical Errors</strong>: Skip tests with insufficient data (e.g., &lt;30 samples for t-test).</li>
+<li><strong>Tests</strong>: Unit tests for profiling (90% coverage), E2E for full pipeline.</li>
+</ul>
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li><strong>Latency</strong>: &lt;5min for 100k-row dataset analysis on standard hardware (16GB RAM, 4 vCPUs).</li>
+<li><strong>Throughput</strong>: 20 concurrent analyses.</li>
+</ul>
+<h3 id="scalability-and-availability">Scalability and Availability</h3>
+<ul>
+<li><strong>Scalability</strong>: Dockerized services with horizontal scaling for large datasets.</li>
+<li><strong>Availability</strong>: 99% uptime; cache common datasets in Redis.</li>
+</ul>
+<h3 id="security-and-privacy">Security and Privacy</h3>
+<ul>
+<li><strong>Data Privacy</strong>: Process data locally or encrypt uploads; delete after session.</li>
+<li><strong>Authentication</strong>: Optional OAuth for premium features.</li>
+<li><strong>Compliance</strong>: GDPR for user-uploaded data, audit logs for analysis.</li>
+</ul>
+<h3 id="reliability-and-maintainability">Reliability and Maintainability</h3>
+<ul>
+<li><strong>Error Rate</strong>: &lt;1% analysis failures.</li>
+<li><strong>Code Quality</strong>: Modular design, 85% test coverage, CI/CD with GitHub Actions.</li>
+<li><strong>Monitoring</strong>: Prometheus for latency, error tracking; Grafana for dashboards.</li>
+</ul>
+<h3 id="usability-and-accessibility">Usability and Accessibility</h3>
+<ul>
+<li><strong>UI/UX</strong>: Responsive Streamlit app, WCAG 2.1 AA compliance (e.g., high-contrast mode).</li>
+<li><strong>Documentation</strong>: API docs via Swagger, user guides with examples.</li>
+</ul>
+<h3 id="environmental-constraints">Environmental Constraints</h3>
+<ul>
+<li><strong>Deployment</strong>: Cloud (AWS/GCP) or on-prem with Docker.</li>
+<li><strong>Cost</strong>: Optimize for &lt;0.01 USD per analysis.</li>
+</ul>
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<p>+———————+ | User Interface | (Streamlit: Data Upload, Insight Dashboard, Interactive Charts) +———————+ | v +———————+ | API Gateway | (FastAPI: Endpoints for Analysis, Visualizations) +———————+ / |<br />
+v v v +———————+ +———————+ +———————+ | Profiler | | Pattern/Stats | | Visualizer/Narrator | | (Pandas) | | (SciPy, sklearn) | | (Plotly, LLM) | +———————+ +———————+ +———————+ | ^ v | +———————+ | | Data Store | &lt;——-+ | (Redis, Local Cache)| +———————+ text## HLD (High Level Design)</p>
+<ul>
+<li><strong>Components</strong>:
+<ul>
+<li><strong>Frontend</strong>: Streamlit for dashboard, Plotly for interactive charts.</li>
+<li><strong>Backend</strong>: FastAPI for APIs, Celery for async analysis tasks.</li>
+<li><strong>AI/ML</strong>: Pandas for profiling, SciPy for stats, Hugging Face Transformers for narratives (e.g., Llama-3-8B).</li>
+<li><strong>Storage</strong>: Redis for caching dataset profiles, local storage for temporary uploads.</li>
+</ul></li>
+<li><strong>Design Patterns</strong>:
+<ul>
+<li><strong>Pipeline</strong>: Sequential flow (profile -&gt; detect -&gt; test -&gt; visualize -&gt; narrate).</li>
+<li><strong>Strategy</strong>: Adaptive test selection based on data type.</li>
+<li><strong>Observer</strong>: Real-time chart updates on user interaction.</li>
+</ul></li>
+<li><strong>Data Management</strong>:
+<ul>
+<li><strong>Sources</strong>: UCI datasets (e.g., Titanic, Iris), Kaggle (e.g., Sales Forecasting).</li>
+<li><strong>Storage</strong>: Cache processed datasets in Redis for repeat analyses.</li>
+</ul></li>
+<li><strong>Security Design</strong>:
+<ul>
+<li>Encrypt uploads with AES-256.</li>
+<li>Optional JWT for premium API access.</li>
+</ul></li>
+<li><strong>High-Level Flow</strong>:
+<ol type="1">
+<li>Upload dataset (CSV/SQL).</li>
+<li>Profile data (stats, types).</li>
+<li>Detect patterns and run statistical tests.</li>
+<li>Generate visualizations and narratives.</li>
+<li>Rank insights and display/export results.</li>
+</ol></li>
+</ul>
+<h2 id="lld-low-level-design">LLD (Low Level Design)</h2>
+<ul>
+<li><strong>Data Profiling</strong>:
+<ul>
+<li>Load: <code>df = pd.read_csv(file)</code></li>
+<li>Stats: <code>profile = df.describe(include='all')</code></li>
+<li>Types: <code>types = df.dtypes.to_dict()</code></li>
+</ul></li>
+<li><strong>Pattern Detection</strong>:
+<ul>
+<li>Trends: <code>slope, _ = scipy.stats.linregress(df['time'], df['value'])</code></li>
+<li>Outliers: <code>outliers = df[abs(stats.zscore(df['col'])) &gt; 3]</code></li>
+<li>Correlations: <code>corr = df.corr(method='pearson')</code></li>
+</ul></li>
+<li><strong>Statistical Testing</strong>:
+<ul>
+<li>Select: <code>test = 'ttest' if is_numerical(df['col']) else 'chi2'</code></li>
+<li>Run: <code>p_value = scipy.stats.ttest_ind(df['col1'], df['col2'])[1]</code></li>
+<li>Hypothesize: <code>hypo = f"Means differ (p={p_value})" if p_value &lt; 0.05 else "No difference"</code></li>
+</ul></li>
+<li><strong>Visualization</strong>:
+<ul>
+<li>Plot: <code>fig = go.Figure(go.Histogram(x=df['col']))</code></li>
+<li>Export: <code>fig.write_html('chart.html')</code></li>
+</ul></li>
+<li><strong>Narrative Generation</strong>:
+<ul>
+<li>Prompt: <code>"Summarize: {patterns}, {test_results}"</code></li>
+<li>Generate: <code>narrative = llm.generate(prompt, max_length=200)</code></li>
+</ul></li>
+<li><strong>Insight Ranking</strong>:
+<ul>
+<li>Rank: <code>insights.sort(key=lambda x: x['p_value'] if x['p_value'] else 1)</code></li>
+</ul></li>
+</ul>
+<h2 id="pseudocode">Pseudocode</h2>
+<p>```python class DataAnalysisAgent: def <strong>init</strong>(self): self.profiler = pandas self.stats = scipy.stats self.llm = HuggingFaceModel(“meta-llama/Llama-3-8b”) self.viz = plotly.graph_objects self.cache = RedisClient()</p>
+<pre><code>def profile(self, dataset):
+    df = self.profiler.read_csv(dataset) if dataset.endswith(&#39;.csv&#39;) else self.profiler.read_sql(dataset)
+    profile = df.describe(include=&#39;all&#39;).to_dict()
+    types = df.dtypes.to_dict()
+    self.cache.save(profile, dataset_id)
+    return profile, types
+
+def detect_patterns(self, df, profile):
+    patterns = []
+    for col in df.columns:
+        if profile[&#39;types&#39;][col] == &#39;numerical&#39;:
+            slope, _ = self.stats.linregress(df.index, df[col])
+            outliers = df[abs(self.stats.zscore(df[col])) &gt; 3]
+            patterns.append({&#39;type&#39;: &#39;trend&#39;, &#39;col&#39;: col, &#39;slope&#39;: slope})
+            patterns.append({&#39;type&#39;: &#39;outlier&#39;, &#39;col&#39;: col, &#39;values&#39;: outliers.tolist()})
+    corr = df.corr(method=&#39;pearson&#39;)
+    for c1, c2 in combinations(df.columns, 2):
+        if abs(corr.loc[c1, c2]) &gt; 0.3:
+            patterns.append({&#39;type&#39;: &#39;correlation&#39;, &#39;vars&#39;: [c1, c2], &#39;value&#39;: corr.loc[c1, c2]})
+    return patterns
+
+def test_stats(self, df, patterns):
+    results = []
+    for p in patterns:
+        if p[&#39;type&#39;] == &#39;correlation&#39;:
+            test = self.stats.pearsonr(df[p[&#39;vars&#39;][0]], df[p[&#39;vars&#39;][1]])
+            results.append({&#39;hypothesis&#39;: f&quot;{p[&#39;vars&#39;]} correlated&quot;, &#39;p_value&#39;: test[1], &#39;effect&#39;: test[0]})
+        elif p[&#39;type&#39;] == &#39;outlier&#39;:
+            results.append({&#39;hypothesis&#39;: f&quot;Outliers in {p[&#39;col&#39;]}&quot;, &#39;p_value&#39;: None})
+    return results
+
+def visualize(self, df, patterns, results):
+    figs = []
+    for p in patterns:
+        if p[&#39;type&#39;] == &#39;trend&#39;:
+            figs.append(self.viz.Figure(self.viz.Scatter(x=df.index, y=df[p[&#39;col&#39;]])))
+        elif p[&#39;type&#39;] == &#39;correlation&#39;:
+            figs.append(self.viz.Figure(self.viz.Heatmap(z=df.corr())))
+    return [fig.to_json() for fig in figs]
+
+def narrate(self, patterns, results):
+    prompt = f&quot;Summarize patterns: {patterns}\nTest results: {results}&quot;
+    narrative = self.llm.generate(prompt, max_length=200)
+    return narrative
+
+def rank_insights(self, patterns, results):
+    insights = patterns + [{&#39;type&#39;: &#39;test&#39;, &#39;data&#39;: r} for r in results]
+    return sorted(insights, key=lambda x: x.get(&#39;p_value&#39;, 1) or x.get(&#39;effect&#39;, 0), reverse=True)
+
+def analyze(self, dataset):
+    profile, types = self.profile(dataset)
+    patterns = self.detect_patterns(dataset, profile)
+    results = self.test_stats(dataset, patterns)
+    visuals = self.visualize(dataset, patterns, results)
+    narrative = self.narrate(patterns, results)
+    ranked = self.rank_insights(patterns, results)
+    return {&quot;profile&quot;: profile, &quot;insights&quot;: ranked, &quot;visuals&quot;: visuals, &quot;narrative&quot;: narrative}</code></pre>

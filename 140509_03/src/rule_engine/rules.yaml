@@ -1,0 +1,13 @@
+aml:
+  - name: "Large Cash Transaction"
+    condition: "amount > 10000"
+    points: 30
+
+fraud:
+  - name: "High Velocity"
+    condition: "velocity_score_1h >= 10"
+    points: 40
+  - name: "Amount Spike"
+    condition: "z_score >= 3"
+    points: 30
+

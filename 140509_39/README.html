@@ -1,0 +1,757 @@
+<h1 id="md---synthetic-data-generation-platform">140509_39.md - Synthetic Data Generation Platform</h1>
+<h2 id="readme">README</h2>
+<p><strong>Summary:</strong> Develop a platform that generates high-quality synthetic data for AI training while preserving statistical properties and privacy characteristics of original datasets.</p>
+<p><strong>Problem Statement:</strong> Organizations need high-quality training data but face privacy, cost, and availability constraints. Your task is to create a synthetic data generation platform that produces realistic datasets maintaining statistical properties, relationships, and patterns of original data while ensuring privacy protection. The system should support various data types, provide quality assessment, and enable data augmentation for improved model training.</p>
+<p><strong>Steps:</strong> - Design generative models for different data types (tabular, time-series, images, text) - Implement statistical property preservation and relationship modeling - Create privacy-preserving synthetic data generation with differential privacy - Build quality assessment metrics and validation frameworks - Develop data augmentation capabilities for improving model performance - Include integration with popular ML training pipelines and data platforms</p>
+<p><strong>Suggested Data Requirements:</strong> - Original datasets for synthesis reference and validation - Statistical property specifications and relationship definitions - Privacy requirements and synthetic data quality criteria - ML model training requirements and performance benchmarks</p>
+<p><strong>Themes:</strong> AI for Data &amp; Data for AI, Synthetic data generation</p>
+<hr />
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision">Product Vision</h3>
+<p>Create a comprehensive synthetic data generation platform that enables organizations to generate high-fidelity, privacy-preserving synthetic datasets for AI/ML training while maintaining statistical integrity and regulatory compliance.</p>
+<h3 id="target-users">Target Users</h3>
+<ul>
+<li><strong>Primary:</strong> Data Scientists, ML Engineers, Data Engineers</li>
+<li><strong>Secondary:</strong> Privacy Officers, Research Teams, Product Managers</li>
+<li><strong>Tertiary:</strong> Healthcare Organizations, Financial Services, Government Agencies</li>
+</ul>
+<h3 id="core-value-propositions">Core Value Propositions</h3>
+<ol type="1">
+<li><strong>Privacy Protection:</strong> Generate synthetic data without exposing sensitive information</li>
+<li><strong>Statistical Fidelity:</strong> Preserve complex relationships and statistical properties</li>
+<li><strong>Scale and Speed:</strong> Generate unlimited synthetic data at enterprise scale</li>
+<li><strong>Multi-Modal Support:</strong> Handle tabular, time-series, images, and text data</li>
+<li><strong>Regulatory Compliance:</strong> Built-in privacy guarantees and audit trails</li>
+</ol>
+<h3 id="key-features">Key Features</h3>
+<ol type="1">
+<li><strong>Multi-Type Data Generation:</strong> Tabular, time-series, images, text, and graph data</li>
+<li><strong>Advanced GANs and Diffusion Models:</strong> State-of-the-art generative architectures</li>
+<li><strong>Privacy-Preserving Techniques:</strong> Differential privacy and federated synthesis</li>
+<li><strong>Quality Assessment Suite:</strong> Comprehensive evaluation metrics and validation</li>
+<li><strong>Relationship Preservation:</strong> Complex dependency and correlation modeling</li>
+<li><strong>Integration APIs:</strong> Seamless integration with ML pipelines and data platforms</li>
+</ol>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li>Statistical fidelity: &gt;95% preservation of original data distributions</li>
+<li>Privacy protection: Formal privacy guarantees with configurable ε-δ bounds</li>
+<li>Generation speed: 10x faster than traditional data collection methods</li>
+<li>Model performance: &lt;5% accuracy loss when training on synthetic vs real data</li>
+<li>Adoption rate: 500+ datasets generated across 100+ organizations</li>
+</ul>
+<hr />
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<h3 id="core-functional-requirements">Core Functional Requirements</h3>
+<h4 id="f1-multi-modal-data-generation">F1: Multi-Modal Data Generation</h4>
+<ul>
+<li><strong>F1.1:</strong> Tabular data synthesis with complex relationships and constraints</li>
+<li><strong>F1.2:</strong> Time-series generation with temporal dependencies and seasonality</li>
+<li><strong>F1.3:</strong> Image synthesis with style consistency and label preservation</li>
+<li><strong>F1.4:</strong> Text generation maintaining semantic meaning and style</li>
+<li><strong>F1.5:</strong> Graph data generation preserving network structure and properties</li>
+</ul>
+<h4 id="f2-advanced-generative-models">F2: Advanced Generative Models</h4>
+<ul>
+<li><strong>F2.1:</strong> Tabular GANs (CTGAN, CopulaGAN, TableGAN) implementation</li>
+<li><strong>F2.2:</strong> Variational autoencoders for continuous data generation</li>
+<li><strong>F2.3:</strong> Diffusion models for high-fidelity image and text synthesis</li>
+<li><strong>F2.4:</strong> Transformer-based models for sequential data generation</li>
+<li><strong>F2.5:</strong> Hybrid architectures combining multiple generative approaches</li>
+</ul>
+<h4 id="f3-privacy-preserving-generation">F3: Privacy-Preserving Generation</h4>
+<ul>
+<li><strong>F3.1:</strong> Differential privacy mechanisms for all data types</li>
+<li><strong>F3.2:</strong> Federated synthetic data generation across organizations</li>
+<li><strong>F3.3:</strong> Membership inference attack protection</li>
+<li><strong>F3.4:</strong> Attribute inference attack mitigation</li>
+<li><strong>F3.5:</strong> Privacy budget management and accounting</li>
+</ul>
+<h4 id="f4-quality-assessment-and-validation">F4: Quality Assessment and Validation</h4>
+<ul>
+<li><strong>F4.1:</strong> Statistical similarity metrics (KS test, Chi-square, correlation)</li>
+<li><strong>F4.2:</strong> Machine learning efficacy evaluation (train on synthetic, test on real)</li>
+<li><strong>F4.3:</strong> Privacy risk assessment and re-identification analysis</li>
+<li><strong>F4.4:</strong> Domain-specific quality metrics and validation rules</li>
+<li><strong>F4.5:</strong> Automated quality reporting and recommendations</li>
+</ul>
+<h4 id="f5-relationship-and-constraint-modeling">F5: Relationship and Constraint Modeling</h4>
+<ul>
+<li><strong>F5.1:</strong> Complex dependency modeling between variables</li>
+<li><strong>F5.2:</strong> Conditional relationships and hierarchical structures</li>
+<li><strong>F5.3:</strong> Business rule and constraint enforcement</li>
+<li><strong>F5.4:</strong> Referential integrity maintenance across related tables</li>
+<li><strong>F5.5:</strong> Custom constraint specification and validation</li>
+</ul>
+<h4 id="f6-integration-and-deployment">F6: Integration and Deployment</h4>
+<ul>
+<li><strong>F6.1:</strong> REST APIs for synthetic data generation requests</li>
+<li><strong>F6.2:</strong> Python/R SDKs for seamless workflow integration</li>
+<li><strong>F6.3:</strong> Integration with popular ML platforms (MLflow, Kubeflow, SageMaker)</li>
+<li><strong>F6.4:</strong> Batch and streaming data generation capabilities</li>
+<li><strong>F6.5:</strong> Export to multiple formats (CSV, Parquet, JSON, HDF5)</li>
+</ul>
+<hr />
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li><strong>NFR-P1:</strong> Generation speed: 1M synthetic records per hour for tabular data</li>
+<li><strong>NFR-P2:</strong> Model training time: &lt;24 hours for datasets up to 10M records</li>
+<li><strong>NFR-P3:</strong> API response time: &lt;30 seconds for small batch requests (&lt;1K records)</li>
+<li><strong>NFR-P4:</strong> Memory efficiency: Generate datasets 10x larger than original</li>
+<li><strong>NFR-P5:</strong> Concurrent jobs: Support 100+ simultaneous generation tasks</li>
+</ul>
+<h3 id="quality-requirements">Quality Requirements</h3>
+<ul>
+<li><strong>NFR-Q1:</strong> Statistical fidelity: &gt;95% similarity in key statistical measures</li>
+<li><strong>NFR-Q2:</strong> ML utility preservation: &lt;5% accuracy degradation on downstream tasks</li>
+<li><strong>NFR-Q3:</strong> Privacy guarantee: Configurable ε-differential privacy (ε ∈ [0.1, 10])</li>
+<li><strong>NFR-Q4:</strong> Relationship preservation: &gt;90% correlation structure maintenance</li>
+<li><strong>NFR-Q5:</strong> Constraint satisfaction: 100% compliance with specified business rules</li>
+</ul>
+<h3 id="scalability-requirements">Scalability Requirements</h3>
+<ul>
+<li><strong>NFR-S1:</strong> Handle datasets up to 1TB in size</li>
+<li><strong>NFR-S2:</strong> Support 1000+ concurrent users across multi-tenant platform</li>
+<li><strong>NFR-S3:</strong> Horizontal scaling across GPU clusters for model training</li>
+<li><strong>NFR-S4:</strong> Auto-scaling based on generation queue length</li>
+<li><strong>NFR-S5:</strong> Global deployment with data residency compliance</li>
+</ul>
+<h3 id="privacy-and-security-requirements">Privacy and Security Requirements</h3>
+<ul>
+<li><strong>NFR-PR1:</strong> Formal privacy guarantees with mathematical proofs</li>
+<li><strong>NFR-PR2:</strong> Zero original data leakage in synthetic outputs</li>
+<li><strong>NFR-PR3:</strong> Secure multi-party computation for federated synthesis</li>
+<li><strong>NFR-PR4:</strong> End-to-end encryption for all data processing</li>
+<li><strong>NFR-PR5:</strong> Audit trails for all generation activities</li>
+</ul>
+<hr />
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<pre class="mermaid"><code>graph TB
+    subgraph &quot;Client Interfaces&quot;
+        WEB_UI[Web Interface]
+        PYTHON_SDK[Python SDK]
+        R_SDK[R SDK]
+        REST_API[REST API]
+    end
+    
+    subgraph &quot;API Gateway &amp; Security&quot;
+        API_GW[API Gateway]
+        AUTH[Authentication]
+        RATE_LIMIT[Rate Limiter]
+        PRIVACY_GUARD[Privacy Guard]
+    end
+    
+    subgraph &quot;Core Generation Services&quot;
+        DATA_PROFILER[Data Profiler]
+        MODEL_SELECTOR[Model Selector]
+        GENERATION_ENGINE[Generation Engine]
+        QUALITY_ASSESSOR[Quality Assessor]
+        PRIVACY_ENGINE[Privacy Engine]
+    end
+    
+    subgraph &quot;Generative Models&quot;
+        TABULAR_GAN[Tabular GANs]
+        VAE[Variational Autoencoders]
+        DIFFUSION[Diffusion Models]
+        TRANSFORMERS[Transformer Models]
+        HYBRID_MODELS[Hybrid Architectures]
+    end
+    
+    subgraph &quot;Quality &amp; Privacy Modules&quot;
+        STAT_VALIDATOR[Statistical Validator]
+        ML_EVALUATOR[ML Utility Evaluator]
+        PRIVACY_ANALYZER[Privacy Risk Analyzer]
+        CONSTRAINT_CHECKER[Constraint Checker]
+        RELATIONSHIP_VALIDATOR[Relationship Validator]
+    end
+    
+    subgraph &quot;Training Infrastructure&quot;
+        GPU_CLUSTER[GPU Training Cluster]
+        MODEL_TRAINER[Model Training Service]
+        HYPERPARAMETER_OPT[Hyperparameter Optimizer]
+        EXPERIMENT_TRACKER[Experiment Tracker]
+    end
+    
+    subgraph &quot;Data Storage&quot;
+        POSTGRES[PostgreSQL - Metadata]
+        MONGODB[MongoDB - Configurations]
+        S3[Object Storage - Data &amp; Models]
+        REDIS[Redis - Cache]
+        VECTOR_DB[Vector Database - Embeddings]
+    end
+    
+    subgraph &quot;External Integrations&quot;
+        ML_PLATFORMS[ML Platforms]
+        DATA_SOURCES[Data Sources]
+        CLOUD_STORAGE[Cloud Storage APIs]
+        MONITORING[Monitoring Systems]
+    end
+    
+    WEB_UI --&gt; API_GW
+    PYTHON_SDK --&gt; API_GW
+    R_SDK --&gt; API_GW
+    REST_API --&gt; API_GW
+    
+    API_GW --&gt; AUTH
+    API_GW --&gt; RATE_LIMIT
+    API_GW --&gt; PRIVACY_GUARD
+    
+    API_GW --&gt; DATA_PROFILER
+    API_GW --&gt; MODEL_SELECTOR
+    API_GW --&gt; GENERATION_ENGINE
+    API_GW --&gt; QUALITY_ASSESSOR
+    API_GW --&gt; PRIVACY_ENGINE
+    
+    MODEL_SELECTOR --&gt; TABULAR_GAN
+    MODEL_SELECTOR --&gt; VAE
+    MODEL_SELECTOR --&gt; DIFFUSION
+    MODEL_SELECTOR --&gt; TRANSFORMERS
+    MODEL_SELECTOR --&gt; HYBRID_MODELS
+    
+    QUALITY_ASSESSOR --&gt; STAT_VALIDATOR
+    QUALITY_ASSESSOR --&gt; ML_EVALUATOR
+    PRIVACY_ENGINE --&gt; PRIVACY_ANALYZER
+    GENERATION_ENGINE --&gt; CONSTRAINT_CHECKER
+    GENERATION_ENGINE --&gt; RELATIONSHIP_VALIDATOR
+    
+    GENERATION_ENGINE --&gt; GPU_CLUSTER
+    MODEL_SELECTOR --&gt; MODEL_TRAINER
+    MODEL_TRAINER --&gt; HYPERPARAMETER_OPT
+    MODEL_TRAINER --&gt; EXPERIMENT_TRACKER
+    
+    DATA_PROFILER --&gt; POSTGRES
+    MODEL_SELECTOR --&gt; MONGODB
+    GENERATION_ENGINE --&gt; S3
+    QUALITY_ASSESSOR --&gt; REDIS
+    PRIVACY_ENGINE --&gt; VECTOR_DB
+    
+    GENERATION_ENGINE --&gt; ML_PLATFORMS
+    DATA_PROFILER --&gt; DATA_SOURCES
+    GENERATION_ENGINE --&gt; CLOUD_STORAGE
+    QUALITY_ASSESSOR --&gt; MONITORING</code></pre>
+<hr />
+<h2 id="hld-high-level-design">HLD (High Level Design)</h2>
+<h3 id="core-generation-architecture">Core Generation Architecture</h3>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">class</span> SyntheticDataPlatform:</a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-3" title="3">        <span class="va">self</span>.data_profiler <span class="op">=</span> DataProfiler()</a>
+<a class="sourceLine" id="cb2-4" title="4">        <span class="va">self</span>.model_selector <span class="op">=</span> ModelSelector()</a>
+<a class="sourceLine" id="cb2-5" title="5">        <span class="va">self</span>.generation_engine <span class="op">=</span> GenerationEngine()</a>
+<a class="sourceLine" id="cb2-6" title="6">        <span class="va">self</span>.quality_assessor <span class="op">=</span> QualityAssessor()</a>
+<a class="sourceLine" id="cb2-7" title="7">        <span class="va">self</span>.privacy_engine <span class="op">=</span> PrivacyEngine()</a>
+<a class="sourceLine" id="cb2-8" title="8">        </a>
+<a class="sourceLine" id="cb2-9" title="9">    <span class="cf">async</span> <span class="kw">def</span> generate_synthetic_data(<span class="va">self</span>, generation_request):</a>
+<a class="sourceLine" id="cb2-10" title="10">        <span class="co"># Step 1: Profile original data</span></a>
+<a class="sourceLine" id="cb2-11" title="11">        data_profile <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.data_profiler.profile_dataset(</a>
+<a class="sourceLine" id="cb2-12" title="12">            generation_request.source_data</a>
+<a class="sourceLine" id="cb2-13" title="13">        )</a>
+<a class="sourceLine" id="cb2-14" title="14">        </a>
+<a class="sourceLine" id="cb2-15" title="15">        <span class="co"># Step 2: Select optimal generative model</span></a>
+<a class="sourceLine" id="cb2-16" title="16">        model_config <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.model_selector.select_model(</a>
+<a class="sourceLine" id="cb2-17" title="17">            data_profile, generation_request.requirements</a>
+<a class="sourceLine" id="cb2-18" title="18">        )</a>
+<a class="sourceLine" id="cb2-19" title="19">        </a>
+<a class="sourceLine" id="cb2-20" title="20">        <span class="co"># Step 3: Apply privacy constraints</span></a>
+<a class="sourceLine" id="cb2-21" title="21">        privacy_config <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.privacy_engine.configure_privacy(</a>
+<a class="sourceLine" id="cb2-22" title="22">            generation_request.privacy_requirements, data_profile</a>
+<a class="sourceLine" id="cb2-23" title="23">        )</a>
+<a class="sourceLine" id="cb2-24" title="24">        </a>
+<a class="sourceLine" id="cb2-25" title="25">        <span class="co"># Step 4: Generate synthetic data</span></a>
+<a class="sourceLine" id="cb2-26" title="26">        synthetic_data <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.generation_engine.generate(</a>
+<a class="sourceLine" id="cb2-27" title="27">            source_data<span class="op">=</span>generation_request.source_data,</a>
+<a class="sourceLine" id="cb2-28" title="28">            model_config<span class="op">=</span>model_config,</a>
+<a class="sourceLine" id="cb2-29" title="29">            privacy_config<span class="op">=</span>privacy_config,</a>
+<a class="sourceLine" id="cb2-30" title="30">            generation_params<span class="op">=</span>generation_request.parameters</a>
+<a class="sourceLine" id="cb2-31" title="31">        )</a>
+<a class="sourceLine" id="cb2-32" title="32">        </a>
+<a class="sourceLine" id="cb2-33" title="33">        <span class="co"># Step 5: Quality assessment</span></a>
+<a class="sourceLine" id="cb2-34" title="34">        quality_report <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.quality_assessor.assess_quality(</a>
+<a class="sourceLine" id="cb2-35" title="35">            original_data<span class="op">=</span>generation_request.source_data,</a>
+<a class="sourceLine" id="cb2-36" title="36">            synthetic_data<span class="op">=</span>synthetic_data,</a>
+<a class="sourceLine" id="cb2-37" title="37">            assessment_criteria<span class="op">=</span>generation_request.quality_criteria</a>
+<a class="sourceLine" id="cb2-38" title="38">        )</a>
+<a class="sourceLine" id="cb2-39" title="39">        </a>
+<a class="sourceLine" id="cb2-40" title="40">        <span class="co"># Step 6: Privacy risk analysis</span></a>
+<a class="sourceLine" id="cb2-41" title="41">        privacy_report <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.privacy_engine.analyze_privacy_risks(</a>
+<a class="sourceLine" id="cb2-42" title="42">            original_data<span class="op">=</span>generation_request.source_data,</a>
+<a class="sourceLine" id="cb2-43" title="43">            synthetic_data<span class="op">=</span>synthetic_data</a>
+<a class="sourceLine" id="cb2-44" title="44">        )</a>
+<a class="sourceLine" id="cb2-45" title="45">        </a>
+<a class="sourceLine" id="cb2-46" title="46">        <span class="cf">return</span> SyntheticDataResult(</a>
+<a class="sourceLine" id="cb2-47" title="47">            synthetic_data<span class="op">=</span>synthetic_data,</a>
+<a class="sourceLine" id="cb2-48" title="48">            quality_report<span class="op">=</span>quality_report,</a>
+<a class="sourceLine" id="cb2-49" title="49">            privacy_report<span class="op">=</span>privacy_report,</a>
+<a class="sourceLine" id="cb2-50" title="50">            generation_metadata<span class="op">=</span><span class="va">self</span>.extract_generation_metadata()</a>
+<a class="sourceLine" id="cb2-51" title="51">        )</a>
+<a class="sourceLine" id="cb2-52" title="52"></a>
+<a class="sourceLine" id="cb2-53" title="53"><span class="kw">class</span> DataProfiler:</a>
+<a class="sourceLine" id="cb2-54" title="54">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-55" title="55">        <span class="va">self</span>.statistical_analyzer <span class="op">=</span> StatisticalAnalyzer()</a>
+<a class="sourceLine" id="cb2-56" title="56">        <span class="va">self</span>.relationship_detector <span class="op">=</span> RelationshipDetector()</a>
+<a class="sourceLine" id="cb2-57" title="57">        <span class="va">self</span>.constraint_extractor <span class="op">=</span> ConstraintExtractor()</a>
+<a class="sourceLine" id="cb2-58" title="58">        </a>
+<a class="sourceLine" id="cb2-59" title="59">    <span class="cf">async</span> <span class="kw">def</span> profile_dataset(<span class="va">self</span>, dataset):</a>
+<a class="sourceLine" id="cb2-60" title="60">        <span class="co"># Basic statistical profiling</span></a>
+<a class="sourceLine" id="cb2-61" title="61">        statistical_profile <span class="op">=</span> <span class="va">self</span>.statistical_analyzer.analyze(dataset)</a>
+<a class="sourceLine" id="cb2-62" title="62">        </a>
+<a class="sourceLine" id="cb2-63" title="63">        <span class="co"># Relationship detection</span></a>
+<a class="sourceLine" id="cb2-64" title="64">        relationships <span class="op">=</span> <span class="va">self</span>.relationship_detector.detect_relationships(dataset)</a>
+<a class="sourceLine" id="cb2-65" title="65">        </a>
+<a class="sourceLine" id="cb2-66" title="66">        <span class="co"># Constraint extraction</span></a>
+<a class="sourceLine" id="cb2-67" title="67">        constraints <span class="op">=</span> <span class="va">self</span>.constraint_extractor.extract_constraints(dataset)</a>
+<a class="sourceLine" id="cb2-68" title="68">        </a>
+<a class="sourceLine" id="cb2-69" title="69">        <span class="co"># Data type analysis</span></a>
+<a class="sourceLine" id="cb2-70" title="70">        column_types <span class="op">=</span> <span class="va">self</span>.analyze_column_types(dataset)</a>
+<a class="sourceLine" id="cb2-71" title="71">        </a>
+<a class="sourceLine" id="cb2-72" title="72">        <span class="cf">return</span> DataProfile(</a>
+<a class="sourceLine" id="cb2-73" title="73">            statistical_summary<span class="op">=</span>statistical_profile,</a>
+<a class="sourceLine" id="cb2-74" title="74">            relationships<span class="op">=</span>relationships,</a>
+<a class="sourceLine" id="cb2-75" title="75">            constraints<span class="op">=</span>constraints,</a>
+<a class="sourceLine" id="cb2-76" title="76">            column_types<span class="op">=</span>column_types,</a>
+<a class="sourceLine" id="cb2-77" title="77">            data_shape<span class="op">=</span>dataset.shape,</a>
+<a class="sourceLine" id="cb2-78" title="78">            missing_patterns<span class="op">=</span><span class="va">self</span>.analyze_missing_patterns(dataset)</a>
+<a class="sourceLine" id="cb2-79" title="79">        )</a>
+<a class="sourceLine" id="cb2-80" title="80"></a>
+<a class="sourceLine" id="cb2-81" title="81"><span class="kw">class</span> GenerationEngine:</a>
+<a class="sourceLine" id="cb2-82" title="82">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-83" title="83">        <span class="va">self</span>.model_factory <span class="op">=</span> ModelFactory()</a>
+<a class="sourceLine" id="cb2-84" title="84">        <span class="va">self</span>.constraint_enforcer <span class="op">=</span> ConstraintEnforcer()</a>
+<a class="sourceLine" id="cb2-85" title="85">        <span class="va">self</span>.relationship_preserver <span class="op">=</span> RelationshipPreserver()</a>
+<a class="sourceLine" id="cb2-86" title="86">        </a>
+<a class="sourceLine" id="cb2-87" title="87">    <span class="cf">async</span> <span class="kw">def</span> generate(<span class="va">self</span>, source_data, model_config, privacy_config, generation_params):</a>
+<a class="sourceLine" id="cb2-88" title="88">        <span class="co"># Initialize generative model</span></a>
+<a class="sourceLine" id="cb2-89" title="89">        model <span class="op">=</span> <span class="va">self</span>.model_factory.create_model(model_config)</a>
+<a class="sourceLine" id="cb2-90" title="90">        </a>
+<a class="sourceLine" id="cb2-91" title="91">        <span class="co"># Apply privacy-preserving training if needed</span></a>
+<a class="sourceLine" id="cb2-92" title="92">        <span class="cf">if</span> privacy_config.use_differential_privacy:</a>
+<a class="sourceLine" id="cb2-93" title="93">            model <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.apply_differential_privacy(</a>
+<a class="sourceLine" id="cb2-94" title="94">                model, source_data, privacy_config</a>
+<a class="sourceLine" id="cb2-95" title="95">            )</a>
+<a class="sourceLine" id="cb2-96" title="96">        </a>
+<a class="sourceLine" id="cb2-97" title="97">        <span class="co"># Train generative model</span></a>
+<a class="sourceLine" id="cb2-98" title="98">        trained_model <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.train_generative_model(</a>
+<a class="sourceLine" id="cb2-99" title="99">            model, source_data, generation_params.training_config</a>
+<a class="sourceLine" id="cb2-100" title="100">        )</a>
+<a class="sourceLine" id="cb2-101" title="101">        </a>
+<a class="sourceLine" id="cb2-102" title="102">        <span class="co"># Generate synthetic samples</span></a>
+<a class="sourceLine" id="cb2-103" title="103">        raw_synthetic_data <span class="op">=</span> <span class="cf">await</span> trained_model.generate(</a>
+<a class="sourceLine" id="cb2-104" title="104">            num_samples<span class="op">=</span>generation_params.num_samples,</a>
+<a class="sourceLine" id="cb2-105" title="105">            seed<span class="op">=</span>generation_params.seed</a>
+<a class="sourceLine" id="cb2-106" title="106">        )</a>
+<a class="sourceLine" id="cb2-107" title="107">        </a>
+<a class="sourceLine" id="cb2-108" title="108">        <span class="co"># Apply constraint enforcement</span></a>
+<a class="sourceLine" id="cb2-109" title="109">        constrained_data <span class="op">=</span> <span class="va">self</span>.constraint_enforcer.enforce_constraints(</a>
+<a class="sourceLine" id="cb2-110" title="110">            raw_synthetic_data, model_config.constraints</a>
+<a class="sourceLine" id="cb2-111" title="111">        )</a>
+<a class="sourceLine" id="cb2-112" title="112">        </a>
+<a class="sourceLine" id="cb2-113" title="113">        <span class="co"># Preserve relationships</span></a>
+<a class="sourceLine" id="cb2-114" title="114">        final_synthetic_data <span class="op">=</span> <span class="va">self</span>.relationship_preserver.preserve_relationships(</a>
+<a class="sourceLine" id="cb2-115" title="115">            constrained_data, model_config.relationships</a>
+<a class="sourceLine" id="cb2-116" title="116">        )</a>
+<a class="sourceLine" id="cb2-117" title="117">        </a>
+<a class="sourceLine" id="cb2-118" title="118">        <span class="cf">return</span> final_synthetic_data</a>
+<a class="sourceLine" id="cb2-119" title="119"></a>
+<a class="sourceLine" id="cb2-120" title="120"><span class="kw">class</span> TabularGAN:</a>
+<a class="sourceLine" id="cb2-121" title="121">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, model_type<span class="op">=</span><span class="st">&#39;CTGAN&#39;</span>):</a>
+<a class="sourceLine" id="cb2-122" title="122">        <span class="va">self</span>.model_type <span class="op">=</span> model_type</a>
+<a class="sourceLine" id="cb2-123" title="123">        <span class="va">self</span>.generator <span class="op">=</span> <span class="va">None</span></a>
+<a class="sourceLine" id="cb2-124" title="124">        <span class="va">self</span>.discriminator <span class="op">=</span> <span class="va">None</span></a>
+<a class="sourceLine" id="cb2-125" title="125">        <span class="va">self</span>.transformer <span class="op">=</span> DataTransformer()</a>
+<a class="sourceLine" id="cb2-126" title="126">        </a>
+<a class="sourceLine" id="cb2-127" title="127">    <span class="cf">async</span> <span class="kw">def</span> train(<span class="va">self</span>, data, training_config):</a>
+<a class="sourceLine" id="cb2-128" title="128">        <span class="co"># Transform data for GAN training</span></a>
+<a class="sourceLine" id="cb2-129" title="129">        transformed_data <span class="op">=</span> <span class="va">self</span>.transformer.fit_transform(data)</a>
+<a class="sourceLine" id="cb2-130" title="130">        </a>
+<a class="sourceLine" id="cb2-131" title="131">        <span class="co"># Initialize generator and discriminator</span></a>
+<a class="sourceLine" id="cb2-132" title="132">        <span class="va">self</span>.generator <span class="op">=</span> <span class="va">self</span>.build_generator(transformed_data.shape[<span class="dv">1</span>])</a>
+<a class="sourceLine" id="cb2-133" title="133">        <span class="va">self</span>.discriminator <span class="op">=</span> <span class="va">self</span>.build_discriminator(transformed_data.shape[<span class="dv">1</span>])</a>
+<a class="sourceLine" id="cb2-134" title="134">        </a>
+<a class="sourceLine" id="cb2-135" title="135">        <span class="co"># Training loop</span></a>
+<a class="sourceLine" id="cb2-136" title="136">        <span class="cf">for</span> epoch <span class="kw">in</span> <span class="bu">range</span>(training_config.epochs):</a>
+<a class="sourceLine" id="cb2-137" title="137">            <span class="co"># Train discriminator</span></a>
+<a class="sourceLine" id="cb2-138" title="138">            d_loss <span class="op">=</span> <span class="va">self</span>.train_discriminator_step(transformed_data)</a>
+<a class="sourceLine" id="cb2-139" title="139">            </a>
+<a class="sourceLine" id="cb2-140" title="140">            <span class="co"># Train generator</span></a>
+<a class="sourceLine" id="cb2-141" title="141">            g_loss <span class="op">=</span> <span class="va">self</span>.train_generator_step(transformed_data.shape[<span class="dv">0</span>])</a>
+<a class="sourceLine" id="cb2-142" title="142">            </a>
+<a class="sourceLine" id="cb2-143" title="143">            <span class="cf">if</span> epoch <span class="op">%</span> <span class="dv">100</span> <span class="op">==</span> <span class="dv">0</span>:</a>
+<a class="sourceLine" id="cb2-144" title="144">                <span class="bu">print</span>(<span class="ss">f&quot;Epoch </span><span class="sc">{</span>epoch<span class="sc">}</span><span class="ss">: D_loss=</span><span class="sc">{</span>d_loss<span class="sc">:.4f}</span><span class="ss">, G_loss=</span><span class="sc">{</span>g_loss<span class="sc">:.4f}</span><span class="ss">&quot;</span>)</a>
+<a class="sourceLine" id="cb2-145" title="145">        </a>
+<a class="sourceLine" id="cb2-146" title="146">        <span class="cf">return</span> <span class="va">self</span></a>
+<a class="sourceLine" id="cb2-147" title="147">    </a>
+<a class="sourceLine" id="cb2-148" title="148">    <span class="cf">async</span> <span class="kw">def</span> generate(<span class="va">self</span>, num_samples, seed<span class="op">=</span><span class="va">None</span>):</a>
+<a class="sourceLine" id="cb2-149" title="149">        <span class="cf">if</span> seed <span class="kw">is</span> <span class="kw">not</span> <span class="va">None</span>:</a>
+<a class="sourceLine" id="cb2-150" title="150">            torch.manual_seed(seed)</a>
+<a class="sourceLine" id="cb2-151" title="151">            </a>
+<a class="sourceLine" id="cb2-152" title="152">        <span class="co"># Generate synthetic samples</span></a>
+<a class="sourceLine" id="cb2-153" title="153">        <span class="cf">with</span> torch.no_grad():</a>
+<a class="sourceLine" id="cb2-154" title="154">            noise <span class="op">=</span> torch.randn(num_samples, <span class="va">self</span>.generator.input_dim)</a>
+<a class="sourceLine" id="cb2-155" title="155">            synthetic_data <span class="op">=</span> <span class="va">self</span>.generator(noise)</a>
+<a class="sourceLine" id="cb2-156" title="156">            </a>
+<a class="sourceLine" id="cb2-157" title="157">        <span class="co"># Inverse transform to original space</span></a>
+<a class="sourceLine" id="cb2-158" title="158">        synthetic_df <span class="op">=</span> <span class="va">self</span>.transformer.inverse_transform(synthetic_data)</a>
+<a class="sourceLine" id="cb2-159" title="159">        </a>
+<a class="sourceLine" id="cb2-160" title="160">        <span class="cf">return</span> synthetic_df</a>
+<a class="sourceLine" id="cb2-161" title="161"></a>
+<a class="sourceLine" id="cb2-162" title="162"><span class="kw">class</span> DifferentialPrivacySynthesis:</a>
+<a class="sourceLine" id="cb2-163" title="163">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-164" title="164">        <span class="va">self</span>.privacy_accountant <span class="op">=</span> PrivacyAccountant()</a>
+<a class="sourceLine" id="cb2-165" title="165">        <span class="va">self</span>.noise_mechanisms <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb2-166" title="166">            <span class="st">&#39;gaussian&#39;</span>: GaussianMechanism(),</a>
+<a class="sourceLine" id="cb2-167" title="167">            <span class="st">&#39;laplacian&#39;</span>: LaplacianMechanism()</a>
+<a class="sourceLine" id="cb2-168" title="168">        }</a>
+<a class="sourceLine" id="cb2-169" title="169">        </a>
+<a class="sourceLine" id="cb2-170" title="170">    <span class="cf">async</span> <span class="kw">def</span> generate_private_synthetic_data(<span class="va">self</span>, data, epsilon, delta, mechanism<span class="op">=</span><span class="st">&#39;gaussian&#39;</span>):</a>
+<a class="sourceLine" id="cb2-171" title="171">        <span class="co"># Initialize privacy accounting</span></a>
+<a class="sourceLine" id="cb2-172" title="172">        <span class="va">self</span>.privacy_accountant.initialize(epsilon, delta)</a>
+<a class="sourceLine" id="cb2-173" title="173">        </a>
+<a class="sourceLine" id="cb2-174" title="174">        <span class="co"># Compute data sensitivity</span></a>
+<a class="sourceLine" id="cb2-175" title="175">        sensitivity <span class="op">=</span> <span class="va">self</span>.compute_data_sensitivity(data)</a>
+<a class="sourceLine" id="cb2-176" title="176">        </a>
+<a class="sourceLine" id="cb2-177" title="177">        <span class="co"># Select noise mechanism</span></a>
+<a class="sourceLine" id="cb2-178" title="178">        noise_mechanism <span class="op">=</span> <span class="va">self</span>.noise_mechanisms[mechanism]</a>
+<a class="sourceLine" id="cb2-179" title="179">        </a>
+<a class="sourceLine" id="cb2-180" title="180">        <span class="co"># Apply noise to sufficient statistics</span></a>
+<a class="sourceLine" id="cb2-181" title="181">        noisy_statistics <span class="op">=</span> noise_mechanism.add_noise(</a>
+<a class="sourceLine" id="cb2-182" title="182">            <span class="va">self</span>.compute_sufficient_statistics(data),</a>
+<a class="sourceLine" id="cb2-183" title="183">            sensitivity,</a>
+<a class="sourceLine" id="cb2-184" title="184">            epsilon,</a>
+<a class="sourceLine" id="cb2-185" title="185">            delta</a>
+<a class="sourceLine" id="cb2-186" title="186">        )</a>
+<a class="sourceLine" id="cb2-187" title="187">        </a>
+<a class="sourceLine" id="cb2-188" title="188">        <span class="co"># Generate synthetic data from noisy statistics</span></a>
+<a class="sourceLine" id="cb2-189" title="189">        synthetic_data <span class="op">=</span> <span class="va">self</span>.reconstruct_from_statistics(</a>
+<a class="sourceLine" id="cb2-190" title="190">            noisy_statistics, data.shape[<span class="dv">0</span>] <span class="op">*</span> <span class="dv">2</span>  <span class="co"># Generate 2x samples</span></a>
+<a class="sourceLine" id="cb2-191" title="191">        )</a>
+<a class="sourceLine" id="cb2-192" title="192">        </a>
+<a class="sourceLine" id="cb2-193" title="193">        <span class="co"># Update privacy accounting</span></a>
+<a class="sourceLine" id="cb2-194" title="194">        <span class="va">self</span>.privacy_accountant.spend_budget(epsilon, delta)</a>
+<a class="sourceLine" id="cb2-195" title="195">        </a>
+<a class="sourceLine" id="cb2-196" title="196">        <span class="cf">return</span> PrivateSyntheticResult(</a>
+<a class="sourceLine" id="cb2-197" title="197">            synthetic_data<span class="op">=</span>synthetic_data,</a>
+<a class="sourceLine" id="cb2-198" title="198">            privacy_spent<span class="op">=</span><span class="va">self</span>.privacy_accountant.get_spent_budget(),</a>
+<a class="sourceLine" id="cb2-199" title="199">            privacy_guarantee<span class="op">=</span><span class="ss">f&quot;(</span><span class="sc">{</span>epsilon<span class="sc">}</span><span class="ss">, </span><span class="sc">{</span>delta<span class="sc">}</span><span class="ss">)-differential privacy&quot;</span></a>
+<a class="sourceLine" id="cb2-200" title="200">        )</a></code></pre></div>
+<hr />
+<h2 id="lld-low-level-design">LLD (Low Level Design)</h2>
+<h3 id="advanced-quality-assessment">Advanced Quality Assessment</h3>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">class</span> ComprehensiveQualityAssessor:</a>
+<a class="sourceLine" id="cb3-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb3-3" title="3">        <span class="va">self</span>.statistical_tests <span class="op">=</span> StatisticalTestSuite()</a>
+<a class="sourceLine" id="cb3-4" title="4">        <span class="va">self</span>.ml_evaluator <span class="op">=</span> MLUtilityEvaluator()</a>
+<a class="sourceLine" id="cb3-5" title="5">        <span class="va">self</span>.privacy_analyzer <span class="op">=</span> PrivacyRiskAnalyzer()</a>
+<a class="sourceLine" id="cb3-6" title="6">        </a>
+<a class="sourceLine" id="cb3-7" title="7">    <span class="cf">async</span> <span class="kw">def</span> comprehensive_assessment(<span class="va">self</span>, original_data, synthetic_data, assessment_config):</a>
+<a class="sourceLine" id="cb3-8" title="8">        quality_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb3-9" title="9">        </a>
+<a class="sourceLine" id="cb3-10" title="10">        <span class="co"># Statistical fidelity assessment</span></a>
+<a class="sourceLine" id="cb3-11" title="11">        statistical_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.assess_statistical_fidelity(</a>
+<a class="sourceLine" id="cb3-12" title="12">            original_data, synthetic_data</a>
+<a class="sourceLine" id="cb3-13" title="13">        )</a>
+<a class="sourceLine" id="cb3-14" title="14">        quality_results[<span class="st">&#39;statistical&#39;</span>] <span class="op">=</span> statistical_results</a>
+<a class="sourceLine" id="cb3-15" title="15">        </a>
+<a class="sourceLine" id="cb3-16" title="16">        <span class="co"># ML utility assessment</span></a>
+<a class="sourceLine" id="cb3-17" title="17">        ml_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.assess_ml_utility(</a>
+<a class="sourceLine" id="cb3-18" title="18">            original_data, synthetic_data, assessment_config.ml_tasks</a>
+<a class="sourceLine" id="cb3-19" title="19">        )</a>
+<a class="sourceLine" id="cb3-20" title="20">        quality_results[<span class="st">&#39;ml_utility&#39;</span>] <span class="op">=</span> ml_results</a>
+<a class="sourceLine" id="cb3-21" title="21">        </a>
+<a class="sourceLine" id="cb3-22" title="22">        <span class="co"># Privacy risk assessment</span></a>
+<a class="sourceLine" id="cb3-23" title="23">        privacy_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.assess_privacy_risks(</a>
+<a class="sourceLine" id="cb3-24" title="24">            original_data, synthetic_data</a>
+<a class="sourceLine" id="cb3-25" title="25">        )</a>
+<a class="sourceLine" id="cb3-26" title="26">        quality_results[<span class="st">&#39;privacy&#39;</span>] <span class="op">=</span> privacy_results</a>
+<a class="sourceLine" id="cb3-27" title="27">        </a>
+<a class="sourceLine" id="cb3-28" title="28">        <span class="co"># Constraint satisfaction assessment</span></a>
+<a class="sourceLine" id="cb3-29" title="29">        constraint_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.assess_constraint_satisfaction(</a>
+<a class="sourceLine" id="cb3-30" title="30">            synthetic_data, assessment_config.constraints</a>
+<a class="sourceLine" id="cb3-31" title="31">        )</a>
+<a class="sourceLine" id="cb3-32" title="32">        quality_results[<span class="st">&#39;constraints&#39;</span>] <span class="op">=</span> constraint_results</a>
+<a class="sourceLine" id="cb3-33" title="33">        </a>
+<a class="sourceLine" id="cb3-34" title="34">        <span class="co"># Overall quality score</span></a>
+<a class="sourceLine" id="cb3-35" title="35">        overall_score <span class="op">=</span> <span class="va">self</span>.calculate_overall_quality_score(quality_results)</a>
+<a class="sourceLine" id="cb3-36" title="36">        </a>
+<a class="sourceLine" id="cb3-37" title="37">        <span class="cf">return</span> QualityAssessmentResult(</a>
+<a class="sourceLine" id="cb3-38" title="38">            overall_score<span class="op">=</span>overall_score,</a>
+<a class="sourceLine" id="cb3-39" title="39">            detailed_results<span class="op">=</span>quality_results,</a>
+<a class="sourceLine" id="cb3-40" title="40">            recommendations<span class="op">=</span><span class="va">self</span>.generate_quality_recommendations(quality_results)</a>
+<a class="sourceLine" id="cb3-41" title="41">        )</a>
+<a class="sourceLine" id="cb3-42" title="42">    </a>
+<a class="sourceLine" id="cb3-43" title="43">    <span class="cf">async</span> <span class="kw">def</span> assess_statistical_fidelity(<span class="va">self</span>, original_data, synthetic_data):</a>
+<a class="sourceLine" id="cb3-44" title="44">        results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb3-45" title="45">        </a>
+<a class="sourceLine" id="cb3-46" title="46">        <span class="co"># Univariate distribution comparison</span></a>
+<a class="sourceLine" id="cb3-47" title="47">        <span class="cf">for</span> column <span class="kw">in</span> original_data.columns:</a>
+<a class="sourceLine" id="cb3-48" title="48">            <span class="cf">if</span> original_data[column].dtype <span class="kw">in</span> [<span class="st">&#39;int64&#39;</span>, <span class="st">&#39;float64&#39;</span>]:</a>
+<a class="sourceLine" id="cb3-49" title="49">                <span class="co"># KS test for continuous variables</span></a>
+<a class="sourceLine" id="cb3-50" title="50">                ks_stat, ks_pvalue <span class="op">=</span> stats.kstest(</a>
+<a class="sourceLine" id="cb3-51" title="51">                    original_data[column].dropna(),</a>
+<a class="sourceLine" id="cb3-52" title="52">                    synthetic_data[column].dropna()</a>
+<a class="sourceLine" id="cb3-53" title="53">                )</a>
+<a class="sourceLine" id="cb3-54" title="54">                results[<span class="ss">f&#39;</span><span class="sc">{</span>column<span class="sc">}</span><span class="ss">_ks_test&#39;</span>] <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb3-55" title="55">                    <span class="st">&#39;statistic&#39;</span>: ks_stat,</a>
+<a class="sourceLine" id="cb3-56" title="56">                    <span class="st">&#39;p_value&#39;</span>: ks_pvalue,</a>
+<a class="sourceLine" id="cb3-57" title="57">                    <span class="st">&#39;similar&#39;</span>: ks_pvalue <span class="op">&gt;</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb3-58" title="58">                }</a>
+<a class="sourceLine" id="cb3-59" title="59">            <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb3-60" title="60">                <span class="co"># Chi-square test for categorical variables</span></a>
+<a class="sourceLine" id="cb3-61" title="61">                orig_counts <span class="op">=</span> original_data[column].value_counts()</a>
+<a class="sourceLine" id="cb3-62" title="62">                synth_counts <span class="op">=</span> synthetic_data[column].value_counts()</a>
+<a class="sourceLine" id="cb3-63" title="63">                </a>
+<a class="sourceLine" id="cb3-64" title="64">                <span class="co"># Align categories</span></a>
+<a class="sourceLine" id="cb3-65" title="65">                all_categories <span class="op">=</span> <span class="bu">set</span>(orig_counts.index) <span class="op">|</span> <span class="bu">set</span>(synth_counts.index)</a>
+<a class="sourceLine" id="cb3-66" title="66">                orig_aligned <span class="op">=</span> [orig_counts.get(cat, <span class="dv">0</span>) <span class="cf">for</span> cat <span class="kw">in</span> all_categories]</a>
+<a class="sourceLine" id="cb3-67" title="67">                synth_aligned <span class="op">=</span> [synth_counts.get(cat, <span class="dv">0</span>) <span class="cf">for</span> cat <span class="kw">in</span> all_categories]</a>
+<a class="sourceLine" id="cb3-68" title="68">                </a>
+<a class="sourceLine" id="cb3-69" title="69">                chi2_stat, chi2_pvalue <span class="op">=</span> stats.chisquare(synth_aligned, orig_aligned)</a>
+<a class="sourceLine" id="cb3-70" title="70">                results[<span class="ss">f&#39;</span><span class="sc">{</span>column<span class="sc">}</span><span class="ss">_chi2_test&#39;</span>] <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb3-71" title="71">                    <span class="st">&#39;statistic&#39;</span>: chi2_stat,</a>
+<a class="sourceLine" id="cb3-72" title="72">                    <span class="st">&#39;p_value&#39;</span>: chi2_pvalue,</a>
+<a class="sourceLine" id="cb3-73" title="73">                    <span class="st">&#39;similar&#39;</span>: chi2_pvalue <span class="op">&gt;</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb3-74" title="74">                }</a>
+<a class="sourceLine" id="cb3-75" title="75">        </a>
+<a class="sourceLine" id="cb3-76" title="76">        <span class="co"># Correlation structure comparison</span></a>
+<a class="sourceLine" id="cb3-77" title="77">        orig_corr <span class="op">=</span> original_data.select_dtypes(include<span class="op">=</span>[np.number]).corr()</a>
+<a class="sourceLine" id="cb3-78" title="78">        synth_corr <span class="op">=</span> synthetic_data.select_dtypes(include<span class="op">=</span>[np.number]).corr()</a>
+<a class="sourceLine" id="cb3-79" title="79">        </a>
+<a class="sourceLine" id="cb3-80" title="80">        correlation_similarity <span class="op">=</span> <span class="va">self</span>.calculate_correlation_similarity(orig_corr, synth_corr)</a>
+<a class="sourceLine" id="cb3-81" title="81">        results[<span class="st">&#39;correlation_preservation&#39;</span>] <span class="op">=</span> correlation_similarity</a>
+<a class="sourceLine" id="cb3-82" title="82">        </a>
+<a class="sourceLine" id="cb3-83" title="83">        <span class="cf">return</span> StatisticalFidelityResult(</a>
+<a class="sourceLine" id="cb3-84" title="84">            univariate_tests<span class="op">=</span>results,</a>
+<a class="sourceLine" id="cb3-85" title="85">            correlation_similarity<span class="op">=</span>correlation_similarity,</a>
+<a class="sourceLine" id="cb3-86" title="86">            overall_fidelity<span class="op">=</span><span class="va">self</span>.calculate_statistical_fidelity_score(results)</a>
+<a class="sourceLine" id="cb3-87" title="87">        )</a>
+<a class="sourceLine" id="cb3-88" title="88">    </a>
+<a class="sourceLine" id="cb3-89" title="89">    <span class="cf">async</span> <span class="kw">def</span> assess_ml_utility(<span class="va">self</span>, original_data, synthetic_data, ml_tasks):</a>
+<a class="sourceLine" id="cb3-90" title="90">        <span class="co">&quot;&quot;&quot;Assess ML utility by training models on synthetic data and testing on real data&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb3-91" title="91">        utility_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb3-92" title="92">        </a>
+<a class="sourceLine" id="cb3-93" title="93">        <span class="cf">for</span> task <span class="kw">in</span> ml_tasks:</a>
+<a class="sourceLine" id="cb3-94" title="94">            <span class="cf">if</span> task.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;classification&#39;</span>:</a>
+<a class="sourceLine" id="cb3-95" title="95">                utility_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.evaluate_classification_utility(</a>
+<a class="sourceLine" id="cb3-96" title="96">                    original_data, synthetic_data, task</a>
+<a class="sourceLine" id="cb3-97" title="97">                )</a>
+<a class="sourceLine" id="cb3-98" title="98">            <span class="cf">elif</span> task.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;regression&#39;</span>:</a>
+<a class="sourceLine" id="cb3-99" title="99">                utility_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.evaluate_regression_utility(</a>
+<a class="sourceLine" id="cb3-100" title="100">                    original_data, synthetic_data, task</a>
+<a class="sourceLine" id="cb3-101" title="101">                )</a>
+<a class="sourceLine" id="cb3-102" title="102">            </a>
+<a class="sourceLine" id="cb3-103" title="103">            utility_results[task.name] <span class="op">=</span> utility_result</a>
+<a class="sourceLine" id="cb3-104" title="104">        </a>
+<a class="sourceLine" id="cb3-105" title="105">        <span class="cf">return</span> MLUtilityResult(</a>
+<a class="sourceLine" id="cb3-106" title="106">            task_results<span class="op">=</span>utility_results,</a>
+<a class="sourceLine" id="cb3-107" title="107">            average_utility_preservation<span class="op">=</span>np.mean([r.utility_score <span class="cf">for</span> r <span class="kw">in</span> utility_results.values()])</a>
+<a class="sourceLine" id="cb3-108" title="108">        )</a>
+<a class="sourceLine" id="cb3-109" title="109">    </a>
+<a class="sourceLine" id="cb3-110" title="110">    <span class="cf">async</span> <span class="kw">def</span> evaluate_classification_utility(<span class="va">self</span>, original_data, synthetic_data, task):</a>
+<a class="sourceLine" id="cb3-111" title="111">        <span class="co">&quot;&quot;&quot;Train classifier on synthetic data, test on real data&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb3-112" title="112">        <span class="im">from</span> sklearn.model_selection <span class="im">import</span> train_test_split</a>
+<a class="sourceLine" id="cb3-113" title="113">        <span class="im">from</span> sklearn.ensemble <span class="im">import</span> RandomForestClassifier</a>
+<a class="sourceLine" id="cb3-114" title="114">        <span class="im">from</span> sklearn.metrics <span class="im">import</span> accuracy_score, f1_score</a>
+<a class="sourceLine" id="cb3-115" title="115">        </a>
+<a class="sourceLine" id="cb3-116" title="116">        <span class="co"># Prepare data</span></a>
+<a class="sourceLine" id="cb3-117" title="117">        X_real <span class="op">=</span> original_data.drop(columns<span class="op">=</span>[task.target_column])</a>
+<a class="sourceLine" id="cb3-118" title="118">        y_real <span class="op">=</span> original_data[task.target_column]</a>
+<a class="sourceLine" id="cb3-119" title="119">        X_synth <span class="op">=</span> synthetic_data.drop(columns<span class="op">=</span>[task.target_column])</a>
+<a class="sourceLine" id="cb3-120" title="120">        y_synth <span class="op">=</span> synthetic_data[task.target_column]</a>
+<a class="sourceLine" id="cb3-121" title="121">        </a>
+<a class="sourceLine" id="cb3-122" title="122">        <span class="co"># Split real data for testing</span></a>
+<a class="sourceLine" id="cb3-123" title="123">        X_real_train, X_real_test, y_real_train, y_real_test <span class="op">=</span> train_test_split(</a>
+<a class="sourceLine" id="cb3-124" title="124">            X_real, y_real, test_size<span class="op">=</span><span class="fl">0.2</span>, random_state<span class="op">=</span><span class="dv">42</span></a>
+<a class="sourceLine" id="cb3-125" title="125">        )</a>
+<a class="sourceLine" id="cb3-126" title="126">        </a>
+<a class="sourceLine" id="cb3-127" title="127">        <span class="co"># Train on real data (baseline)</span></a>
+<a class="sourceLine" id="cb3-128" title="128">        baseline_model <span class="op">=</span> RandomForestClassifier(random_state<span class="op">=</span><span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb3-129" title="129">        baseline_model.fit(X_real_train, y_real_train)</a>
+<a class="sourceLine" id="cb3-130" title="130">        baseline_accuracy <span class="op">=</span> accuracy_score(y_real_test, baseline_model.predict(X_real_test))</a>
+<a class="sourceLine" id="cb3-131" title="131">        </a>
+<a class="sourceLine" id="cb3-132" title="132">        <span class="co"># Train on synthetic data</span></a>
+<a class="sourceLine" id="cb3-133" title="133">        synthetic_model <span class="op">=</span> RandomForestClassifier(random_state<span class="op">=</span><span class="dv">42</span>)</a>
+<a class="sourceLine" id="cb3-134" title="134">        synthetic_model.fit(X_synth, y_synth)</a>
+<a class="sourceLine" id="cb3-135" title="135">        synthetic_accuracy <span class="op">=</span> accuracy_score(y_real_test, synthetic_model.predict(X_real_test))</a>
+<a class="sourceLine" id="cb3-136" title="136">        </a>
+<a class="sourceLine" id="cb3-137" title="137">        <span class="co"># Calculate utility preservation</span></a>
+<a class="sourceLine" id="cb3-138" title="138">        utility_score <span class="op">=</span> synthetic_accuracy <span class="op">/</span> baseline_accuracy</a>
+<a class="sourceLine" id="cb3-139" title="139">        </a>
+<a class="sourceLine" id="cb3-140" title="140">        <span class="cf">return</span> ClassificationUtilityResult(</a>
+<a class="sourceLine" id="cb3-141" title="141">            baseline_accuracy<span class="op">=</span>baseline_accuracy,</a>
+<a class="sourceLine" id="cb3-142" title="142">            synthetic_accuracy<span class="op">=</span>synthetic_accuracy,</a>
+<a class="sourceLine" id="cb3-143" title="143">            utility_score<span class="op">=</span>utility_score,</a>
+<a class="sourceLine" id="cb3-144" title="144">            utility_preservation<span class="op">=</span>utility_score <span class="op">&gt;=</span> <span class="fl">0.95</span></a>
+<a class="sourceLine" id="cb3-145" title="145">        )</a>
+<a class="sourceLine" id="cb3-146" title="146"></a>
+<a class="sourceLine" id="cb3-147" title="147"><span class="kw">class</span> PrivacyEngine:</a>
+<a class="sourceLine" id="cb3-148" title="148">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb3-149" title="149">        <span class="va">self</span>.privacy_accountant <span class="op">=</span> AdvancedPrivacyAccountant()</a>
+<a class="sourceLine" id="cb3-150" title="150">        <span class="va">self</span>.attack_simulators <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb3-151" title="151">            <span class="st">&#39;membership_inference&#39;</span>: MembershipInferenceAttack(),</a>
+<a class="sourceLine" id="cb3-152" title="152">            <span class="st">&#39;attribute_inference&#39;</span>: AttributeInferenceAttack(),</a>
+<a class="sourceLine" id="cb3-153" title="153">            <span class="st">&#39;model_inversion&#39;</span>: ModelInversionAttack()</a>
+<a class="sourceLine" id="cb3-154" title="154">        }</a>
+<a class="sourceLine" id="cb3-155" title="155">        </a>
+<a class="sourceLine" id="cb3-156" title="156">    <span class="cf">async</span> <span class="kw">def</span> analyze_privacy_risks(<span class="va">self</span>, original_data, synthetic_data):</a>
+<a class="sourceLine" id="cb3-157" title="157">        privacy_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb3-158" title="158">        </a>
+<a class="sourceLine" id="cb3-159" title="159">        <span class="co"># Membership inference attack simulation</span></a>
+<a class="sourceLine" id="cb3-160" title="160">        mia_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.attack_simulators[<span class="st">&#39;membership_inference&#39;</span>].simulate_attack(</a>
+<a class="sourceLine" id="cb3-161" title="161">            original_data, synthetic_data</a>
+<a class="sourceLine" id="cb3-162" title="162">        )</a>
+<a class="sourceLine" id="cb3-163" title="163">        privacy_results[<span class="st">&#39;membership_inference&#39;</span>] <span class="op">=</span> mia_result</a>
+<a class="sourceLine" id="cb3-164" title="164">        </a>
+<a class="sourceLine" id="cb3-165" title="165">        <span class="co"># Attribute inference attack simulation  </span></a>
+<a class="sourceLine" id="cb3-166" title="166">        aia_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.attack_simulators[<span class="st">&#39;attribute_inference&#39;</span>].simulate_attack(</a>
+<a class="sourceLine" id="cb3-167" title="167">            original_data, synthetic_data</a>
+<a class="sourceLine" id="cb3-168" title="168">        )</a>
+<a class="sourceLine" id="cb3-169" title="169">        privacy_results[<span class="st">&#39;attribute_inference&#39;</span>] <span class="op">=</span> aia_result</a>
+<a class="sourceLine" id="cb3-170" title="170">        </a>
+<a class="sourceLine" id="cb3-171" title="171">        <span class="co"># Distance-based privacy metrics</span></a>
+<a class="sourceLine" id="cb3-172" title="172">        distance_metrics <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.calculate_distance_based_privacy(</a>
+<a class="sourceLine" id="cb3-173" title="173">            original_data, synthetic_data</a>
+<a class="sourceLine" id="cb3-174" title="174">        )</a>
+<a class="sourceLine" id="cb3-175" title="175">        privacy_results[<span class="st">&#39;distance_metrics&#39;</span>] <span class="op">=</span> distance_metrics</a>
+<a class="sourceLine" id="cb3-176" title="176">        </a>
+<a class="sourceLine" id="cb3-177" title="177">        <span class="co"># Overall privacy risk score</span></a>
+<a class="sourceLine" id="cb3-178" title="178">        privacy_risk_score <span class="op">=</span> <span class="va">self</span>.calculate_privacy_risk_score(privacy_results)</a>
+<a class="sourceLine" id="cb3-179" title="179">        </a>
+<a class="sourceLine" id="cb3-180" title="180">        <span class="cf">return</span> PrivacyAnalysisResult(</a>
+<a class="sourceLine" id="cb3-181" title="181">            individual_attacks<span class="op">=</span>privacy_results,</a>
+<a class="sourceLine" id="cb3-182" title="182">            overall_risk_score<span class="op">=</span>privacy_risk_score,</a>
+<a class="sourceLine" id="cb3-183" title="183">            privacy_guaranteed<span class="op">=</span>privacy_risk_score <span class="op">&lt;</span> <span class="fl">0.3</span>,</a>
+<a class="sourceLine" id="cb3-184" title="184">            recommendations<span class="op">=</span><span class="va">self</span>.generate_privacy_recommendations(privacy_results)</a>
+<a class="sourceLine" id="cb3-185" title="185">        )</a>
+<a class="sourceLine" id="cb3-186" title="186"></a>
+<a class="sourceLine" id="cb3-187" title="187"><span class="co"># Database Schema</span></a>
+<a class="sourceLine" id="cb3-188" title="188"><span class="co">&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb3-189" title="189"><span class="co">-- Synthetic data generation jobs</span></a>
+<a class="sourceLine" id="cb3-190" title="190"><span class="co">CREATE TABLE generation_jobs (</span></a>
+<a class="sourceLine" id="cb3-191" title="191"><span class="co">    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),</span></a>
+<a class="sourceLine" id="cb3-192" title="192"><span class="co">    job_name VARCHAR(255) NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-193" title="193"><span class="co">    user_id UUID NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-194" title="194"><span class="co">    source_data_path TEXT NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-195" title="195"><span class="co">    data_type VARCHAR(50) NOT NULL, -- &#39;tabular&#39;, &#39;time_series&#39;, &#39;image&#39;, &#39;text&#39;</span></a>
+<a class="sourceLine" id="cb3-196" title="196"><span class="co">    generation_config JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-197" title="197"><span class="co">    privacy_config JSONB,</span></a>
+<a class="sourceLine" id="cb3-198" title="198"><span class="co">    status VARCHAR(50) DEFAULT &#39;pending&#39;,</span></a>
+<a class="sourceLine" id="cb3-199" title="199"><span class="co">    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</span></a>
+<a class="sourceLine" id="cb3-200" title="200"><span class="co">    started_at TIMESTAMP,</span></a>
+<a class="sourceLine" id="cb3-201" title="201"><span class="co">    completed_at TIMESTAMP,</span></a>
+<a class="sourceLine" id="cb3-202" title="202"><span class="co">    error_message TEXT</span></a>
+<a class="sourceLine" id="cb3-203" title="203"><span class="co">);</span></a>
+<a class="sourceLine" id="cb3-204" title="204"></a>
+<a class="sourceLine" id="cb3-205" title="205"><span class="co">-- Generated datasets</span></a>
+<a class="sourceLine" id="cb3-206" title="206"><span class="co">CREATE TABLE generated_datasets (</span></a>
+<a class="sourceLine" id="cb3-207" title="207"><span class="co">    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),</span></a>
+<a class="sourceLine" id="cb3-208" title="208"><span class="co">    generation_job_id UUID REFERENCES generation_jobs(id) ON DELETE CASCADE,</span></a>
+<a class="sourceLine" id="cb3-209" title="209"><span class="co">    dataset_name VARCHAR(255) NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-210" title="210"><span class="co">    file_path TEXT NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-211" title="211"><span class="co">    file_size_bytes BIGINT,</span></a>
+<a class="sourceLine" id="cb3-212" title="212"><span class="co">    num_records INTEGER,</span></a>
+<a class="sourceLine" id="cb3-213" title="213"><span class="co">    quality_score DECIMAL(4,3),</span></a>
+<a class="sourceLine" id="cb3-214" title="214"><span class="co">    privacy_score DECIMAL(4,3),</span></a>
+<a class="sourceLine" id="cb3-215" title="215"><span class="co">    generation_method VARCHAR(100) NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-216" title="216"><span class="co">    model_config JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-217" title="217"><span class="co">    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span></a>
+<a class="sourceLine" id="cb3-218" title="218"><span class="co">);</span></a>
+<a class="sourceLine" id="cb3-219" title="219"></a>
+<a class="sourceLine" id="cb3-220" title="220"><span class="co">-- Quality assessments</span></a>
+<a class="sourceLine" id="cb3-221" title="221"><span class="co">CREATE TABLE quality_assessments (</span></a>
+<a class="sourceLine" id="cb3-222" title="222"><span class="co">    id UUID PRIMARY KEY DEFAULT gen_random_uuid(),</span></a>
+<a class="sourceLine" id="cb3-223" title="223"><span class="co">    dataset_id UUID REFERENCES generated_datasets(id) ON DELETE CASCADE,</span></a>
+<a class="sourceLine" id="cb3-224" title="224"><span class="co">    assessment_type VARCHAR(50) NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-225" title="225"><span class="co">    assessment_results JSONB NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-226" title="226"><span class="co">    overall_score DECIMAL(4,3) NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-227" title="227"><span class="co">    passed_threshold BOOLEAN NOT NULL,</span></a>
+<a class="sourceLine" id="cb3-228" title="228"><span class="co">    assessment_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP</span></a>
+<a class="sourceLine" id="cb3-229" title="229"><span class="co">);</span></a>
+<a class="sourceLine" id="cb3-230" title="230"><span class="co">&quot;&quot;&quot;</span></a></code></pre></div>
+<hr />
+<h2 id="pseudocode">Pseudocode</h2>
+<h3 id="synthetic-data-generation-workflow">Synthetic Data Generation Workflow</h3>
+<p>``` ALGORITHM SyntheticDataGeneration INPUT: source_data, generation_requirements OUTPUT: synthetic_dataset, quality_report</p>
+<p>BEGIN // Step 1: Validate and profile source data data_profile = PROFILE_SOURCE_DATA(source_data) validation_result = VALIDATE_DATA_REQUIREMENTS(data_profile, generation_requirements)</p>
+<pre><code>IF NOT validation_result.is_valid THEN
+    RETURN ERROR(&quot;Data validation failed&quot;, validation_result.errors)
+END IF
+
+// Step 2: Select optimal generative approach
+model_selection = SELECT_GENERATIVE_MODEL(
+    data_profile, 
+    generation_requirements.quality_targets,
+    generation_requirements.privacy_requirements
+)
+
+// Step 3: Configure privacy constraints
+privacy_config = CONFIGURE_PRIVACY_CONSTRAINTS(
+    generation_requirements.privacy_requirements,
+    data_profile.sensitivity_analysis
+)
+
+// Step 4: Train generative model
+IF generation_requirements.use_pretrained_model THEN
+    generative_model = LOAD_PRETRAINED_MODEL(model_selection.model_id)
+ELSE
+    generative_model = TRAIN_GENERATIVE_MODEL(
+        source_data,
+        model_selection.model_config,
+        privacy_config
+    )
+END IF
+
+// Step 5: Generate synthetic data
+synthetic_data = GENERATE_SYNTHETIC_SAMPLES(
+    generative_model,
+    generation_requirements.num_samples,
+    generation_requirements.generation_constraints
+)
+
+// Step 6: Apply post-processing
+processed_synthetic_data = APPLY_POST_PROCESSING(
+    synthetic_data,
+    data_profile.constraints,
+    generation_requirements.business_rules
+)
+
+// Step 7: Comprehensive quality assessment
+quality_report = ASSESS_SYNTHETIC_DATA_QUALITY(
+    source_data,
+    processed_synthetic_data,
+    generation_requirements.quality_criteria
+)
+
+// Step 8: Privacy risk analysis
+privacy_report = ANALYZE_PRIVACY_RISKS(
+    source_data,
+    processed_synthetic_data,
+    privacy_config
+)
+
+// Step 9: Final validation and optimization
+IF quality_report.overall_score &lt; generation_requirements.min_quality_threshold THEN
+    IF generation_requirements.auto_optimize THEN
+        optimized_data = OPTIMIZE_SYNTHETIC_DATA(
+            processed_synthetic_data,
+            quality_report.improvement_suggestions
+        )
+        processed_synthetic_data = optimized_data
+        quality_report = ASSESS_SYNTHETIC_DATA_QUALITY(source_data, optimized_data, generation_requirements.quality_criteria)
+    ELSE
+        RETURN WARNING(&quot;Quality threshold not met&quot;, quality_report)
+    END IF
+END IF
+
+RETURN SyntheticDataResult(
+    synthetic_dataset = processed_synthetic_data,
+    quality_report = quality_report,
+    privacy_report = privacy_report,
+    generation_metadata = EXTRACT_GENERATION_METADATA()
+)</code></pre>
+<p>END</p>
+<p>FUNCTION TRAIN_GENERATIVE_MODEL(source_data, model_config, privacy_config) BEGIN SWITCH model_config.model_type CASE “tabular_gan”: model = TRAIN_TABULAR_GAN(source_data, model_config, privacy_config) CASE “vae”: model = TRAIN_VARIATIONAL_AUTOENCODER(source_data, model_config, privacy_config) CASE “diffusion”: model = TRAIN_DIFFUSION_MODEL(source_data, model_config, privacy_config) CASE “transformer”: model = TRAIN_TRANSFORMER_MODEL(source_data, model_config, privacy_config) DEFAULT: RAISE UnsupportedModelTypeError(model_config.model_type) END SWITCH</p>
+<pre><code>RETURN model</code></pre>
+<p>END</p>
+<p>FUNCTION ASSESS_SYNTHETIC_DATA_QUALITY(original_data, synthetic_data, quality_criteria) BEGIN quality_results = {}</p>
+<pre><code>// Statistical fidelity assessment
+statistical_results = ASSESS_STATISTICAL_FIDELITY(original_data, synthetic_data)
+quality_</code></pre>

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>RetailAI Executive Dashboard</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, sans-serif; margin: 2rem; }
+    h1 { margin-bottom: 0.5rem; }
+    .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 1rem; margin-top: 1rem; }
+    .card { border: 1px solid #e5e7eb; border-radius: 8px; padding: 1rem; }
+    code, a { color: #2563eb; }
+  </style>
+  </head>
+  <body>
+    <h1>RetailAI Executive Dashboard</h1>
+    <p>Frontend container is running. Use the links below to access backend services.</p>
+
+    <div class="grid">
+      <div class="card">
+        <h3>ML Engine</h3>
+        <p><a href="http://localhost:8001/health" target="_blank">Health</a></p>
+      </div>
+      <div class="card">
+        <h3>External Data</h3>
+        <p><a href="http://localhost:8002/health" target="_blank">Health</a></p>
+      </div>
+      <div class="card">
+        <h3>Alert Engine</h3>
+        <p><a href="http://localhost:8003/health" target="_blank">Health</a></p>
+      </div>
+      <div class="card">
+        <h3>Auth Service</h3>
+        <p><a href="http://localhost:8004/health" target="_blank">Health</a></p>
+      </div>
+      <div class="card">
+        <h3>Dashboard API</h3>
+        <p><a href="http://localhost:8005/health" target="_blank">Health</a></p>
+      </div>
+      <div class="card">
+        <h3>Reporting</h3>
+        <p><a href="http://localhost:8006/health" target="_blank">Health</a></p>
+      </div>
+      <div class="card">
+        <h3>Monitoring</h3>
+        <p><a href="http://localhost:8007/health" target="_blank">Health</a></p>
+      </div>
+    </div>
+
+    <p style="margin-top:1rem">Container health endpoint: <code>/health</code></p>
+  </body>
+  </html>
+

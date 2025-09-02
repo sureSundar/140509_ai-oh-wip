@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: retailai-config
+  namespace: retailai
+data:
+  DATABASE_URL: "sqlite:///./data/retail_inventory.db"
+  CORS_ORIGINS: "http://localhost:3000,https://retailai.example.com"
+  LOG_LEVEL: "INFO"
+  WORKERS: "4"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: retailai-secrets
+  namespace: retailai
+type: Opaque
+data:
+  jwt-secret: eW91ci1zZWNyZXQta2V5LWhlcmU=  # base64 encoded "your-secret-key-here"

@@ -1,0 +1,503 @@
+<h1 id="md">140509_20.md</h1>
+<h2 id="readme">README</h2>
+<ol start="20" type="1">
+<li>Knowledge Graph Enhanced Q&amp;A System</li>
+</ol>
+<p>Summary: Create a question-answering system that combines knowledge graphs with generative AI to provide accurate, structured responses with reasoning chains.</p>
+<p>Problem Statement: Traditional Q&amp;A systems often lack structured reasoning and relationship understanding. Your task is to build a system that combines knowledge graphs with generative AI to answer complex questions requiring multi-hop reasoning. The system should construct and query knowledge graphs, generate explanations for answers, and provide confidence scores based on knowledge graph completeness.</p>
+<p>Steps:</p>
+<p>• Design knowledge graph construction from unstructured text using NER and relation extraction</p>
+<p>• Implement graph-based query processing for multi-hop reasoning</p>
+<p>• Create integration between graph queries and generative AI responses</p>
+<p>• Build explanation generation showing reasoning paths through the knowledge graph</p>
+<p>• Develop confidence scoring based on graph connectivity and source reliability</p>
+<p>• Include graph visualization and interactive exploration capabilities</p>
+<p>Suggested Data Requirements:</p>
+<p>• Structured and unstructured text data for knowledge extraction</p>
+<p>• Curated question-answer pairs requiring multi-hop reasoning</p>
+<p>• Entity and relationship ontologies for domain-specific knowledge</p>
+<p>• Source credibility and reliability metadata</p>
+<p>Themes: GenAI &amp; its techniques, Knowledge Graph, Graph RAG</p>
+<p>The steps and data requirements outlined above are intended solely as reference points to assist you in conceptualising your solution.</p>
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision-and-goals">Product Vision and Goals</h3>
+<p>The Knowledge Graph Enhanced Q&amp;A System aims to revolutionize information retrieval by integrating structured knowledge graphs (KGs) with generative AI, enabling precise answers to complex, multi-hop queries. Goals include improving answer accuracy by 30% over traditional systems, providing transparent reasoning to build user trust, and supporting domain adaptability for sectors like healthcare, finance, and research.</p>
+<h3 id="target-audience-and-stakeholders">Target Audience and Stakeholders</h3>
+<ul>
+<li>Primary Users: Researchers, analysts, students, and professionals in knowledge-intensive fields.</li>
+<li>Stakeholders: Data scientists for KG maintenance, end-users for querying, administrators for system oversight.</li>
+<li>Personas: E.g., a biomedical researcher querying drug interactions needing multi-hop paths (drug -&gt; protein -&gt; disease).</li>
+</ul>
+<h3 id="key-features-and-functionality">Key Features and Functionality</h3>
+<ul>
+<li>Automated KG ingestion and construction from diverse sources.</li>
+<li>Natural language query parsing to graph traversals.</li>
+<li>Generative AI for response synthesis with embedded reasoning.</li>
+<li>Confidence scoring and explanations for accountability.</li>
+<li>Interactive visualizations for KG exploration.</li>
+<li>API endpoints for integration with external apps.</li>
+</ul>
+<h3 id="business-requirements">Business Requirements</h3>
+<ul>
+<li>Support for 100+ concurrent users with low latency.</li>
+<li>Compliance with data privacy standards (e.g., GDPR for entity handling).</li>
+<li>Monetization: Open-source core with premium features like custom ontologies.</li>
+</ul>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li>User satisfaction: NPS &gt;80.</li>
+<li>Accuracy: F1-score &gt;0.85 on multi-hop QA benchmarks like HotpotQA.</li>
+<li>Adoption: 50% reduction in manual research time.</li>
+</ul>
+<h3 id="assumptions-risks-and-dependencies">Assumptions, Risks, and Dependencies</h3>
+<ul>
+<li>Assumptions: Access to open LLMs (e.g., Llama) and graph DBs (e.g., Neo4j Community).</li>
+<li>Risks: Incomplete KG leading to low confidence; mitigate with fallback to pure generative AI.</li>
+<li>Dependencies: Public datasets like WikiData for initial KG seeding.</li>
+</ul>
+<h3 id="out-of-scope">Out of Scope</h3>
+<ul>
+<li>Real-time KG updates from live streams.</li>
+<li>Multilingual support beyond English initially.</li>
+</ul>
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<p>Building upon the PRD’s vision, this FRD specifies detailed functional behaviors, ensuring alignment with user needs and technical feasibility.</p>
+<h3 id="system-modules-and-requirements">System Modules and Requirements</h3>
+<ol type="1">
+<li><strong>KG Construction Module (FR-001)</strong>:
+<ul>
+<li>Input: Unstructured text (e.g., PDFs, web articles), structured data (CSVs).</li>
+<li>Functionality: Extract entities using NER (e.g., spaCy or BERT-based), relations via RE models (e.g., REBEL). Merge with ontologies (e.g., WordNet).</li>
+<li>Output: Populated KG with nodes, edges, and metadata.</li>
+<li>Validation: Ensure no duplicate entities; use entity resolution algorithms.</li>
+</ul></li>
+<li><strong>Query Processing Module (FR-002)</strong>:
+<ul>
+<li>Input: Natural language question.</li>
+<li>Functionality: Parse intent with LLM (e.g., prompt: “Translate to graph query”), execute multi-hop traversals (e.g., shortest path algorithms in graph DB).</li>
+<li>Output: Relevant subgraphs or fact triples.</li>
+<li>Edge Cases: Handle ambiguous queries with clarification prompts.</li>
+</ul></li>
+<li><strong>Generative AI Integration Module (FR-003)</strong>:
+<ul>
+<li>Input: Query results from KG.</li>
+<li>Functionality: Feed into LLM prompt template (e.g., “Using facts: {facts}, answer {question} with step-by-step reasoning”).</li>
+<li>Output: Natural language response with structured JSON for reasoning chains.</li>
+</ul></li>
+<li><strong>Explanation and Confidence Module (FR-004)</strong>:
+<ul>
+<li>Input: Query paths and sources.</li>
+<li>Functionality: Generate human-readable paths (e.g., “Entity A relates to B via C”); compute confidence as weighted average (graph density * source score, where source score from metadata 0-1).</li>
+<li>Output: Annotated response; threshold alerts if &lt;0.6.</li>
+</ul></li>
+<li><strong>Visualization Module (FR-005)</strong>:
+<ul>
+<li>Input: Subgraph.</li>
+<li>Functionality: Render interactive graphs (nodes clickable for details) using libraries like vis.js.</li>
+<li>Output: Embeddable HTML/JS for web UI.</li>
+</ul></li>
+</ol>
+<h3 id="interfaces-and-integrations">Interfaces and Integrations</h3>
+<ul>
+<li>UI: Web-based with query input, response display, and viz panel.</li>
+<li>API: RESTful endpoints (e.g., POST /query with JSON body).</li>
+<li>Data Flow: User query -&gt; Parse -&gt; KG Retrieve -&gt; LLM Generate -&gt; Score &amp; Viz -&gt; Response.</li>
+</ul>
+<h3 id="error-handling-and-validation">Error Handling and Validation</h3>
+<ul>
+<li>Invalid Query: Return suggestions via LLM.</li>
+<li>KG Gaps: Flag in confidence; suggest data augmentation.</li>
+<li>Functional Tests: Unit tests for each module (e.g., 90% coverage).</li>
+</ul>
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<p>Leveraging PRD goals and FRD specs, NFRD defines quality attributes for robustness.</p>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li>Latency: Query response &lt;3s for graphs &lt;50k nodes; scale with sharding.</li>
+<li>Throughput: 200 queries/min on standard hardware (16GB RAM, GPU optional).</li>
+</ul>
+<h3 id="scalability-and-availability">Scalability and Availability</h3>
+<ul>
+<li>Horizontal scaling: Containerized (Docker) for KG DB clusters.</li>
+<li>Uptime: 99.5%; use redundant DB instances.</li>
+</ul>
+<h3 id="security-and-privacy">Security and Privacy</h3>
+<ul>
+<li>Authentication: OAuth for user access.</li>
+<li>Data Handling: Anonymize PII in entities; encrypt graph data at rest.</li>
+<li>Compliance: Audit logs for queries.</li>
+</ul>
+<h3 id="reliability-and-maintainability">Reliability and Maintainability</h3>
+<ul>
+<li>Error Rate: &lt;1% failure; auto-retry on transient DB errors.</li>
+<li>Code Quality: Modular design, CI/CD pipeline, 85% test coverage.</li>
+<li>Monitoring: Integrate Prometheus for KG size, query times.</li>
+</ul>
+<h3 id="usability-and-accessibility">Usability and Accessibility</h3>
+<ul>
+<li>UI/UX: Responsive design, keyboard navigation (WCAG 2.1 AA).</li>
+<li>Documentation: API docs with Swagger.</li>
+</ul>
+<h3 id="environmental-constraints">Environmental Constraints</h3>
+<ul>
+<li>Deployment: Cloud-agnostic (AWS, GCP); support on-prem.</li>
+<li>Cost: Optimize for &lt;0.01 USD per query.</li>
+</ul>
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<pre><code>+--------------------+
+| User Interface     |  (React.js: Query Input, Response Display, Interactive Viz)
++--------------------+
+          |
+          v
++--------------------+
+| API Gateway        |  (FastAPI: Endpoints for Query, KG Upload)
++--------------------+
+ /         |         \
+v          v          v
++--------------------+ +--------------------+ +--------------------+
+| KG Builder         | | Query Processor    | | LLM Integrator     |
+| (spaCy, Transformers| | (Neo4j Cypher)     | | (HuggingFace API)  |
+| for NER/RE)        | +--------------------+ +--------------------+
++--------------------+          |
+          |                    v
+          v          +--------------------+
++--------------------+ | Explainer &amp; Scorer |
+| Knowledge Graph DB | | (Path Gen, Conf Calc)
+| (Neo4j: Nodes/Edges)| +--------------------+
++--------------------+          |
+                               v
+                      +--------------------+
+                      | Visualization Engine|
+                      | (vis.js/D3.js)     |
+                      +--------------------+</code></pre>
+<p>This layered architecture separates concerns for modularity.</p>
+<h2 id="hld-high-level-design">HLD (High Level Design)</h2>
+<ul>
+<li><strong>System Components</strong>:
+<ul>
+<li>Frontend: React with Redux for state, integrated viz libraries.</li>
+<li>Backend: Python FastAPI for APIs, Celery for async KG builds.</li>
+<li>Data Layer: Neo4j for KG storage; vector embeddings for hybrid search.</li>
+<li>AI Layer: Hugging Face Transformers for NER/RE/LLM; fine-tune on domain data.</li>
+</ul></li>
+<li><strong>Design Patterns</strong>:
+<ul>
+<li>Microservices for scalability.</li>
+<li>Observer for real-time viz updates.</li>
+<li>Pipeline for data flow (ingest -&gt; query -&gt; respond).</li>
+</ul></li>
+<li><strong>Data Management</strong>:
+<ul>
+<li>Sources: Public like Freebase, HotpotQA for QA pairs, schema.org ontologies.</li>
+<li>Storage: Indexed nodes for fast traversal.</li>
+</ul></li>
+<li><strong>Security Design</strong>:
+<ul>
+<li>JWT tokens for API auth.</li>
+</ul></li>
+<li><strong>High-Level Flow</strong>:
+<ol type="1">
+<li>Ingest text -&gt; Build KG.</li>
+<li>Query -&gt; Parse to Cypher -&gt; Retrieve -&gt; LLM enhance -&gt; Score &amp; Viz.</li>
+</ol></li>
+</ul>
+<h2 id="lld-low-level-design">LLD (Low Level Design)</h2>
+<ul>
+<li><strong>KG Construction LLD</strong>:
+<ul>
+<li>NER: Use pipeline = spacy.load(“en_core_web_trf”); entities = [ent.text for ent in doc.ents].</li>
+<li>RE: Fine-tuned model like “Babelscape/rebel-large”; extract triples from model output.</li>
+<li>Merge: Use graph.merge(Node(“Entity”, name=ent, source_meta=reliability)).</li>
+</ul></li>
+<li><strong>Query Processing LLD</strong>:
+<ul>
+<li>Parse: LLM prompt: “Generate Cypher for: {question}. Entities: {extracted}”.</li>
+<li>Execute: driver.session().run(query, params); handle paths with BFS if needed.</li>
+</ul></li>
+<li><strong>Generative Integration LLD</strong>:
+<ul>
+<li>Prompt Engineering: Chain-of-thought template with facts injected.</li>
+<li>Model: tokenizer.encode(prompt); model.generate(max_length=200).</li>
+</ul></li>
+<li><strong>Confidence LLD</strong>:
+<ul>
+<li>Formula: confidence = (1 / path_length) * avg_source_reliab * (connected_components / total_nodes).</li>
+<li>Threshold: If &lt;0.5, append “Low confidence due to sparse data”.</li>
+</ul></li>
+<li><strong>Visualization LLD</strong>:
+<ul>
+<li>Data Prep: Convert Neo4j results to JSON {nodes: [], links: []}.</li>
+<li>Render: Use force-directed layout in vis.js; add tooltips for metadata.</li>
+</ul></li>
+</ul>
+<h2 id="pseudocode">Pseudocode</h2>
+<pre><code>class KGQASystem:
+    def __init__(self):
+        self.graph = Neo4jDriver(uri, auth)
+        self.ner_model = spacy.load(&quot;en_core_web_trf&quot;)
+        self.re_model = load_rebel()
+        self.llm = HuggingFaceModel(&quot;meta-llama/Llama-2-7b&quot;)
+
+    def build_kg(self, text):
+        doc = self.ner_model(text)
+        entities = extract_entities(doc)
+        relations = self.re_model(entities, text)
+        for sub, pred, obj, rel_meta in relations:
+            self.graph.add_node(sub, props)
+            self.graph.add_node(obj, props)
+            self.graph.add_edge(sub, pred, obj, rel_meta)
+
+    def process_query(self, question):
+        extracted_ents = extract_from_question(question)
+        cypher = self.llm.generate_prompt(&quot;To Cypher: &quot;, question, extracted_ents)
+        results = self.graph.execute(cypher)
+        if not results:
+            return fallback_llm(question)
+        reasoning_paths = build_paths(results)  # List of string paths
+        prompt = f&quot;Facts: {results}\nPaths: {reasoning_paths}\nAnswer: {question}&quot;
+        response = self.llm.generate(prompt)
+        confidence = compute_conf(results, reasoning_paths)
+        viz_data = subgraph_to_json(results)
+        return {&quot;answer&quot;: response, &quot;reasoning&quot;: reasoning_paths, &quot;confidence&quot;: confidence, &quot;viz&quot;: viz_data}</code></pre>
+<p>This pseudocode emphasizes modularity and error handling.</p>
+<h1 id="md-1">140509_21.md</h1>
+<h2 id="readme-1">README</h2>
+<ol start="21" type="1">
+<li>Model Quantization and Fine-tuning Platform</li>
+</ol>
+<p>Summary: Develop a platform that enables efficient model quantization and fine-tuning for deploying large language models on resource-constrained environments.</p>
+<p>Problem Statement: Large language models require significant computational resources, limiting their deployment in edge environments. Your task is to create a platform that automates model quantization, fine-tuning, and optimization for specific use cases while maintaining performance quality. The system should support various quantization techniques, provide performance benchmarking, and enable easy deployment to different hardware configurations.</p>
+<p>Steps:</p>
+<p>• Design automated quantization pipeline supporting multiple techniques (INT8, INT4, dynamic)</p>
+<p>• Implement fine-tuning workflows with parameter-efficient methods (LoRA, QLoRA)</p>
+<p>• Create performance benchmarking suite measuring accuracy, speed, and memory usage</p>
+<p>• Build deployment optimization for different hardware targets (CPU, GPU, mobile)</p>
+<p>• Develop model comparison and selection tools based on constraints</p>
+<p>• Include monitoring and quality assessment for quantized models</p>
+<p>Suggested Data Requirements:</p>
+<p>• Pre-trained model checkpoints and configuration files</p>
+<p>• Domain-specific fine-tuning datasets</p>
+<p>• Hardware performance benchmarks and constraints</p>
+<p>• Quality evaluation datasets for model comparison</p>
+<p>Themes: GenAI &amp; its techniques, Quantization, Fine-tuning</p>
+<p>The steps and data requirements outlined above are intended solely as reference points to assist you in conceptualising your solution.</p>
+<h2 id="prd-product-requirements-document-1">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision-and-goals-1">Product Vision and Goals</h3>
+<p>To democratize LLM deployment on edge devices by automating optimization, reducing model size by 4x-8x while retaining &gt;95% accuracy. Goals: Support 10+ quantization methods, integrate with 5 hardware types, and provide one-click deployment.</p>
+<h3 id="target-audience-and-stakeholders-1">Target Audience and Stakeholders</h3>
+<ul>
+<li>Primary Users: ML engineers, mobile app developers, IoT specialists.</li>
+<li>Stakeholders: Hardware vendors for benchmarks, end-users for inference.</li>
+<li>Personas: An edge AI developer optimizing GPT-J for Raspberry Pi.</li>
+</ul>
+<h3 id="key-features-and-functionality-1">Key Features and Functionality</h3>
+<ul>
+<li>Auto-quantization with technique selection.</li>
+<li>PEFT (Parameter-Efficient Fine-Tuning) workflows.</li>
+<li>Multi-metric benchmarking dashboard.</li>
+<li>Hardware-specific exporters (e.g., TFLite for mobile).</li>
+<li>Model selector with constraint-based ranking.</li>
+<li>Post-deployment monitoring for drift.</li>
+</ul>
+<h3 id="business-requirements-1">Business Requirements</h3>
+<ul>
+<li>Open-source with enterprise edition for cloud integration.</li>
+<li>Integration with Hugging Face Hub for model loading.</li>
+</ul>
+<h3 id="success-metrics-1">Success Metrics</h3>
+<ul>
+<li>Efficiency: &gt;2x speed-up on target hardware.</li>
+<li>User Adoption: 1000+ downloads in first year.</li>
+<li>Quality: Perplexity &lt;5% increase post-quantization.</li>
+</ul>
+<h3 id="assumptions-risks-and-dependencies-1">Assumptions, Risks, and Dependencies</h3>
+<ul>
+<li>Assumptions: Users have basic PyTorch knowledge.</li>
+<li>Risks: Accuracy loss in quantization; mitigate with calibration datasets.</li>
+<li>Dependencies: Libraries like bitsandbytes for QLoRA, public models from HF.</li>
+</ul>
+<h3 id="out-of-scope-1">Out of Scope</h3>
+<ul>
+<li>Custom hardware acceleration (e.g., FPGA design).</li>
+<li>Online learning during inference.</li>
+</ul>
+<h2 id="frd-functional-requirements-document-1">FRD (Functional Requirements Document)</h2>
+<h3 id="system-modules-and-requirements-1">System Modules and Requirements</h3>
+<ol type="1">
+<li><strong>Quantization Pipeline (FR-001)</strong>:
+<ul>
+<li>Input: Model checkpoint, calibration data.</li>
+<li>Functionality: Support PTQ (Post-Training Quant), QAT; techniques: static INT8, dynamic, FP16.</li>
+<li>Output: Quantized model with config.</li>
+</ul></li>
+<li><strong>Fine-Tuning Workflow (FR-002)</strong>:
+<ul>
+<li>Input: Quantized model, dataset.</li>
+<li>Functionality: Apply LoRA/QLoRA; trainers with PEFT library.</li>
+<li>Output: Adapted model adapters.</li>
+</ul></li>
+<li><strong>Benchmarking Suite (FR-003)</strong>:
+<ul>
+<li>Input: Models, eval dataset, hardware spec.</li>
+<li>Functionality: Measure accuracy (e.g., BLEU), latency (ms), memory (MB), power (if sim).</li>
+<li>Output: Comparative reports, graphs.</li>
+</ul></li>
+<li><strong>Deployment Optimization (FR-004)</strong>:
+<ul>
+<li>Input: Model, target (CPU/GPU/Android).</li>
+<li>Functionality: Convert to ONNX/TFLite/CoreML; optimize ops.</li>
+<li>Output: Deployable binary.</li>
+</ul></li>
+<li><strong>Model Comparison (FR-005)</strong>:
+<ul>
+<li>Input: Multiple models, constraints (e.g., max 1GB RAM).</li>
+<li>Functionality: Rank by Pareto front (accuracy vs size).</li>
+<li>Output: Recommended model.</li>
+</ul></li>
+</ol>
+<h3 id="interfaces-and-integrations-1">Interfaces and Integrations</h3>
+<ul>
+<li>UI: Web app for uploading, visualizing benchmarks.</li>
+<li>API: CLI commands like <code>quantize --model gpt2 --tech int8</code>.</li>
+<li>Data Flow: Load model -&gt; Quantize -&gt; Fine-tune -&gt; Benchmark -&gt; Deploy -&gt; Monitor.</li>
+</ul>
+<h3 id="error-handling-and-validation-1">Error Handling and Validation</h3>
+<ul>
+<li>Validation: Auto-check accuracy drop; rollback if &gt;threshold.</li>
+<li>Errors: Handle incompatible hardware with warnings.</li>
+</ul>
+<h2 id="nfrd-non-functional-requirements-document-1">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements-1">Performance Requirements</h3>
+<ul>
+<li>Process Time: Quantize 7B model &lt;30min on V100 GPU.</li>
+<li>Inference: &lt;50ms/token on mobile.</li>
+</ul>
+<h3 id="scalability-and-availability-1">Scalability and Availability</h3>
+<ul>
+<li>Handle models up to 70B params.</li>
+<li>Cloud deployable with auto-scaling.</li>
+</ul>
+<h3 id="security-and-privacy-1">Security and Privacy</h3>
+<ul>
+<li>Secure model uploads; no data retention.</li>
+<li>Compliance: MIT license for open components.</li>
+</ul>
+<h3 id="reliability-and-maintainability-1">Reliability and Maintainability</h3>
+<ul>
+<li>Fault Tolerance: Resume interrupted fine-tuning.</li>
+<li>Code: 90% coverage, modular plugins for new techs.</li>
+</ul>
+<h3 id="usability-and-accessibility-1">Usability and Accessibility</h3>
+<ul>
+<li>Intuitive GUI with tutorials.</li>
+<li>Support dark mode, screen readers.</li>
+</ul>
+<h3 id="environmental-constraints-1">Environmental Constraints</h3>
+<ul>
+<li>Run on CPU-only for low-end users.</li>
+</ul>
+<h2 id="ad-architecture-diagram-1">AD (Architecture Diagram)</h2>
+<pre><code>+--------------------+
+| User Interface/CLI |  (Streamlit: Upload, Config, Viz Dashboard)
++--------------------+
+          |
+          v
++--------------------+
+| Workflow Orchestrator |  (Airflow/Dagster: Pipeline Management)
++--------------------+
+ /      |      |      \
+v       v      v       v
++-----+ +-----+ +-----+ +-----+
+| Quant| | Fine| | Bench| | Deploy|
+| Pipe | | Tune | | Suite| | Opt  |
++-----+ +-----+ +-----+ +-----+
+          |             |
+          v             v
++--------------------+ +--------------------+
+| Model Registry     | | Monitoring Agent   |
+| (HF Hub)          | | (Prometheus)       |
++--------------------+ +--------------------+</code></pre>
+<h2 id="hld-high-level-design-1">HLD (High Level Design)</h2>
+<ul>
+<li><strong>Components</strong>:
+<ul>
+<li>Orchestrator: Use Hugging Face Accelerate for distributed.</li>
+<li>Quant: Torch.quantization, bitsandbytes.</li>
+<li>Benchmark: Torch Profiler, hardware sims.</li>
+<li>Deployment: ONNX Runtime.</li>
+</ul></li>
+<li><strong>Design Patterns</strong>:
+<ul>
+<li>Factory for quantization types.</li>
+<li>Observer for monitoring.</li>
+</ul></li>
+<li><strong>Data Management</strong>:
+<ul>
+<li>Datasets: Alpaca for fine-tune, GLUE for eval.</li>
+</ul></li>
+<li><strong>High-Level Flow</strong>:
+<ol type="1">
+<li>Config input -&gt; Run pipeline stages sequentially or parallel.</li>
+<li>Store artifacts in registry.</li>
+</ol></li>
+</ul>
+<h2 id="lld-low-level-design-1">LLD (Low Level Design)</h2>
+<ul>
+<li><strong>Quantization LLD</strong>:
+<ul>
+<li>Static INT8: model = torch.quantization.quantize(model, qconfig_spec, inplace=False)</li>
+<li>Calibration: Run forward passes on 1000 samples.</li>
+</ul></li>
+<li><strong>Fine-Tuning LLD</strong>:
+<ul>
+<li>LoRA Config: from peft import LoraConfig; config = LoraConfig(r=16, lora_alpha=32)</li>
+<li>Trainer: from transformers import Trainer; trainer.train()</li>
+</ul></li>
+<li><strong>Benchmark LLD</strong>:
+<ul>
+<li>Accuracy: from evaluate import load; acc = load(“accuracy”).compute(preds, refs)</li>
+<li>Latency: with torch.profiler.profile(): model(input); print(profile.key_averages())</li>
+</ul></li>
+<li><strong>Comparison LLD</strong>:
+<ul>
+<li>Pareto: Use scipy.optimize for multi-objective ranking.</li>
+</ul></li>
+</ul>
+<h2 id="pseudocode-1">Pseudocode</h2>
+<pre><code>class QuantFinePlatform:
+    def __init__(self):
+        self.hf_hub = HFHub()
+
+    def quantize(self, model_name, tech=&#39;int8&#39;, calib_data):
+        model = self.hf_hub.load_model(model_name)
+        if tech == &#39;int8&#39;:
+            q_model = torch.quantization.quantize_dynamic(model, {nn.Linear: torch.qint8})
+        elif tech == &#39;int4&#39;:
+            q_model = bitsandbytes.quantize(model, 4)
+        q_model.calibrate(calib_data)
+        return q_model
+
+    def fine_tune(self, q_model, dataset, method=&#39;qlora&#39;):
+        config = LoraConfig(...) if method == &#39;lora&#39; else QLoRAConfig(...)
+        peft_model = get_peft_model(q_model, config)
+        trainer = Trainer(peft_model, train_dataset=dataset, eval_dataset=val)
+        trainer.train()
+        return peft_model
+
+    def benchmark(self, models, eval_data, hardware=&#39;cpu&#39;):
+        results = []
+        for m in models:
+            acc = evaluate_model(m, eval_data)
+            lat, mem = profile_inference(m, hardware)
+            results.append({&#39;acc&#39;: acc, &#39;lat&#39;: lat, &#39;mem&#39;: mem})
+        return results
+
+    def deploy(self, model, target=&#39;mobile&#39;):
+        if target == &#39;mobile&#39;:
+            converted = convert_to_tflite(model)
+        return converted
+
+    def compare(self, benchmarks, constraints):
+        filtered = [b for b in benchmarks if b[&#39;mem&#39;] &lt; constraints[&#39;max_mem&#39;]]
+        ranked = sort_by_pareto(filtered, keys=[&#39;acc&#39;, &#39;-lat&#39;])
+        return ranked[0]</code></pre>

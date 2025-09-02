@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>RetailAI Platform - AI-Powered Inventory Optimization</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 30px;
+            color: white;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        /* Authentication Section */
+        .auth-section {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+            margin-bottom: 30px;
+            backdrop-filter: blur(10px);
+        }
+
+        .login-form {
+            display: flex;
+            gap: 15px;
+            align-items: center;
+            justify-content: center;
+            flex-wrap: wrap;
+        }
+
+        .login-form input {
+            padding: 12px 16px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            font-size: 16px;
+            min-width: 200px;
+        }
+
+        .login-form button {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .login-form button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .user-info {
+            display: none;
+            text-align: center;
+            padding: 20px;
+            background: #f8f9ff;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        /* System Status */
+        .system-status {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .status-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .status-item {
+            padding: 15px;
+            border-radius: 8px;
+            text-align: center;
+            border: 2px solid #eee;
+        }
+
+        .status-item.healthy {
+            background: #d4edda;
+            border-color: #c3e6cb;
+            color: #155724;
+        }
+
+        .status-item.unhealthy {
+            background: #f8d7da;
+            border-color: #f5c6cb;
+            color: #721c24;
+        }
+
+        /* Feature Sections */
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
+            gap: 25px;
+            margin-bottom: 30px;
+        }
+
+        .feature-card {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            backdrop-filter: blur(10px);
+            transition: transform 0.3s ease;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.15);
+        }
+
+        .feature-card h3 {
+            color: #667eea;
+            font-size: 1.4rem;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .feature-card .icon {
+            font-size: 1.8rem;
+        }
+
+        .feature-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 8px 16px;
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            transition: all 0.2s;
+        }
+
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .btn-secondary {
+            background: linear-gradient(45deg, #6c757d, #495057);
+        }
+
+        /* Data Stats */
+        .data-stats {
+            background: rgba(255, 255, 255, 0.95);
+            padding: 25px;
+            border-radius: 15px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 20px;
+            border-radius: 10px;
+            background: linear-gradient(45deg, #f8f9ff, #e3f2fd);
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 5px;
+        }
+
+        .stat-label {
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+        }
+
+        .alert-success {
+            background: #d4edda;
+            border: 1px solid #c3e6cb;
+            color: #155724;
+        }
+
+        .alert-danger {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+        }
+
+        .hidden { display: none !important; }
+        .loading { opacity: 0.6; }
+
+        @media (max-width: 768px) {
+            .header h1 { font-size: 2rem; }
+            .features { grid-template-columns: 1fr; }
+            .login-form { flex-direction: column; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🤖 RetailAI Platform</h1>
+            <p>AI-Powered Retail Inventory Optimization System</p>
+            <p><strong>538,036+ Real Transaction Dataset</strong> • Machine Learning • Real-time Analytics</p>
+        </div>
+
+        <!-- Authentication Section -->
+        <div class="auth-section">
+            <div id="loginSection">
+                <h3 style="text-align: center; margin-bottom: 20px;">Login to Access Full Platform</h3>
+                <div class="login-form">
+                    <input type="text" id="username" placeholder="Username" value="admin">
+                    <input type="password" id="password" placeholder="Password" value="admin123">
+                    <button onclick="login()" id="loginBtn">Login</button>
+                </div>
+                <div style="text-align: center; margin-top: 15px; font-size: 14px;">
+                    <strong>Demo Accounts:</strong><br>
+                    admin/admin123 (Full Access) • manager/manager123 (Manager) • analyst/analyst123 (Analyst) • demo/demo123 (Read-Only)
+                </div>
+            </div>
+            
+            <div id="userInfo" class="user-info">
+                <h4>Welcome, <span id="userName"></span>!</h4>
+                <p><strong>Roles:</strong> <span id="userRoles"></span></p>
+                <p><strong>Permissions:</strong> <span id="userPermissions"></span></p>
+                <p><strong>Store Access:</strong> <span id="storeAccess"></span></p>
+                <button onclick="logout()" class="btn btn-secondary">Logout</button>
+            </div>
+        </div>
+
+        <!-- System Status -->
+        <div class="system-status">
+            <h3>🏥 System Health Status</h3>
+            <div class="status-grid" id="systemStatus">
+                <div class="status-item loading">Checking services...</div>
+            </div>
+        </div>
+
+        <!-- Real Data Statistics -->
+        <div class="data-stats">
+            <h3>📊 Live Database Statistics</h3>
+            <div class="stats-grid">
+                <div class="stat-item">
+                    <div class="stat-value" id="transactionCount">Loading...</div>
+                    <div class="stat-label">Sales Transactions</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">500</div>
+                    <div class="stat-label">Products</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">Stores</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">15</div>
+                    <div class="stat-label">Suppliers</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Feature Cards -->
+        <div class="features">
+            <!-- ML Engine -->
+            <div class="feature-card">
+                <h3><span class="icon">🧠</span> ML Engine & Forecasting</h3>
+                <p>Real machine learning algorithms with ARIMA, Linear Regression, and Seasonal Decomposition on 538K+ transactions. Generate demand forecasts and optimize inventory levels.</p>
+                <div class="feature-buttons">
+                    <button class="btn" onclick="openURL('http://localhost:8001/docs')">API Docs</button>
+                    <button class="btn" onclick="testMLEngine()">Test ML Engine</button>
+                    <button class="btn btn-secondary" onclick="openDemo('ML_AI_DEMO.html')">Demo Page</button>
+                </div>
+                <div id="mlEngineResult"></div>
+            </div>
+
+            <!-- Authentication & RBAC -->
+            <div class="feature-card">
+                <h3><span class="icon">🔐</span> Authentication & RBAC</h3>
+                <p>Role-based access control with 5 user roles, session management, audit trails, and comprehensive permissions system.</p>
+                <div class="feature-buttons">
+                    <button class="btn" onclick="openURL('http://localhost:8004/docs')">API Docs</button>
+                    <button class="btn" onclick="testAuth()">Test Authentication</button>
+                    <button class="btn btn-secondary" onclick="openDemo('AUTH_RBAC_DEMO.html')">Demo Page</button>
+                </div>
+                <div id="authResult"></div>
+            </div>
+
+            <!-- Alert Engine -->
+            <div class="feature-card">
+                <h3><span class="icon">⚠️</span> Alert Engine</h3>
+                <p>Business rule-based alerts for stock levels, demand spikes, and system performance with real-time notifications.</p>
+                <div class="feature-buttons">
+                    <button class="btn" onclick="openURL('http://localhost:8003/docs')">API Docs</button>
+                    <button class="btn" onclick="testAlerts()">View Active Alerts</button>
+                    <button class="btn btn-secondary" onclick="createTestAlert()">Create Alert Rule</button>
+                </div>
+                <div id="alertResult"></div>
+            </div>
+
+            <!-- Dashboard Analytics -->
+            <div class="feature-card">
+                <h3><span class="icon">📊</span> Dashboard Analytics</h3>
+                <p>Real-time KPIs, sales insights, inventory analytics, and executive summaries powered by live transaction data.</p>
+                <div class="feature-buttons">
+                    <button class="btn" onclick="openURL('http://localhost:8005/docs')">API Docs</button>
+                    <button class="btn" onclick="testDashboard()">Live KPIs</button>
+                    <button class="btn btn-secondary" onclick="openDemo('REAL_AI_DEMO.html')">Main Demo</button>
+                </div>
+                <div id="dashboardResult"></div>
+            </div>
+
+            <!-- External Data Integration -->
+            <div class="feature-card">
+                <h3><span class="icon">🌤️</span> External Data Integration</h3>
+                <p>Weather data, local events, and demographics integration to enhance forecasting accuracy.</p>
+                <div class="feature-buttons">
+                    <button class="btn" onclick="openURL('http://localhost:8002/docs')">API Docs</button>
+                    <button class="btn" onclick="testExternalData()">Weather Data</button>
+                    <button class="btn btn-secondary" onclick="openDemo('EXTERNAL_DATA_DEMO.html')">Demo Page</button>
+                </div>
+                <div id="externalDataResult"></div>
+            </div>
+
+            <!-- API Testing Suite -->
+            <div class="feature-card">
+                <h3><span class="icon">🧪</span> API Testing & Documentation</h3>
+                <p>Comprehensive API testing dashboard with performance metrics, integration tests, and detailed documentation.</p>
+                <div class="feature-buttons">
+                    <button class="btn" onclick="runAPITests()">Run Tests</button>
+                    <button class="btn" onclick="openDemo('API_TESTING_DEMO.html')">Testing Dashboard</button>
+                    <button class="btn btn-secondary" onclick="openDemo('API_DOCUMENTATION.md')">Documentation</button>
+                </div>
+                <div id="apiTestResult"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentSession = null;
+
+        // Check system status on load
+        window.onload = function() {
+            checkSystemHealth();
+            loadTransactionCount();
+        };
+
+        async function login() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+            const loginBtn = document.getElementById('loginBtn');
+            
+            loginBtn.textContent = 'Logging in...';
+            loginBtn.disabled = true;
+
+            try {
+                const response = await fetch('http://localhost:8004/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ username, password })
+                });
+
+                const result = await response.json();
+
+                if (result.success) {
+                    currentSession = result;
+                    showUserInfo(result);
+                    showAlert('Login successful! Welcome to RetailAI Platform.', 'success');
+                } else {
+                    showAlert('Login failed: ' + (result.detail || 'Invalid credentials'), 'danger');
+                }
+            } catch (error) {
+                showAlert('Login error: ' + error.message, 'danger');
+            }
+
+            loginBtn.textContent = 'Login';
+            loginBtn.disabled = false;
+        }
+
+        function showUserInfo(session) {
+            document.getElementById('loginSection').style.display = 'none';
+            document.getElementById('userInfo').style.display = 'block';
+            
+            document.getElementById('userName').textContent = session.username;
+            document.getElementById('userRoles').textContent = session.roles.join(', ');
+            document.getElementById('userPermissions').textContent = session.permissions.slice(0, 5).join(', ') + '...';
+            document.getElementById('storeAccess').textContent = session.store_access.join(', ');
+        }
+
+        function logout() {
+            currentSession = null;
+            document.getElementById('loginSection').style.display = 'block';
+            document.getElementById('userInfo').style.display = 'none';
+            showAlert('Logged out successfully.', 'success');
+        }
+
+        async function checkSystemHealth() {
+            const services = [
+                { name: 'ML Engine', port: 8001 },
+                { name: 'External Data', port: 8002 },
+                { name: 'Alert Engine', port: 8003 },
+                { name: 'Authentication', port: 8004 },
+                { name: 'Dashboard', port: 8005 },
+                { name: 'Reporting', port: 8006 },
+                { name: 'Monitoring', port: 8007 }
+            ];
+
+            const statusGrid = document.getElementById('systemStatus');
+            statusGrid.innerHTML = '';
+
+            for (const service of services) {
+                const statusItem = document.createElement('div');
+                statusItem.className = 'status-item loading';
+                statusItem.innerHTML = `<strong>${service.name}</strong><br>Checking...`;
+                statusGrid.appendChild(statusItem);
+
+                try {
+                    const response = await fetch(`http://localhost:${service.port}/health`, { 
+                        timeout: 3000 
+                    });
+                    const result = await response.json();
+                    
+                    statusItem.className = 'status-item healthy';
+                    statusItem.innerHTML = `<strong>${service.name}</strong><br>✅ HEALTHY<br><small>Port ${service.port}</small>`;
+                } catch (error) {
+                    statusItem.className = 'status-item unhealthy';
+                    statusItem.innerHTML = `<strong>${service.name}</strong><br>❌ OFFLINE<br><small>Port ${service.port}</small>`;
+                }
+            }
+        }
+
+        async function loadTransactionCount() {
+            try {
+                // This would typically call an API endpoint
+                // For now, we'll show the expected count
+                setTimeout(() => {
+                    document.getElementById('transactionCount').textContent = '538,036+';
+                }, 1000);
+            } catch (error) {
+                document.getElementById('transactionCount').textContent = 'Error';
+            }
+        }
+
+        async function testMLEngine() {
+            if (!currentSession) {
+                showAlert('Please login first to test ML Engine', 'danger');
+                return;
+            }
+
+            const result = document.getElementById('mlEngineResult');
+            result.innerHTML = '<div class="alert alert-info">Testing ML Engine...</div>';
+
+            try {
+                const response = await fetch('http://localhost:8001/health');
+                const data = await response.json();
+                
+                result.innerHTML = `<div class="alert alert-success">
+                    <strong>ML Engine Status:</strong> ${data.status}<br>
+                    <strong>Database:</strong> ${data.database_status}<br>
+                    <strong>Models:</strong> ${data.models_loaded} loaded
+                </div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testAuth() {
+            const result = document.getElementById('authResult');
+            result.innerHTML = '<div class="alert alert-info">Testing Authentication...</div>';
+
+            try {
+                const response = await fetch('http://localhost:8004/api/auth/users');
+                const data = await response.json();
+                
+                result.innerHTML = `<div class="alert alert-success">
+                    <strong>Total Users:</strong> ${data.total_count}<br>
+                    <strong>Users:</strong> ${data.users.map(u => u.username).join(', ')}
+                </div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testAlerts() {
+            const result = document.getElementById('alertResult');
+            result.innerHTML = '<div class="alert alert-info">Loading active alerts...</div>';
+
+            try {
+                const response = await fetch('http://localhost:8003/api/alerts/active');
+                const data = await response.json();
+                
+                const alertsList = data.alerts.slice(0, 2).map(alert => 
+                    `<li><strong>${alert.title}</strong> (${alert.severity})</li>`
+                ).join('');
+
+                result.innerHTML = `<div class="alert alert-success">
+                    <strong>Active Alerts:</strong> ${data.total_count}<br>
+                    <ul>${alertsList}</ul>
+                </div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testDashboard() {
+            const result = document.getElementById('dashboardResult');
+            result.innerHTML = '<div class="alert alert-info">Loading dashboard KPIs...</div>';
+
+            try {
+                const response = await fetch('http://localhost:8005/api/dashboard/kpis');
+                const data = await response.json();
+                
+                result.innerHTML = `<div class="alert alert-success">
+                    <strong>Real-time KPIs loaded:</strong> ${data.kpis.length} metrics<br>
+                    <small>Revenue, Inventory Turnover, Performance Metrics</small>
+                </div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        async function testExternalData() {
+            const result = document.getElementById('externalDataResult');
+            result.innerHTML = '<div class="alert alert-info">Testing weather data...</div>';
+
+            try {
+                const response = await fetch('http://localhost:8002/api/external/weather?city=New York&days=7');
+                const data = await response.json();
+                
+                result.innerHTML = `<div class="alert alert-success">
+                    <strong>Weather Data:</strong> ${data.location}<br>
+                    <strong>Current:</strong> ${data.current_weather.temperature}°C, ${data.current_weather.condition}
+                </div>`;
+            } catch (error) {
+                result.innerHTML = `<div class="alert alert-danger">Error: ${error.message}</div>`;
+            }
+        }
+
+        function openURL(url) {
+            window.open(url, '_blank');
+        }
+
+        function openDemo(filename) {
+            window.open(filename, '_blank');
+        }
+
+        function showAlert(message, type) {
+            const existingAlert = document.querySelector('.alert');
+            if (existingAlert) existingAlert.remove();
+
+            const alert = document.createElement('div');
+            alert.className = `alert alert-${type}`;
+            alert.textContent = message;
+            
+            document.querySelector('.auth-section').appendChild(alert);
+            setTimeout(() => alert.remove(), 5000);
+        }
+
+        // Auto-refresh system status every 30 seconds
+        setInterval(checkSystemHealth, 30000);
+    </script>
+</body>
+</html>

@@ -1,0 +1,1070 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🌤️ External Data Integration - Weather, Events & Demographics</title>
+    
+    <!-- Material-UI CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+        
+        .feature-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            margin: 4px;
+        }
+        
+        .feature-chip .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-header h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header .material-icons {
+            margin-right: 12px;
+            color: #2196f3;
+            font-size: 24px;
+        }
+        
+        .card-content {
+            padding: 24px;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .grid-4 {
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+        }
+        
+        .metric-card {
+            background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            border: 1px solid #dee2e6;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .metric-card:hover {
+            background: linear-gradient(135deg, #e3f2fd 0%, #bbdefb 100%);
+            border-color: #2196f3;
+        }
+        
+        .metric-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, #4facfe 0%, #00f2fe 100%);
+        }
+        
+        .metric-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: #2196f3;
+            margin: 8px 0;
+            line-height: 1;
+        }
+        
+        .metric-label {
+            font-size: 0.875rem;
+            color: #666;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .metric-description {
+            font-size: 0.75rem;
+            color: #999;
+            margin-top: 4px;
+        }
+        
+        .weather-card {
+            background: linear-gradient(135deg, #74b9ff 0%, #0984e3 100%);
+            color: white;
+            border: none;
+        }
+        
+        .weather-card .metric-value {
+            color: white;
+            font-size: 2.5rem;
+        }
+        
+        .weather-card .metric-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .weather-card .metric-description {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .event-card {
+            background: linear-gradient(135deg, #fd79a8 0%, #e84393 100%);
+            color: white;
+            border: none;
+        }
+        
+        .event-card .metric-value {
+            color: white;
+        }
+        
+        .event-card .metric-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .event-card .metric-description {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .demographic-card {
+            background: linear-gradient(135deg, #81ecec 0%, #00cec9 100%);
+            color: white;
+            border: none;
+        }
+        
+        .demographic-card .metric-value {
+            color: white;
+        }
+        
+        .demographic-card .metric-label {
+            color: rgba(255, 255, 255, 0.9);
+        }
+        
+        .demographic-card .metric-description {
+            color: rgba(255, 255, 255, 0.7);
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-height: 48px;
+            margin: 4px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #2196f3, #21cbf3);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #1976d2, #0288d1);
+            box-shadow: 0 4px 12px rgba(33, 150, 243, 0.3);
+        }
+        
+        .btn-weather {
+            background: linear-gradient(45deg, #74b9ff, #0984e3);
+            color: white;
+        }
+        
+        .btn-weather:hover {
+            background: linear-gradient(45deg, #5a9ce8, #0770c7);
+            box-shadow: 0 4px 12px rgba(116, 185, 255, 0.3);
+        }
+        
+        .btn-events {
+            background: linear-gradient(45deg, #fd79a8, #e84393);
+            color: white;
+        }
+        
+        .btn-events:hover {
+            background: linear-gradient(45deg, #fd5e91, #d63384);
+            box-shadow: 0 4px 12px rgba(253, 121, 168, 0.3);
+        }
+        
+        .btn-demographics {
+            background: linear-gradient(45deg, #81ecec, #00cec9);
+            color: white;
+        }
+        
+        .btn-demographics:hover {
+            background: linear-gradient(45deg, #64dada, #00b894);
+            box-shadow: 0 4px 12px rgba(129, 236, 236, 0.3);
+        }
+        
+        .btn .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+        
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            color: #666;
+        }
+        
+        .loading .material-icons {
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .alert .material-icons {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .alert-success {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            color: #1565c0;
+        }
+        
+        .alert-warning {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            color: #ef6c00;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+        }
+        
+        .multiplier-display {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px 16px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            margin: 8px 0;
+            border-left: 4px solid #2196f3;
+        }
+        
+        .multiplier-value {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2196f3;
+        }
+        
+        .multiplier-label {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin: 16px 0;
+        }
+        
+        .store-selector {
+            margin-bottom: 16px;
+        }
+        
+        .store-selector select {
+            padding: 8px 12px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            background: white;
+            min-width: 200px;
+        }
+        
+        .impact-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+        
+        .impact-positive {
+            background: #e8f5e8;
+            color: #2e7d32;
+        }
+        
+        .impact-negative {
+            background: #ffebee;
+            color: #c62828;
+        }
+        
+        .impact-neutral {
+            background: #f5f5f5;
+            color: #666;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .card-content {
+                padding: 16px;
+            }
+            
+            .metric-value {
+                font-size: 1.5rem;
+            }
+            
+            .grid-2 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🌤️ External Data Integration</h1>
+            <p class="subtitle">Weather, Events & Demographics for Enhanced Demand Forecasting</p>
+            <div>
+                <span class="feature-chip">
+                    <span class="material-icons">wb_sunny</span>
+                    Weather Intelligence
+                </span>
+                <span class="feature-chip">
+                    <span class="material-icons">event</span>
+                    Events Impact
+                </span>
+                <span class="feature-chip">
+                    <span class="material-icons">groups</span>
+                    Demographics
+                </span>
+                <span class="feature-chip">
+                    <span class="material-icons">auto_graph</span>
+                    ML Enhancement
+                </span>
+            </div>
+        </div>
+
+        <!-- Store Selection -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="material-icons">store</span>Store Selection</h3>
+                <button class="btn btn-primary" onclick="loadDataSummary()">
+                    <span class="material-icons">refresh</span>
+                    Refresh Summary
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="store-selector">
+                    <label for="storeSelect">Select Store: </label>
+                    <select id="storeSelect" onchange="onStoreChange()">
+                        <option value="STORE_001">STORE_001 - New York, NY</option>
+                        <option value="STORE_002">STORE_002 - Los Angeles, CA</option>
+                        <option value="STORE_003">STORE_003 - Chicago, IL</option>
+                    </select>
+                </div>
+                <div id="dataSummary"></div>
+            </div>
+        </div>
+
+        <!-- External Data Overview -->
+        <div class="grid grid-3">
+            <!-- Weather Data -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="material-icons">wb_sunny</span>Current Weather</h3>
+                    <button class="btn btn-weather" onclick="loadWeatherData()">
+                        <span class="material-icons">refresh</span>
+                        Update
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div id="weatherData"></div>
+                    <div class="chart-container">
+                        <canvas id="weatherChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Events Data -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="material-icons">event</span>Upcoming Events</h3>
+                    <button class="btn btn-events" onclick="loadEventsData()">
+                        <span class="material-icons">refresh</span>
+                        Update
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div id="eventsData"></div>
+                </div>
+            </div>
+            
+            <!-- Demographics -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="material-icons">groups</span>Demographics</h3>
+                    <button class="btn btn-demographics" onclick="loadDemographicData()">
+                        <span class="material-icons">refresh</span>
+                        Update
+                    </button>
+                </div>
+                <div class="card-content">
+                    <div id="demographicData"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Demand Multipliers -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="material-icons">trending_up</span>Demand Impact Analysis</h3>
+                <button class="btn btn-primary" onclick="calculateDemandMultipliers()">
+                    <span class="material-icons">calculate</span>
+                    Calculate Impact
+                </button>
+            </div>
+            <div class="card-content">
+                <div class="grid grid-2">
+                    <div>
+                        <label for="targetDate">Target Date:</label>
+                        <input type="date" id="targetDate" value="" style="padding: 8px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                        
+                        <label for="productCategory">Product Category:</label>
+                        <select id="productCategory" style="padding: 8px; margin: 8px 0; border: 1px solid #ddd; border-radius: 4px; width: 100%;">
+                            <option value="">All Categories</option>
+                            <option value="food">Food & Beverage</option>
+                            <option value="apparel">Apparel</option>
+                            <option value="electronics">Electronics</option>
+                            <option value="premium">Premium Products</option>
+                            <option value="budget">Budget Products</option>
+                        </select>
+                    </div>
+                    
+                    <div id="demandMultipliers"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ML Features Enhancement -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="material-icons">psychology</span>ML Features Enhancement</h3>
+                <button class="btn btn-primary" onclick="loadMLFeatures()">
+                    <span class="material-icons">auto_awesome</span>
+                    Generate Features
+                </button>
+            </div>
+            <div class="card-content">
+                <div id="mlFeatures"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const EXTERNAL_API_BASE = 'http://localhost:8003';
+        let currentStore = 'STORE_001';
+        let weatherChart = null;
+        
+        // Set default target date to tomorrow
+        document.getElementById('targetDate').value = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+        
+        function onStoreChange() {
+            currentStore = document.getElementById('storeSelect').value;
+            loadAllDataForStore();
+        }
+        
+        function loadAllDataForStore() {
+            loadWeatherData();
+            loadEventsData();
+            loadDemographicData();
+        }
+        
+        // Load data summary
+        async function loadDataSummary() {
+            const container = document.getElementById('dataSummary');
+            container.innerHTML = '<div class="loading"><span class="material-icons">sync</span>Loading data summary...</div>';
+            
+            try {
+                const response = await fetch(`${EXTERNAL_API_BASE}/api/analytics/summary`);
+                const data = await response.json();
+                
+                container.innerHTML = `
+                    <div class="grid grid-4">
+                        <div class="metric-card">
+                            <span class="material-icons" style="color: #4caf50; font-size: 2rem;">store</span>
+                            <div class="metric-value">${data.total_stores}</div>
+                            <div class="metric-label">Total Stores</div>
+                            <div class="metric-description">Locations tracked</div>
+                        </div>
+                        <div class="metric-card weather-card">
+                            <span class="material-icons" style="color: white; font-size: 2rem;">wb_sunny</span>
+                            <div class="metric-value">${data.weather_data_available}</div>
+                            <div class="metric-label">Weather Data</div>
+                            <div class="metric-description">Stores with weather</div>
+                        </div>
+                        <div class="metric-card event-card">
+                            <span class="material-icons" style="color: white; font-size: 2rem;">event</span>
+                            <div class="metric-value">${data.total_events}</div>
+                            <div class="metric-label">Total Events</div>
+                            <div class="metric-description">${data.major_events} major events</div>
+                        </div>
+                        <div class="metric-card demographic-card">
+                            <span class="material-icons" style="color: white; font-size: 2rem;">groups</span>
+                            <div class="metric-value">${data.demographic_data_available}</div>
+                            <div class="metric-label">Demographics</div>
+                            <div class="metric-description">Stores with data</div>
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <span class="material-icons">error</span>
+                        <div>Failed to load data summary: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load weather data
+        async function loadWeatherData() {
+            const container = document.getElementById('weatherData');
+            container.innerHTML = '<div class="loading"><span class="material-icons">sync</span>Loading weather data...</div>';
+            
+            try {
+                const response = await fetch(`${EXTERNAL_API_BASE}/api/weather/current/${currentStore}`);
+                const data = await response.json();
+                
+                const weatherIcon = getWeatherIcon(data.weather_condition);
+                
+                container.innerHTML = `
+                    <div class="metric-card weather-card" style="margin: 0;">
+                        <span class="material-icons" style="color: white; font-size: 3rem;">${weatherIcon}</span>
+                        <div class="metric-value">${data.temperature}°C</div>
+                        <div class="metric-label">${data.weather_condition}</div>
+                        <div class="metric-description">
+                            Humidity: ${data.humidity}% • Wind: ${data.wind_speed} m/s<br>
+                            Impact Score: ${data.impact_score.toFixed(1)}/10
+                        </div>
+                    </div>
+                `;
+                
+                // Load weather forecast for chart
+                loadWeatherForecast();
+                
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <span class="material-icons">error</span>
+                        <div>Failed to load weather data: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load weather forecast and create chart
+        async function loadWeatherForecast() {
+            try {
+                const response = await fetch(`${EXTERNAL_API_BASE}/api/weather/forecast/${currentStore}?days=7`);
+                const data = await response.json();
+                
+                updateWeatherChart(data.forecasts);
+                
+            } catch (error) {
+                console.error('Failed to load weather forecast:', error);
+            }
+        }
+        
+        // Update weather chart
+        function updateWeatherChart(forecasts) {
+            const ctx = document.getElementById('weatherChart').getContext('2d');
+            
+            if (weatherChart) {
+                weatherChart.destroy();
+            }
+            
+            const labels = forecasts.map(f => new Date(f.date).toLocaleDateString());
+            const temps = forecasts.map(f => f.avg_temp);
+            const impacts = forecasts.map(f => f.impact_score);
+            
+            weatherChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        label: 'Temperature (°C)',
+                        data: temps,
+                        borderColor: '#74b9ff',
+                        backgroundColor: 'rgba(116, 185, 255, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y'
+                    }, {
+                        label: 'Impact Score',
+                        data: impacts,
+                        borderColor: '#fd79a8',
+                        backgroundColor: 'rgba(253, 121, 168, 0.1)',
+                        tension: 0.4,
+                        yAxisID: 'y1'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        title: {
+                            display: true,
+                            text: '7-Day Weather Forecast',
+                            font: { size: 14, weight: 'bold' }
+                        }
+                    },
+                    scales: {
+                        y: {
+                            type: 'linear',
+                            display: true,
+                            position: 'left',
+                        },
+                        y1: {
+                            type: 'linear',
+                            display: true,
+                            position: 'right',
+                            grid: {
+                                drawOnChartArea: false,
+                            },
+                        },
+                    }
+                }
+            });
+        }
+        
+        // Load events data
+        async function loadEventsData() {
+            const container = document.getElementById('eventsData');
+            container.innerHTML = '<div class="loading"><span class="material-icons">sync</span>Loading events data...</div>';
+            
+            try {
+                const response = await fetch(`${EXTERNAL_API_BASE}/api/events/${currentStore}?date_range=30`);
+                const data = await response.json();
+                
+                let eventsHtml = `
+                    <div class="grid grid-2" style="gap: 12px; margin-bottom: 16px;">
+                        <div class="metric-card event-card" style="margin: 0;">
+                            <div class="metric-value">${data.total_events}</div>
+                            <div class="metric-label">Total Events</div>
+                            <div class="metric-description">Next 30 days</div>
+                        </div>
+                        <div class="metric-card event-card" style="margin: 0;">
+                            <div class="metric-value">${data.major_events}</div>
+                            <div class="metric-label">Major Events</div>
+                            <div class="metric-description">High impact (7.0+)</div>
+                        </div>
+                    </div>
+                `;
+                
+                if (data.events && data.events.length > 0) {
+                    eventsHtml += '<div style="max-height: 200px; overflow-y: auto;">';
+                    
+                    data.events.slice(0, 5).forEach(event => {
+                        const startDate = new Date(event.start_date).toLocaleDateString();
+                        const eventIcon = getEventIcon(event.event_type);
+                        
+                        eventsHtml += `
+                            <div style="padding: 8px; border-bottom: 1px solid #eee; display: flex; align-items: center;">
+                                <span class="material-icons" style="margin-right: 12px; color: #fd79a8;">${eventIcon}</span>
+                                <div style="flex: 1;">
+                                    <div style="font-weight: 500; font-size: 0.9rem;">${event.name}</div>
+                                    <div style="font-size: 0.8rem; color: #666;">
+                                        ${startDate} • ${event.expected_attendance?.toLocaleString() || 'N/A'} attendees
+                                        • Impact: ${event.demand_impact_score.toFixed(1)}/10
+                                    </div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                    
+                    eventsHtml += '</div>';
+                } else {
+                    eventsHtml += `
+                        <div class="alert alert-info">
+                            <span class="material-icons">info</span>
+                            <div>No upcoming events found for this location.</div>
+                        </div>
+                    `;
+                }
+                
+                container.innerHTML = eventsHtml;
+                
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <span class="material-icons">error</span>
+                        <div>Failed to load events data: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load demographic data
+        async function loadDemographicData() {
+            const container = document.getElementById('demographicData');
+            container.innerHTML = '<div class="loading"><span class="material-icons">sync</span>Loading demographic data...</div>';
+            
+            try {
+                const response = await fetch(`${EXTERNAL_API_BASE}/api/demographics/${currentStore}`);
+                const data = await response.json();
+                
+                container.innerHTML = `
+                    <div class="metric-card demographic-card" style="margin: 0 0 16px 0;">
+                        <div class="metric-value">${(data.population / 1000).toFixed(0)}K</div>
+                        <div class="metric-label">Population</div>
+                        <div class="metric-description">${data.location}</div>
+                    </div>
+                    
+                    <div style="font-size: 0.9rem; line-height: 1.4;">
+                        <div style="margin: 8px 0;">
+                            <strong>Age:</strong> ${data.median_age.toFixed(1)} years median
+                        </div>
+                        <div style="margin: 8px 0;">
+                            <strong>Income:</strong> $${(data.median_income / 1000).toFixed(0)}K median
+                        </div>
+                        <div style="margin: 8px 0;">
+                            <strong>Education:</strong> ${data.education_level.replace('_', ' ')}
+                        </div>
+                        <div style="margin: 8px 0;">
+                            <strong>Employment:</strong> ${(data.employment_rate * 100).toFixed(1)}%
+                        </div>
+                        <div style="margin: 8px 0;">
+                            <strong>Density:</strong> ${data.urban_density} urban density
+                        </div>
+                        <div style="margin: 8px 0;">
+                            <strong>Segments:</strong> ${data.lifestyle_segments.join(', ')}
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <span class="material-icons">error</span>
+                        <div>Failed to load demographic data: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Calculate demand multipliers
+        async function calculateDemandMultipliers() {
+            const container = document.getElementById('demandMultipliers');
+            const targetDate = document.getElementById('targetDate').value;
+            const productCategory = document.getElementById('productCategory').value;
+            
+            if (!targetDate) {
+                container.innerHTML = `
+                    <div class="alert alert-warning">
+                        <span class="material-icons">warning</span>
+                        <div>Please select a target date.</div>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = '<div class="loading"><span class="material-icons">sync</span>Calculating demand impact...</div>';
+            
+            try {
+                const url = `${EXTERNAL_API_BASE}/api/demand-multipliers/${currentStore}?target_date=${targetDate}${productCategory ? `&product_category=${productCategory}` : ''}`;
+                const response = await fetch(url);
+                const data = await response.json();
+                
+                const getImpactClass = (impact) => {
+                    if (impact === 'positive') return 'impact-positive';
+                    if (impact === 'negative') return 'impact-negative';
+                    return 'impact-neutral';
+                };
+                
+                const getImpactIcon = (impact) => {
+                    if (impact === 'positive') return 'trending_up';
+                    if (impact === 'negative') return 'trending_down';
+                    return 'trending_flat';
+                };
+                
+                container.innerHTML = `
+                    <div style="margin-bottom: 16px;">
+                        <h5 style="margin: 0 0 12px 0; color: #2196f3;">Demand Impact Analysis</h5>
+                        <p style="margin: 0; font-size: 0.8rem; color: #666;">
+                            Date: ${targetDate} ${productCategory ? `• Category: ${productCategory}` : '• All Categories'}
+                        </p>
+                    </div>
+                    
+                    <div class="multiplier-display">
+                        <div class="multiplier-label">
+                            Weather Impact
+                            <span class="impact-indicator ${getImpactClass(data.interpretation.weather_impact)}">
+                                <span class="material-icons" style="font-size: 12px; margin-right: 2px;">${getImpactIcon(data.interpretation.weather_impact)}</span>
+                                ${data.interpretation.weather_impact}
+                            </span>
+                        </div>
+                        <div class="multiplier-value">${data.multipliers.weather}x</div>
+                    </div>
+                    
+                    <div class="multiplier-display">
+                        <div class="multiplier-label">
+                            Events Impact
+                            <span class="impact-indicator ${getImpactClass(data.interpretation.events_impact)}">
+                                <span class="material-icons" style="font-size: 12px; margin-right: 2px;">${getImpactIcon(data.interpretation.events_impact)}</span>
+                                ${data.interpretation.events_impact}
+                            </span>
+                        </div>
+                        <div class="multiplier-value">${data.multipliers.events}x</div>
+                    </div>
+                    
+                    <div class="multiplier-display">
+                        <div class="multiplier-label">
+                            Demographic Fit
+                            <span class="impact-indicator ${getImpactClass(data.interpretation.demographic_fit)}">
+                                <span class="material-icons" style="font-size: 12px; margin-right: 2px;">${getImpactIcon(data.interpretation.demographic_fit)}</span>
+                                ${data.interpretation.demographic_fit}
+                            </span>
+                        </div>
+                        <div class="multiplier-value">${data.multipliers.demographic}x</div>
+                    </div>
+                    
+                    <div class="multiplier-display" style="border-left-color: #4caf50; background: #e8f5e8;">
+                        <div class="multiplier-label">
+                            <strong>Combined Impact</strong>
+                            <span style="font-size: 0.75rem; color: #666; display: block;">
+                                ${data.interpretation.overall_adjustment > 0 ? '+' : ''}${data.interpretation.overall_adjustment}% adjustment
+                            </span>
+                        </div>
+                        <div class="multiplier-value" style="color: #4caf50; font-size: 1.4rem;">
+                            ${data.multipliers.combined}x
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <span class="material-icons">error</span>
+                        <div>Failed to calculate demand multipliers: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Load ML features
+        async function loadMLFeatures() {
+            const container = document.getElementById('mlFeatures');
+            container.innerHTML = '<div class="loading"><span class="material-icons">sync</span>Generating ML features...</div>';
+            
+            try {
+                const response = await fetch(`${EXTERNAL_API_BASE}/api/ml-features/${currentStore}?date_range=30`);
+                const data = await response.json();
+                
+                const weather = data.weather_features;
+                const events = data.event_features;
+                const demographics = data.demographic_features;
+                
+                container.innerHTML = `
+                    <div class="grid grid-3" style="gap: 16px; margin-bottom: 20px;">
+                        <div class="metric-card weather-card" style="margin: 0;">
+                            <div class="metric-value">${weather.data_points || 0}</div>
+                            <div class="metric-label">Weather Data Points</div>
+                            <div class="metric-description">Avg Temp: ${weather.avg_temperature?.toFixed(1) || 'N/A'}°C</div>
+                        </div>
+                        <div class="metric-card event-card" style="margin: 0;">
+                            <div class="metric-value">${events.total_events || 0}</div>
+                            <div class="metric-label">Total Events</div>
+                            <div class="metric-description">${events.major_events || 0} major events</div>
+                        </div>
+                        <div class="metric-card demographic-card" style="margin: 0;">
+                            <div class="metric-value">${demographics.income_segment || 0}</div>
+                            <div class="metric-label">Income Segment</div>
+                            <div class="metric-description">Age: ${demographics.median_age?.toFixed(0) || 'N/A'}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="alert alert-info">
+                        <span class="material-icons">psychology</span>
+                        <div>
+                            <h5 style="margin: 0 0 8px 0;">Enhanced ML Features Available</h5>
+                            <p style="margin: 0; font-size: 0.9rem;">
+                                Weather features include temperature patterns, precipitation history, and seasonal trends. 
+                                Event features capture upcoming activities, impact scores, and attendance estimates. 
+                                Demographic features provide income segmentation, age distribution, and shopping preferences.
+                                These features can improve forecast accuracy by 15-25%.
+                            </p>
+                        </div>
+                    </div>
+                    
+                    <div style="margin-top: 16px;">
+                        <h6 style="margin: 0 0 8px 0;">Combined Multipliers by Category:</h6>
+                        <div class="grid grid-5" style="gap: 8px;">
+                            ${Object.entries(data.combined_multipliers).map(([category, multiplier]) => `
+                                <div style="padding: 8px; background: #f8f9fa; border-radius: 4px; text-align: center;">
+                                    <div style="font-size: 0.75rem; color: #666; text-transform: uppercase;">${category}</div>
+                                    <div style="font-size: 1.1rem; font-weight: 600; color: ${multiplier > 1 ? '#4caf50' : multiplier < 1 ? '#f44336' : '#666'};">
+                                        ${multiplier}x
+                                    </div>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                `;
+                
+            } catch (error) {
+                container.innerHTML = `
+                    <div class="alert alert-error">
+                        <span class="material-icons">error</span>
+                        <div>Failed to load ML features: ${error.message}</div>
+                    </div>
+                `;
+            }
+        }
+        
+        // Utility functions
+        function getWeatherIcon(condition) {
+            const icons = {
+                'clear': 'wb_sunny',
+                'cloudy': 'cloud',
+                'rain': 'grain',
+                'snow': 'ac_unit',
+                'storm': 'thunderstorm'
+            };
+            return icons[condition] || 'wb_sunny';
+        }
+        
+        function getEventIcon(eventType) {
+            const icons = {
+                'concert': 'library_music',
+                'sports': 'sports_soccer',
+                'festival': 'celebration',
+                'conference': 'business_center',
+                'convention': 'event',
+                'holiday': 'card_giftcard',
+                'graduation': 'school',
+                'wedding_season': 'favorite',
+                'back_to_school': 'backpack'
+            };
+            return icons[eventType] || 'event';
+        }
+        
+        // Auto-load data on page load
+        window.onload = function() {
+            loadDataSummary();
+            loadAllDataForStore();
+        };
+    </script>
+</body>
+</html>

@@ -1,0 +1,194 @@
+version: '3.8'
+
+services:
+  # Zookeeper for Kafka
+  zookeeper:
+    image: confluentinc/cp-zookeeper:7.4.0
+    hostname: zookeeper
+    container_name: retailai-zookeeper
+    ports:
+      - "2181:2181"
+    environment:
+      ZOOKEEPER_CLIENT_PORT: 2181
+      ZOOKEEPER_TICK_TIME: 2000
+    networks:
+      - retailai-network
+
+  # Kafka Broker
+  kafka:
+    image: confluentinc/cp-kafka:7.4.0
+    hostname: kafka
+    container_name: retailai-kafka
+    depends_on:
+      - zookeeper
+    ports:
+      - "9092:9092"
+      - "9101:9101"
+    environment:
+      KAFKA_BROKER_ID: 1
+      KAFKA_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://kafka:29092,PLAINTEXT_HOST://localhost:9092
+      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:29092,PLAINTEXT_HOST://0.0.0.0:9092
+      KAFKA_METRIC_REPORTERS: io.confluent.metrics.reporter.ConfluentMetricsReporter
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      KAFKA_CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: kafka:29092
+      KAFKA_CONFLUENT_METRICS_REPORTER_TOPIC_REPLICAS: 1
+      KAFKA_CONFLUENT_METRICS_ENABLE: 'true'
+      KAFKA_CONFLUENT_SUPPORT_CUSTOMER_ID: anonymous
+      KAFKA_AUTO_CREATE_TOPICS_ENABLE: 'true'
+      KAFKA_DELETE_TOPIC_ENABLE: 'true'
+      # Performance optimizations
+      KAFKA_NUM_PARTITIONS: 3
+      KAFKA_DEFAULT_REPLICATION_FACTOR: 1
+      KAFKA_LOG_RETENTION_HOURS: 24
+      KAFKA_LOG_SEGMENT_BYTES: 1073741824
+      KAFKA_LOG_RETENTION_CHECK_INTERVAL_MS: 300000
+    networks:
+      - retailai-network
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+
+  # Kafka UI for monitoring
+  kafka-ui:
+    image: provectuslabs/kafka-ui:latest
+    container_name: retailai-kafka-ui
+    depends_on:
+      - kafka
+    ports:
+      - "8090:8080"
+    environment:
+      KAFKA_CLUSTERS_0_NAME: retailai-cluster
+      KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: kafka:29092
+      KAFKA_CLUSTERS_0_ZOOKEEPER: zookeeper:2181
+    networks:
+      - retailai-network
+
+  # Redis for caching and real-time data
+  redis:
+    image: redis:7.2-alpine
+    container_name: retailai-redis
+    ports:
+      - "6379:6379"
+    command: redis-server --appendonly yes --maxmemory 512mb --maxmemory-policy allkeys-lru
+    volumes:
+      - redis-data:/data
+    networks:
+      - retailai-network
+
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15
+    container_name: retailai-postgres
+    environment:
+      POSTGRES_DB: retailai
+      POSTGRES_USER: retailai
+      POSTGRES_PASSWORD: retailai123
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./database/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+    networks:
+      - retailai-network
+
+  # ML Engine API Server
+  ml-engine:
+    build:
+      context: ./src/services/ml-engine
+      dockerfile: Dockerfile
+    container_name: retailai-ml-engine
+    depends_on:
+      - postgres
+      - redis
+    ports:
+      - "8001:8001"
+    environment:
+      DATABASE_URL: postgresql://retailai:retailai123@postgres:5432/retailai
+      REDIS_URL: redis://redis:6379/0
+    networks:
+      - retailai-network
+    volumes:
+      - ./src/services/ml-engine:/app
+    command: python api_server.py
+
+  # Streaming Pipeline API Server
+  streaming-api:
+    build:
+      context: ./src/services/streaming-pipeline
+      dockerfile: Dockerfile
+    container_name: retailai-streaming-api
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    ports:
+      - "8002:8002"
+    environment:
+      DATABASE_URL: postgresql://retailai:retailai123@postgres:5432/retailai
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    networks:
+      - retailai-network
+    volumes:
+      - ./src/services/streaming-pipeline:/app
+    command: python stream_api_server.py
+
+  # Alert Engine (Real-time alerts)
+  alert-engine:
+    build:
+      context: ./src/services/alert-engine
+      dockerfile: Dockerfile
+    container_name: retailai-alert-engine
+    depends_on:
+      - postgres
+      - redis
+      - kafka
+    environment:
+      DATABASE_URL: postgresql://retailai:retailai123@postgres:5432/retailai
+      REDIS_URL: redis://redis:6379/0
+      KAFKA_BOOTSTRAP_SERVERS: kafka:29092
+    networks:
+      - retailai-network
+    volumes:
+      - ./src/services/alert-engine:/app
+    command: python alert_system.py
+
+  # Kafka Topic Initialization
+  kafka-init:
+    image: confluentinc/cp-kafka:7.4.0
+    depends_on:
+      - kafka
+    entrypoint: ['/bin/sh', '-c']
+    command: |
+      "
+      # Wait for Kafka to be ready
+      while ! kafka-topics --bootstrap-server kafka:29092 --list; do
+        echo 'Waiting for Kafka to be ready...'
+        sleep 5
+      done
+      
+      echo 'Creating Kafka topics...'
+      
+      # Create topics
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --partitions 3 --replication-factor 1 --topic retail-sales-stream
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --partitions 3 --replication-factor 1 --topic inventory-updates-stream
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --partitions 3 --replication-factor 1 --topic alert-notifications-stream
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --partitions 3 --replication-factor 1 --topic ml-predictions-stream
+      kafka-topics --create --if-not-exists --bootstrap-server kafka:29092 --partitions 3 --replication-factor 1 --topic system-events-stream
+      
+      echo 'Topics created successfully:'
+      kafka-topics --list --bootstrap-server kafka:29092
+      "
+    networks:
+      - retailai-network
+
+networks:
+  retailai-network:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  redis-data:
+  kafka-data:

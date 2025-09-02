@@ -1,0 +1,1172 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🧪 RetailAI API Testing Dashboard</title>
+    
+    <!-- Material-UI CSS -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+        
+        .header {
+            text-align: center;
+            margin-bottom: 32px;
+            color: white;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 300;
+            margin-bottom: 8px;
+        }
+        
+        .header .subtitle {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 16px;
+        }
+        
+        .features {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-bottom: 32px;
+        }
+        
+        .feature-chip {
+            display: inline-flex;
+            align-items: center;
+            padding: 8px 16px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 24px;
+            color: white;
+            font-size: 0.875rem;
+            font-weight: 500;
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .feature-chip .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+        
+        .card {
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            margin-bottom: 24px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .card:hover {
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transform: translateY(-2px);
+        }
+        
+        .card-header {
+            padding: 20px 24px 16px;
+            border-bottom: 1px solid #f0f0f0;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .card-header h3 {
+            font-size: 1.25rem;
+            font-weight: 500;
+            margin: 0;
+            display: flex;
+            align-items: center;
+        }
+        
+        .card-header .material-icons {
+            margin-right: 12px;
+            color: #667eea;
+            font-size: 24px;
+        }
+        
+        .card-content {
+            padding: 24px;
+        }
+        
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            min-height: 48px;
+            margin: 4px;
+        }
+        
+        .btn-primary {
+            background: linear-gradient(45deg, #667eea, #764ba2);
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: linear-gradient(45deg, #5a6fd8, #6a4190);
+            box-shadow: 0 4px 12px rgba(102, 126, 234, 0.3);
+        }
+        
+        .btn-secondary {
+            background: #f8f9fa;
+            color: #495057;
+            border: 1px solid #dee2e6;
+        }
+        
+        .btn-secondary:hover {
+            background: #e9ecef;
+        }
+        
+        .btn-success {
+            background: #28a745;
+            color: white;
+        }
+        
+        .btn-danger {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .btn .material-icons {
+            font-size: 18px;
+            margin-right: 8px;
+        }
+        
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+        
+        .grid-2 {
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+        }
+        
+        .grid-3 {
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+            gap: 16px;
+            margin: 20px 0;
+        }
+        
+        .stat-card {
+            background: #f8f9fa;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+        
+        .stat-value.success {
+            color: #28a745;
+        }
+        
+        .stat-value.failure {
+            color: #dc3545;
+        }
+        
+        .stat-value.warning {
+            color: #ffc107;
+        }
+        
+        .stat-label {
+            font-size: 0.875rem;
+            color: #666;
+        }
+        
+        .test-result {
+            display: flex;
+            align-items: center;
+            padding: 12px;
+            border-radius: 6px;
+            margin: 8px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .test-result.success {
+            background: #d4edda;
+            border-left: 4px solid #28a745;
+        }
+        
+        .test-result.failure {
+            background: #f8d7da;
+            border-left: 4px solid #dc3545;
+        }
+        
+        .test-result.running {
+            background: #fff3cd;
+            border-left: 4px solid #ffc107;
+        }
+        
+        .test-result .material-icons {
+            margin-right: 12px;
+            font-size: 18px;
+        }
+        
+        .endpoint-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .endpoint-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            margin: 8px 0;
+        }
+        
+        .endpoint-info {
+            flex: 1;
+        }
+        
+        .endpoint-method {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: bold;
+            margin-right: 8px;
+        }
+        
+        .method-get {
+            background: #007bff;
+            color: white;
+        }
+        
+        .method-post {
+            background: #28a745;
+            color: white;
+        }
+        
+        .method-put {
+            background: #ffc107;
+            color: black;
+        }
+        
+        .method-delete {
+            background: #dc3545;
+            color: white;
+        }
+        
+        .loading {
+            display: inline-flex;
+            align-items: center;
+            color: #666;
+        }
+        
+        .loading .material-icons {
+            animation: spin 1s linear infinite;
+            margin-right: 8px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .code-block {
+            background: #f8f9fa;
+            border: 1px solid #dee2e6;
+            border-radius: 6px;
+            padding: 16px;
+            margin: 16px 0;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            overflow-x: auto;
+        }
+        
+        .alert {
+            padding: 16px 20px;
+            border-radius: 8px;
+            margin: 16px 0;
+            display: flex;
+            align-items: flex-start;
+        }
+        
+        .alert .material-icons {
+            margin-right: 12px;
+            font-size: 20px;
+        }
+        
+        .alert-success {
+            background: #e8f5e8;
+            border: 1px solid #4caf50;
+            color: #2e7d32;
+        }
+        
+        .alert-error {
+            background: #ffebee;
+            border: 1px solid #f44336;
+            color: #c62828;
+        }
+        
+        .alert-info {
+            background: #e3f2fd;
+            border: 1px solid #2196f3;
+            color: #1565c0;
+        }
+        
+        .alert-warning {
+            background: #fff3e0;
+            border: 1px solid #ff9800;
+            color: #ef6c00;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 6px;
+            background: #e0e0e0;
+            border-radius: 3px;
+            overflow: hidden;
+            margin: 8px 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: #4caf50;
+            transition: width 0.5s ease;
+        }
+        
+        .hidden {
+            display: none !important;
+        }
+        
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .features {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .grid-2, .grid-3 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🧪 RetailAI API Testing Dashboard</h1>
+            <p class="subtitle">Comprehensive API Integration Testing & Documentation</p>
+            
+            <div class="features">
+                <div class="feature-chip">
+                    <span class="material-icons">api</span>
+                    REST API Testing
+                </div>
+                <div class="feature-chip">
+                    <span class="material-icons">speed</span>
+                    Performance Tests
+                </div>
+                <div class="feature-chip">
+                    <span class="material-icons">security</span>
+                    Authentication
+                </div>
+                <div class="feature-chip">
+                    <span class="material-icons">analytics</span>
+                    Test Reports
+                </div>
+                <div class="feature-chip">
+                    <span class="material-icons">description</span>
+                    Documentation
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Control Panel -->
+        <div class="grid grid-2">
+            
+            <!-- Test Execution -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="material-icons">play_arrow</span>Test Execution</h3>
+                </div>
+                <div class="card-content">
+                    <div class="grid grid-3">
+                        <button class="btn btn-primary" onclick="runHealthChecks()" id="healthTestBtn">
+                            <span class="material-icons">favorite</span>
+                            Health Checks
+                        </button>
+                        
+                        <button class="btn btn-primary" onclick="runAuthenticationTests()" id="authTestBtn">
+                            <span class="material-icons">security</span>
+                            Authentication
+                        </button>
+                        
+                        <button class="btn btn-primary" onclick="runMLEngineTests()" id="mlTestBtn">
+                            <span class="material-icons">psychology</span>
+                            ML Engine
+                        </button>
+                        
+                        <button class="btn btn-primary" onclick="runDashboardTests()" id="dashboardTestBtn">
+                            <span class="material-icons">dashboard</span>
+                            Dashboard
+                        </button>
+                        
+                        <button class="btn btn-primary" onclick="runAlertTests()" id="alertTestBtn">
+                            <span class="material-icons">notification_important</span>
+                            Alerts
+                        </button>
+                        
+                        <button class="btn btn-primary" onclick="runPerformanceTests()" id="perfTestBtn">
+                            <span class="material-icons">speed</span>
+                            Performance
+                        </button>
+                    </div>
+                    
+                    <div style="margin-top: 24px;">
+                        <button class="btn btn-success" onclick="runAllTests()" id="runAllBtn">
+                            <span class="material-icons">play_circle</span>
+                            Run All Tests
+                        </button>
+                        
+                        <button class="btn btn-danger" onclick="stopTests()" id="stopBtn" disabled>
+                            <span class="material-icons">stop_circle</span>
+                            Stop Tests
+                        </button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Test Progress -->
+            <div class="card">
+                <div class="card-header">
+                    <h3><span class="material-icons">analytics</span>Test Progress</h3>
+                </div>
+                <div class="card-content">
+                    <div id="testProgress">
+                        <p>Click "Run All Tests" to start comprehensive testing</p>
+                    </div>
+                    
+                    <div class="stats-grid" id="testStats" style="display: none;">
+                        <div class="stat-card">
+                            <div class="stat-value success" id="passedCount">0</div>
+                            <div class="stat-label">Passed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value failure" id="failedCount">0</div>
+                            <div class="stat-label">Failed</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="totalCount">0</div>
+                            <div class="stat-label">Total</div>
+                        </div>
+                        <div class="stat-card">
+                            <div class="stat-value" id="successRate">0%</div>
+                            <div class="stat-label">Success Rate</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+        </div>
+
+        <!-- API Endpoints Documentation -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="material-icons">api</span>API Endpoints</h3>
+                <button class="btn btn-secondary" onclick="toggleEndpoints()">
+                    <span class="material-icons">visibility</span>
+                    Toggle View
+                </button>
+            </div>
+            <div class="card-content">
+                <div id="endpointsContainer" class="hidden">
+                    <div class="endpoint-list" id="endpointsList">
+                        <div class="loading">
+                            <span class="material-icons">sync</span>
+                            Loading API endpoints...
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Test Results -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="material-icons">fact_check</span>Test Results</h3>
+                <button class="btn btn-secondary" onclick="clearResults()">
+                    <span class="material-icons">clear_all</span>
+                    Clear Results
+                </button>
+            </div>
+            <div class="card-content">
+                <div id="testResultsContainer">
+                    <p>Test results will appear here after running tests</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Quick API Test -->
+        <div class="card">
+            <div class="card-header">
+                <h3><span class="material-icons">code</span>Quick API Test</h3>
+            </div>
+            <div class="card-content">
+                <div class="grid grid-2">
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">Method</label>
+                        <select id="apiMethod" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="GET">GET</option>
+                            <option value="POST">POST</option>
+                            <option value="PUT">PUT</option>
+                            <option value="DELETE">DELETE</option>
+                        </select>
+                    </div>
+                    
+                    <div>
+                        <label style="display: block; margin-bottom: 6px; font-weight: 500;">Service</label>
+                        <select id="apiService" style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+                            <option value="8001">ML Engine (8001)</option>
+                            <option value="8002">External Data (8002)</option>
+                            <option value="8003">Alert Engine (8003)</option>
+                            <option value="8004">Authentication (8004)</option>
+                            <option value="8005">Dashboard (8005)</option>
+                            <option value="8006">Reporting (8006)</option>
+                            <option value="8007">Monitoring (8007)</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <div style="margin: 16px 0;">
+                    <label style="display: block; margin-bottom: 6px; font-weight: 500;">Endpoint</label>
+                    <input type="text" id="apiEndpoint" placeholder="/health or /api/dashboard/kpis" 
+                           style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px;">
+                </div>
+                
+                <div style="margin: 16px 0;">
+                    <label style="display: block; margin-bottom: 6px; font-weight: 500;">Request Body (JSON)</label>
+                    <textarea id="apiBody" rows="4" placeholder='{"key": "value"}' 
+                              style="width: 100%; padding: 12px; border: 1px solid #ddd; border-radius: 4px; font-family: monospace;"></textarea>
+                </div>
+                
+                <button class="btn btn-primary" onclick="executeQuickTest()" style="width: 100%;">
+                    <span class="material-icons">send</span>
+                    Execute Request
+                </button>
+                
+                <div id="quickTestResult"></div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        // API endpoints configuration
+        const API_ENDPOINTS = {
+            8001: [ // ML Engine
+                {method: 'GET', path: '/health', description: 'Health check'},
+                {method: 'GET', path: '/api/kpis', description: 'Get live KPIs'},
+                {method: 'GET', path: '/api/forecasts', description: 'Get forecast data'},
+                {method: 'GET', path: '/api/analytics/stores', description: 'Get store analytics'}
+            ],
+            8002: [ // External Data
+                {method: 'GET', path: '/health', description: 'Health check'},
+                {method: 'GET', path: '/api/external/weather', description: 'Get weather data'},
+                {method: 'GET', path: '/api/external/events', description: 'Get local events'},
+                {method: 'GET', path: '/api/external/demographics', description: 'Get demographics'}
+            ],
+            8003: [ // Alert Engine
+                {method: 'GET', path: '/health', description: 'Health check'},
+                {method: 'GET', path: '/api/alerts/active', description: 'Get active alerts'},
+                {method: 'POST', path: '/api/alerts/rules', description: 'Create alert rule'},
+                {method: 'GET', path: '/api/alerts/analytics', description: 'Get alert analytics'}
+            ],
+            8004: [ // Authentication
+                {method: 'GET', path: '/health', description: 'Health check'},
+                {method: 'POST', path: '/api/auth/login', description: 'User login'},
+                {method: 'GET', path: '/api/auth/session', description: 'Get session info'},
+                {method: 'GET', path: '/api/auth/users', description: 'Get users (admin)'},
+                {method: 'GET', path: '/api/auth/roles', description: 'Get available roles'}
+            ],
+            8005: [ // Dashboard
+                {method: 'GET', path: '/health', description: 'Health check'},
+                {method: 'GET', path: '/api/dashboard/data', description: 'Get dashboard data'}
+            ],
+            8006: [ // Reporting
+                {method: 'GET', path: '/health', description: 'Health check'},
+                {method: 'POST', path: '/api/reports/generate', description: 'Generate report'},
+                {method: 'GET', path: '/api/reports/executions', description: 'Get report executions'},
+                {method: 'POST', path: '/api/reports/schedules', description: 'Create report schedule'}
+            ],
+            8007: [ // Monitoring
+                {method: 'GET', path: '/health', description: 'Health check'},
+                {method: 'GET', path: '/api/monitoring/metrics/current', description: 'Get current metrics'},
+                {method: 'POST', path: '/api/monitoring/metrics/custom', description: 'Record custom metric'},
+                {method: 'GET', path: '/api/monitoring/alerts/active', description: 'Get performance alerts'}
+            ]
+        };
+        
+        let testRunning = false;
+        let testResults = [];
+        let authToken = null;
+        
+        // Authentication
+        async function authenticate() {
+            try {
+                const response = await fetch('http://localhost:8004/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        username: 'admin',
+                        password: 'admin123'
+                    })
+                });
+                
+                const data = await response.json();
+                if (data.success && data.session_id) {
+                    authToken = data.session_id;
+                    return true;
+                }
+                return false;
+            } catch (error) {
+                console.error('Authentication failed:', error);
+                return false;
+            }
+        }
+        
+        // Make API request
+        async function makeRequest(method, url, body = null) {
+            const options = {
+                method: method,
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            };
+            
+            if (authToken) {
+                options.headers['Authorization'] = `Bearer ${authToken}`;
+            }
+            
+            if (body && (method === 'POST' || method === 'PUT')) {
+                options.body = JSON.stringify(body);
+            }
+            
+            const startTime = performance.now();
+            
+            try {
+                const response = await fetch(url, options);
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+                
+                let responseData;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    responseData = await response.json();
+                } else {
+                    responseData = await response.text();
+                }
+                
+                return {
+                    success: response.ok,
+                    status: response.status,
+                    responseTime: responseTime,
+                    data: responseData,
+                    url: url,
+                    method: method
+                };
+            } catch (error) {
+                const endTime = performance.now();
+                const responseTime = Math.round(endTime - startTime);
+                
+                return {
+                    success: false,
+                    status: 0,
+                    responseTime: responseTime,
+                    error: error.message,
+                    url: url,
+                    method: method
+                };
+            }
+        }
+        
+        // Display test result
+        function displayTestResult(testName, result) {
+            const container = document.getElementById('testResultsContainer');
+            
+            const resultElement = document.createElement('div');
+            resultElement.className = `test-result ${result.success ? 'success' : 'failure'}`;
+            
+            const icon = result.success ? 'check_circle' : 'error';
+            const statusText = result.success ? 'PASS' : 'FAIL';
+            const statusCode = result.status || 'N/A';
+            
+            resultElement.innerHTML = `
+                <span class="material-icons">${icon}</span>
+                <div style="flex: 1;">
+                    <strong>${testName}</strong><br>
+                    <small>${result.method} ${result.url}</small>
+                </div>
+                <div style="text-align: right;">
+                    <div><strong>${statusText}</strong> (${statusCode})</div>
+                    <div><small>${result.responseTime}ms</small></div>
+                </div>
+            `;
+            
+            // Insert at top
+            container.insertBefore(resultElement, container.firstChild);
+        }
+        
+        // Update test statistics
+        function updateTestStats() {
+            const passed = testResults.filter(r => r.success).length;
+            const failed = testResults.filter(r => !r.success).length;
+            const total = testResults.length;
+            const successRate = total > 0 ? Math.round((passed / total) * 100) : 0;
+            
+            document.getElementById('passedCount').textContent = passed;
+            document.getElementById('failedCount').textContent = failed;
+            document.getElementById('totalCount').textContent = total;
+            document.getElementById('successRate').textContent = `${successRate}%`;
+            document.getElementById('testStats').style.display = 'grid';
+        }
+        
+        // Health checks
+        async function runHealthChecks() {
+            if (!authToken && !await authenticate()) {
+                displayTestResult('Authentication', {
+                    success: false, status: 401, responseTime: 0,
+                    method: 'POST', url: '/api/auth/login'
+                });
+                return;
+            }
+            
+            const services = [8001, 8002, 8003, 8004, 8005, 8006, 8007];
+            
+            for (const port of services) {
+                const result = await makeRequest('GET', `http://localhost:${port}/health`);
+                const serviceName = getServiceName(port);
+                displayTestResult(`${serviceName} Health Check`, result);
+                testResults.push(result);
+            }
+            
+            updateTestStats();
+        }
+        
+        // Authentication tests
+        async function runAuthenticationTests() {
+            const tests = [
+                {
+                    name: 'Authentication Health Check',
+                    method: 'GET',
+                    url: 'http://localhost:8004/health'
+                },
+                {
+                    name: 'User Login',
+                    method: 'POST',
+                    url: 'http://localhost:8004/api/auth/login',
+                    body: {username: 'admin', password: 'admin123'}
+                },
+                {
+                    name: 'Get Session Info',
+                    method: 'GET',
+                    url: 'http://localhost:8004/api/auth/session'
+                },
+                {
+                    name: 'Get Available Roles',
+                    method: 'GET',
+                    url: 'http://localhost:8004/api/auth/roles'
+                }
+            ];
+            
+            for (const test of tests) {
+                const result = await makeRequest(test.method, test.url, test.body);
+                displayTestResult(test.name, result);
+                testResults.push(result);
+            }
+            
+            updateTestStats();
+        }
+        
+        // ML Engine tests
+        async function runMLEngineTests() {
+            if (!authToken && !await authenticate()) return;
+            
+            const tests = [
+                {
+                    name: 'Get Live KPIs',
+                    method: 'GET',
+                    url: 'http://localhost:8001/api/kpis'
+                },
+                {
+                    name: 'Get Forecast Data',
+                    method: 'GET',
+                    url: 'http://localhost:8001/api/forecasts'
+                },
+                {
+                    name: 'Get Store Analytics',
+                    method: 'GET',
+                    url: 'http://localhost:8001/api/analytics/stores'
+                }
+            ];
+            
+            for (const test of tests) {
+                const result = await makeRequest(test.method, test.url, test.body);
+                displayTestResult(test.name, result);
+                testResults.push(result);
+            }
+            
+            updateTestStats();
+        }
+        
+        // Dashboard tests
+        async function runDashboardTests() {
+            if (!authToken && !await authenticate()) return;
+            
+            const tests = [
+                {
+                    name: 'Dashboard Health Check',
+                    method: 'GET',
+                    url: 'http://localhost:8005/health'
+                },
+                {
+                    name: 'Get Dashboard Data',
+                    method: 'GET',
+                    url: 'http://localhost:8005/api/dashboard/data'
+                }
+            ];
+            
+            for (const test of tests) {
+                const result = await makeRequest(test.method, test.url, test.body);
+                displayTestResult(test.name, result);
+                testResults.push(result);
+            }
+            
+            updateTestStats();
+        }
+        
+        // Alert tests
+        async function runAlertTests() {
+            if (!authToken && !await authenticate()) return;
+            
+            const tests = [
+                {
+                    name: 'Alert Engine Health Check',
+                    method: 'GET',
+                    url: 'http://localhost:8003/health'
+                },
+                {
+                    name: 'Get Active Alerts',
+                    method: 'GET',
+                    url: 'http://localhost:8003/api/alerts/active'
+                },
+                {
+                    name: 'Get Alert Analytics',
+                    method: 'GET',
+                    url: 'http://localhost:8003/api/alerts/analytics'
+                }
+            ];
+            
+            for (const test of tests) {
+                const result = await makeRequest(test.method, test.url, test.body);
+                displayTestResult(test.name, result);
+                testResults.push(result);
+            }
+            
+            updateTestStats();
+        }
+        
+        // Performance tests
+        async function runPerformanceTests() {
+            if (!authToken && !await authenticate()) return;
+            
+            const endpoint = 'http://localhost:8001/api/kpis';
+            const concurrentRequests = 10;
+            const testName = `Load Test (${concurrentRequests} concurrent requests)`;
+            
+            const startTime = performance.now();
+            
+            const promises = Array(concurrentRequests).fill().map(() => 
+                makeRequest('GET', endpoint)
+            );
+            
+            try {
+                const results = await Promise.all(promises);
+                const endTime = performance.now();
+                const totalTime = Math.round(endTime - startTime);
+                
+                const successful = results.filter(r => r.success).length;
+                const successRate = Math.round((successful / results.length) * 100);
+                const avgResponseTime = Math.round(
+                    results.reduce((sum, r) => sum + r.responseTime, 0) / results.length
+                );
+                
+                const loadTestResult = {
+                    success: successRate >= 80,
+                    status: `${successful}/${results.length}`,
+                    responseTime: totalTime,
+                    method: 'LOAD',
+                    url: endpoint,
+                    loadTestData: {
+                        successRate: successRate,
+                        avgResponseTime: avgResponseTime,
+                        totalTime: totalTime
+                    }
+                };
+                
+                displayTestResult(testName, loadTestResult);
+                testResults.push(loadTestResult);
+            } catch (error) {
+                const errorResult = {
+                    success: false,
+                    status: 'ERROR',
+                    responseTime: 0,
+                    method: 'LOAD',
+                    url: endpoint,
+                    error: error.message
+                };
+                
+                displayTestResult(testName, errorResult);
+                testResults.push(errorResult);
+            }
+            
+            updateTestStats();
+        }
+        
+        // Run all tests
+        async function runAllTests() {
+            if (testRunning) return;
+            
+            testRunning = true;
+            document.getElementById('runAllBtn').disabled = true;
+            document.getElementById('stopBtn').disabled = false;
+            
+            // Clear previous results
+            clearResults();
+            
+            // Update progress
+            document.getElementById('testProgress').innerHTML = 
+                '<div class="loading"><span class="material-icons">sync</span>Running comprehensive test suite...</div>';
+            
+            try {
+                await runHealthChecks();
+                if (!testRunning) return;
+                
+                await runAuthenticationTests();
+                if (!testRunning) return;
+                
+                await runMLEngineTests();
+                if (!testRunning) return;
+                
+                await runDashboardTests();
+                if (!testRunning) return;
+                
+                await runAlertTests();
+                if (!testRunning) return;
+                
+                await runPerformanceTests();
+                
+                document.getElementById('testProgress').innerHTML = 
+                    '<div class="alert alert-success"><span class="material-icons">check_circle</span><div>All tests completed successfully!</div></div>';
+                    
+            } catch (error) {
+                document.getElementById('testProgress').innerHTML = 
+                    `<div class="alert alert-error"><span class="material-icons">error</span><div>Test suite failed: ${error.message}</div></div>`;
+            } finally {
+                testRunning = false;
+                document.getElementById('runAllBtn').disabled = false;
+                document.getElementById('stopBtn').disabled = true;
+            }
+        }
+        
+        // Stop tests
+        function stopTests() {
+            testRunning = false;
+            document.getElementById('testProgress').innerHTML = 
+                '<div class="alert alert-warning"><span class="material-icons">warning</span><div>Test suite stopped by user</div></div>';
+        }
+        
+        // Clear results
+        function clearResults() {
+            document.getElementById('testResultsContainer').innerHTML = 
+                '<p>Test results will appear here after running tests</p>';
+            testResults = [];
+            document.getElementById('testStats').style.display = 'none';
+        }
+        
+        // Execute quick test
+        async function executeQuickTest() {
+            const method = document.getElementById('apiMethod').value;
+            const service = document.getElementById('apiService').value;
+            const endpoint = document.getElementById('apiEndpoint').value;
+            const bodyText = document.getElementById('apiBody').value;
+            
+            if (!endpoint) {
+                alert('Please enter an endpoint');
+                return;
+            }
+            
+            let body = null;
+            if (bodyText && (method === 'POST' || method === 'PUT')) {
+                try {
+                    body = JSON.parse(bodyText);
+                } catch (e) {
+                    alert('Invalid JSON in request body');
+                    return;
+                }
+            }
+            
+            const url = `http://localhost:${service}${endpoint}`;
+            const result = await makeRequest(method, url, body);
+            
+            const resultContainer = document.getElementById('quickTestResult');
+            
+            let resultHtml = `
+                <div class="code-block" style="margin-top: 16px;">
+                    <strong>${method} ${url}</strong><br><br>
+                    <strong>Status:</strong> ${result.status}<br>
+                    <strong>Response Time:</strong> ${result.responseTime}ms<br>
+                    <strong>Success:</strong> ${result.success ? '✅ Yes' : '❌ No'}<br>
+            `;
+            
+            if (result.error) {
+                resultHtml += `<strong>Error:</strong> ${result.error}<br>`;
+            }
+            
+            if (result.data) {
+                resultHtml += `<br><strong>Response Data:</strong><br>`;
+                resultHtml += `<pre>${JSON.stringify(result.data, null, 2)}</pre>`;
+            }
+            
+            resultHtml += '</div>';
+            
+            resultContainer.innerHTML = resultHtml;
+        }
+        
+        // Toggle endpoints view
+        function toggleEndpoints() {
+            const container = document.getElementById('endpointsContainer');
+            const isHidden = container.classList.contains('hidden');
+            
+            if (isHidden) {
+                loadEndpoints();
+                container.classList.remove('hidden');
+            } else {
+                container.classList.add('hidden');
+            }
+        }
+        
+        // Load endpoints
+        function loadEndpoints() {
+            const container = document.getElementById('endpointsList');
+            
+            let html = '';
+            
+            Object.entries(API_ENDPOINTS).forEach(([port, endpoints]) => {
+                const serviceName = getServiceName(port);
+                
+                html += `<h4 style="margin: 20px 0 10px 0; color: #667eea;">${serviceName} (Port ${port})</h4>`;
+                
+                endpoints.forEach(endpoint => {
+                    html += `
+                        <div class="endpoint-item">
+                            <div class="endpoint-info">
+                                <span class="endpoint-method method-${endpoint.method.toLowerCase()}">${endpoint.method}</span>
+                                <code>${endpoint.path}</code>
+                                <br><small style="color: #666;">${endpoint.description}</small>
+                            </div>
+                            <button class="btn btn-secondary" onclick="testSingleEndpoint('${endpoint.method}', ${port}, '${endpoint.path}')" style="height: auto; padding: 6px 12px; font-size: 0.75rem;">
+                                <span class="material-icons" style="font-size: 14px; margin-right: 4px;">play_arrow</span>
+                                Test
+                            </button>
+                        </div>
+                    `;
+                });
+            });
+            
+            container.innerHTML = html;
+        }
+        
+        // Test single endpoint
+        async function testSingleEndpoint(method, port, path) {
+            if (!authToken && !await authenticate()) return;
+            
+            const url = `http://localhost:${port}${path}`;
+            const result = await makeRequest(method, url);
+            const testName = `${getServiceName(port)} - ${path}`;
+            
+            displayTestResult(testName, result);
+            testResults.push(result);
+            updateTestStats();
+        }
+        
+        // Get service name
+        function getServiceName(port) {
+            const names = {
+                8001: 'ML Engine',
+                8002: 'External Data',
+                8003: 'Alert Engine', 
+                8004: 'Authentication',
+                8005: 'Dashboard',
+                8006: 'Reporting',
+                8007: 'Monitoring'
+            };
+            return names[port] || `Service ${port}`;
+        }
+        
+        // Initialize page
+        window.onload = function() {
+            // Pre-authenticate
+            authenticate().then(success => {
+                if (success) {
+                    console.log('✅ Pre-authentication successful');
+                } else {
+                    console.log('⚠️ Pre-authentication failed - will retry during tests');
+                }
+            });
+        };
+    </script>
+</body>
+</html>

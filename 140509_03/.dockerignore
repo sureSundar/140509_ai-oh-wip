@@ -1,0 +1,15 @@
+__pycache__
+*.pyc
+.venv
+venv
+dist
+build
+.pytest_cache
+.mypy_cache
+.DS_Store
+node_modules
+*.log
+*.sqlite*
+*.db
+*.env
+docker-compose.override.yml

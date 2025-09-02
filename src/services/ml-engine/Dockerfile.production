@@ -1,0 +1,23 @@
+FROM python:3.10-slim
+ENV PYTHONDONTWRITEBYTECODE=1 PYTHONUNBUFFERED=1
+WORKDIR /app
+
+# Tools for healthchecks
+RUN apt-get update && apt-get install -y --no-install-recommends curl socat && rm -rf /var/lib/apt/lists/*
+
+# App code
+COPY . /app/
+
+# Python deps (minimal for this service)
+RUN pip install --no-cache-dir \
+    fastapi==0.110.0 \
+    uvicorn[standard]==0.27.1 \
+    pydantic==1.10.15 \
+    psycopg2-binary==2.9.9 \
+    redis==5.0.1 \
+    pandas==2.2.2 \
+    numpy==1.26.4
+
+EXPOSE 8001
+HEALTHCHECK CMD curl -f http://localhost:8001/health || exit 1
+CMD ["sh", "-c", "socat TCP-LISTEN:5432,fork,reuseaddr TCP:postgres:5432 & socat TCP-LISTEN:6379,fork,reuseaddr TCP:redis:6379 & uvicorn api_server:app --host 0.0.0.0 --port 8001"]

@@ -1,0 +1,204 @@
+<h1 id="md-legacy-system-modernization-assistant">140509_48.md — Legacy System Modernization Assistant</h1>
+<blockquote>
+<p><strong>Theme:</strong> AI in Software Engineering Lifecycle, AI for Reengineering<br />
+<strong>Mission:</strong> Analyze legacy systems to generate modernization strategies, refactor/transform code safely, and validate functional equivalence with automated tests and phased migration plans.</p>
+</blockquote>
+<hr />
+<h2 id="readme-problem-statement">README (Problem Statement)</h2>
+<p><strong>Summary:</strong> Build an AI assistant that analyzes legacy codebases and provides recommendations for modernization, refactoring, and technology migration.<br />
+<strong>Problem Statement:</strong> Organizations struggle to modernize legacy systems due to complexity, risk, and scarce knowledge. Create an assistant that understands legacy code (COBOL/PL-SQL/C/Java, etc.), maps dependencies, identifies modernization options, estimates risk/effort, generates transformed code, and validates behavior through automated testing.</p>
+<p><strong>Steps:</strong><br />
+- Legacy code analysis &amp; dependency mapping<br />
+- Strategy generation w.r.t. target stacks<br />
+- Risk assessment for planning<br />
+- Code transformation with business logic preservation<br />
+- Test strategy generation<br />
+- Project planning &amp; resource estimation</p>
+<p><strong>Suggested Data:</strong> Legacy repos; migration case studies; modernization patterns (Strangler, microservices, event-driven); risk criteria; testing artifacts; DB schemas.</p>
+<hr />
+<h2 id="vision-scope-kpis">1) Vision, Scope, KPIs</h2>
+<p><strong>Vision:</strong> Compress modernization timelines while de-risking rewrites through AI-guided analysis, refactoring, and verification.<br />
+<strong>Scope:</strong><br />
+- v1: static analysis, call/data-flow graphs, modernization strategy, risk heatmaps.<br />
+- v2: partial code transformation (module-level), test synthesis, DB migration scripts.<br />
+- v3: end-to-end pipelines with canary releases, runtime shims, continuous equivalence testing.</p>
+<p><strong>KPIs:</strong><br />
+- Manual discovery effort ↓ 50%<br />
+- Functional equivalence ≥ 95% on golden test suites<br />
+- Auto-generated test coverage ≥ 80% of critical paths<br />
+- PROD incident rate during migration &lt; baseline by 30%</p>
+<hr />
+<h2 id="personas-user-stories">2) Personas &amp; User Stories</h2>
+<ul>
+<li><strong>Modernization Architect:</strong> needs impact/risk analysis and target-state blueprint.<br />
+</li>
+<li><strong>Legacy Engineer:</strong> wants accurate dependency maps and side-effect awareness.<br />
+</li>
+<li><strong>Platform Engineer:</strong> needs deployment patterns and infra IaC.<br />
+</li>
+<li><strong>QA Lead:</strong> needs equivalence tests and regression nets.<br />
+</li>
+<li><strong>Product Owner:</strong> needs phased plan with cost/benefit and timelines.</li>
+</ul>
+<p><strong>Stories:</strong><br />
+- US‑01: Generate a system map (modules ↔ DB ↔ batch jobs ↔ external).<br />
+- US‑07: Recommend refactor vs rewrite with rationale.<br />
+- US‑12: Produce COBOL→Java/Spring sample with passing tests.<br />
+- US‑15: Create phased migration Gantt with risk mitigation.</p>
+<hr />
+<h2 id="prd-capabilities">3) PRD (Capabilities)</h2>
+<ol type="1">
+<li><strong>Code Intelligence:</strong> parsers for COBOL, PL/SQL, C, Java, .NET; build AST, symbol table, call/dep graphs; detect patterns (batch, screen, file I/O).<br />
+</li>
+<li><strong>System Discovery:</strong> runtime tracing option; map interfaces, data lineage, critical paths, SLAs.<br />
+</li>
+<li><strong>Strategy Engine:</strong> target-state options (cloud-native, microservices, serverless, DDD); pros/cons &amp; feasibility.<br />
+</li>
+<li><strong>Risk Assessment:</strong> complexity, churn, coupling, business criticality, test gaps → risk score.<br />
+</li>
+<li><strong>Transformation:</strong> rule-based + ML transpilation; idiomatic templates for target language/framework.<br />
+</li>
+<li><strong>DB &amp; Schema Migration:</strong> DDL diff, data type mapping, ETL/CDC pipelines.<br />
+</li>
+<li><strong>Test Synthesis:</strong> unit/property/integration tests; golden master recording; contract tests for external deps.<br />
+</li>
+<li><strong>Planner:</strong> effort estimation (COCOMO-like + historical priors), roadmap, staffing, canary plans.<br />
+</li>
+<li><strong>Safety Nets:</strong> runtime adapter/shim, shadow traffic, kill switches.</li>
+</ol>
+<hr />
+<h2 id="frd-functional-requirements">4) FRD (Functional Requirements)</h2>
+<ul>
+<li><strong>Parsers &amp; Indexers:</strong> ANTLR-based parsers; build AST; symbol resolution; type inference where needed.<br />
+</li>
+<li><strong>Graph Builder:</strong> call graph, dataflow, dependency graph (modules↔tables↔files↔jobs); export to Neo4j.<br />
+</li>
+<li><strong>Pattern Detectors:</strong> mainframe file I/O, COBOL COPYBOOK usage, PL/SQL cursors, transactional boundaries, transaction scripts.<br />
+</li>
+<li><strong>Strategy Generator:</strong> matches detected patterns to modernization patterns (Strangler Fig, Saga, CQRS, Event-sourcing).<br />
+</li>
+<li><strong>Risk Model:</strong> Risk = f(complexity, churn, coupling, criticality, test deficit, defect density).<br />
+</li>
+<li><strong>Transformer:</strong> AST→AST rules (e.g., cursor loop → ORM stream); LLM-assisted idiomatic code; human review gates.<br />
+</li>
+<li><strong>Schema Migrator:</strong> DDL translator, index strategy, CDC for cutover; data quality checks.<br />
+</li>
+<li><strong>TestGen:</strong> glean requirements from comments/specs; mine logs for realistic inputs; golden master snapshots.<br />
+</li>
+<li><strong>Planner:</strong> dependency-based slicing; milestone generator; cost/benefit and ROI.</li>
+</ul>
+<hr />
+<h2 id="nfrd">5) NFRD</h2>
+<ul>
+<li><strong>Scale:</strong> 10M+ LOC; parallel parse ≥100k LOC/min/node.<br />
+</li>
+<li><strong>Accuracy:</strong> transformation pass rate ≥ 85% first-pass on selected patterns.<br />
+</li>
+<li><strong>Reliability:</strong> 99.9% service uptime.<br />
+</li>
+<li><strong>Security:</strong> on-prem option; code never leaves VPC; SBOMs of tools.<br />
+</li>
+<li><strong>Compliance:</strong> audit of transforms and approvals.</li>
+</ul>
+<hr />
+<h2 id="architecture-logical">6) Architecture (Logical)</h2>
+<pre><code>[Legacy SCM/Artifacts] -&gt; [Parsers] -&gt; [AST/IR Store] -&gt; [Graph Builder]
+                                         |                 |
+                                         v                 v
+                               [Pattern/Risk Engine]   [System Map (Neo4j)]
+                                         |
+                                         v
+                                [Strategy Generator]
+                                         |
+                                         v
+                                 [Transform Engine] -&gt; [Modern Repo]
+                                         |
+                                         v
+                              [Test Synthesis &amp; Runner]
+                                         |
+                                         v
+                                  [Planner/Dashboards]</code></pre>
+<hr />
+<h2 id="hld-key-components">7) HLD (Key Components)</h2>
+<ul>
+<li><strong>IR Store:</strong> persisted AST/IR shards (columnar for queries).<br />
+</li>
+<li><strong>System Mapper:</strong> visual explorer (React + Cytoscape), overlays critical paths &amp; risks.<br />
+</li>
+<li><strong>Transform Engine:</strong> hybrid (rules + LLM); compiles safety diffs, runs unit tests; emits PRs.<br />
+</li>
+<li><strong>Golden Master Runner:</strong> record/ replay against legacy to compare outputs (tolerances).<br />
+</li>
+<li><strong>Planner:</strong> critical path analysis; dependency-aware slicing for phased rollout; Gantt + RACI.</li>
+</ul>
+<hr />
+<h2 id="lld-selected">8) LLD (Selected)</h2>
+<p><strong>Risk Scoring:</strong><br />
+- <code>risk = sigmoid(a*complexity + b*coupling + c*churn + d*criticality + e*test_gap)</code>; tiers: Low &lt;0.33, Med 0.33–0.66, High &gt;0.66.</p>
+<p><strong>Transformation Rule (COBOL READ loop → Java):</strong><br />
+- Detect COPYBOOK record; map to POJO; <code>READ ... AT END</code> → <code>while(reader.hasNext())</code>; <code>WRITE</code> → repository <code>.save()</code>.</p>
+<p><strong>DB Migration:</strong><br />
+- Type map (NUMBER(10) → BIGINT); date handling; seq→identity; triggers→app events.</p>
+<p><strong>Golden Master:</strong><br />
+- Capture I/O pairs for critical modules; assert equivalence with tolerance configs.</p>
+<hr />
+<h2 id="pseudocode-end-to-end">9) Pseudocode (End-to-End)</h2>
+<pre class="pseudo"><code>analyze(repo):
+  ast = parse_all(repo)
+  graph = build_graph(ast)
+  risks = score_risks(graph)
+  strategy = recommend(graph, risks, targets)
+  plan = plan_migration(strategy)
+  return {graph, risks, strategy, plan}
+
+transform(module):
+  rules = select_rules(module)
+  code_new = apply_rules(module, rules)
+  tests = synthesize_tests(module, code_new)
+  assert equivalence(module, code_new, tests)
+  create_pr(code_new, tests)</code></pre>
+<hr />
+<h2 id="data-evaluation">10) Data &amp; Evaluation</h2>
+<ul>
+<li><strong>Corpora:</strong> open-source legacy code (Gov COBOL samples, OSS PL/SQL/C), internal anonymized systems.<br />
+</li>
+<li><strong>Metrics:</strong> transformation success %, test coverage uplift, defect escape rate, time-to-modernize.<br />
+</li>
+<li><strong>Benchmarks:</strong> run pilot on 3 representative subsystems; track rollback rate.</li>
+</ul>
+<hr />
+<h2 id="security-governance">11) Security &amp; Governance</h2>
+<ul>
+<li>On-prem execution; no internet; signed toolchain; immutable logs of transforms; approvals required for merge.<br />
+</li>
+<li>RBAC for architects, engineers, QA, and approvers.</li>
+</ul>
+<hr />
+<h2 id="observability-cost">12) Observability &amp; Cost</h2>
+<ul>
+<li>Metrics: LOC analyzed/day, % high-risk modules, PR acceptance, test pass rates.<br />
+</li>
+<li>FinOps: parallelize analysis on spot nodes; cache IR; incremental re-analysis.</li>
+</ul>
+<hr />
+<h2 id="roadmap">13) Roadmap</h2>
+<ul>
+<li><strong>M1 (4w):</strong> Parsers + graphs + risk heatmaps.<br />
+</li>
+<li><strong>M2 (8w):</strong> Strategy generator + pilot transforms.<br />
+</li>
+<li><strong>M3 (12w):</strong> Test synthesis + golden master + DB migration.<br />
+</li>
+<li><strong>M4 (16w):</strong> Full pipeline + phased rollouts + runtime shims.</li>
+</ul>
+<hr />
+<h2 id="risks-mitigations">14) Risks &amp; Mitigations</h2>
+<ul>
+<li><strong>Semantic drift:</strong> strict golden masters; manual checkpoints.<br />
+</li>
+<li><strong>Partial parser coverage:</strong> incremental grammar expansion; fallbacks.<br />
+</li>
+<li><strong>Operational risk:</strong> strangler pattern; canary releases with kill switches.<br />
+</li>
+<li><strong>Stakeholder resistance:</strong> show ROI and phased wins.</li>
+</ul>

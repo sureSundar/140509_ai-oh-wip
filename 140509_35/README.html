@@ -1,0 +1,1982 @@
+<pre><code>PRIMARY KEY(session_id, user_id)</code></pre>
+<p>);</p>
+<p>– Security scan results CREATE TABLE security_scan_results ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), template_id UUID REFERENCES templates(id) ON DELETE CASCADE, version_id UUID REFERENCES template_versions(id), scan_type VARCHAR(50) NOT NULL, – ‘pii’, ‘sensitive_data’, ‘policy_violation’ severity VARCHAR(20) NOT NULL, – ‘low’, ‘medium’, ‘high’, ‘critical’ finding_type VARCHAR(100) NOT NULL, finding_details JSONB NOT NULL, is_resolved BOOLEAN DEFAULT FALSE, resolved_by UUID, resolved_at TIMESTAMP, scanned_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</p>
+<pre><code>INDEX(template_id, severity),
+INDEX(scan_type, scanned_at)</code></pre>
+<p>);</p>
+<p>– Workflow states CREATE TABLE workflow_states ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), template_id UUID REFERENCES templates(id) ON DELETE CASCADE, version_id UUID REFERENCES template_versions(id), workflow_type VARCHAR(50) NOT NULL, – ‘review’, ‘approval’, ‘deployment’ current_state VARCHAR(50) NOT NULL, assigned_to UUID, assigned_at TIMESTAMP, due_date TIMESTAMP, completed_at TIMESTAMP, workflow_data JSONB DEFAULT ‘{}’, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</p>
+<pre><code>INDEX(assigned_to, current_state),
+INDEX(workflow_type, current_state)</code></pre>
+<p>);</p>
+<p>– Audit log CREATE TABLE audit_log ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), entity_type VARCHAR(50) NOT NULL, – ‘template’, ‘version’, ‘experiment’ entity_id UUID NOT NULL, action VARCHAR(100) NOT NULL, user_id UUID NOT NULL, timestamp TIMESTAMP DEFAULT CURRENT_TIMESTAMP, ip_address INET, user_agent TEXT, changes JSONB, – Before/after values metadata JSONB DEFAULT ‘{}’,</p>
+<pre><code>INDEX(entity_type, entity_id),
+INDEX(user_id, timestamp),
+INDEX(timestamp)</code></pre>
+<p>);</p>
+<pre><code>
+---
+
+## Pseudocode
+
+### Main Prompt Management Workflow
+</code></pre>
+<p>ALGORITHM AdvancedPromptManagementWorkflow INPUT: user_request (action_type, template_data, user_context) OUTPUT: management_result (success, data, metadata)</p>
+<p>BEGIN // Step 1: Authentication and authorization user_auth = AUTHENTICATE_USER(user_request.auth_token) IF NOT user_auth.is_valid THEN RETURN ERROR(“Authentication failed”) END IF</p>
+<pre><code>permissions = CHECK_USER_PERMISSIONS(user_auth.user_id, user_request.action_type, user_request.template_id)
+IF NOT permissions.has_access THEN
+    RETURN ERROR(&quot;Insufficient permissions&quot;)
+END IF
+
+// Step 2: Route to appropriate handler based on action type
+SWITCH user_request.action_type
+    CASE &quot;create_template&quot;:
+        result = CREATE_TEMPLATE_WORKFLOW(user_request.template_data, user_auth.user_id)
+    CASE &quot;update_template&quot;:
+        result = UPDATE_TEMPLATE_WORKFLOW(user_request.template_data, user_auth.user_id)
+    CASE &quot;start_ab_test&quot;:
+        result = START_AB_TEST_WORKFLOW(user_request.experiment_config, user_auth.user_id)
+    CASE &quot;deploy_template&quot;:
+        result = DEPLOY_TEMPLATE_WORKFLOW(user_request.deployment_config, user_auth.user_id)
+    CASE &quot;collaborate_edit&quot;:
+        result = COLLABORATIVE_EDIT_WORKFLOW(user_request.edit_operation, user_auth.user_id)
+    DEFAULT:
+        RETURN ERROR(&quot;Unsupported action type&quot;)
+END SWITCH
+
+// Step 3: Log audit trail
+RECORD_AUDIT_EVENT(
+    entity_type = &quot;template_management&quot;,
+    action = user_request.action_type,
+    user_id = user_auth.user_id,
+    result = result,
+    metadata = user_request.metadata
+)
+
+RETURN result</code></pre>
+<p>END</p>
+<p>FUNCTION CREATE_TEMPLATE_WORKFLOW(template_data, user_id) BEGIN // Step 1: Validate template structure validation_result = VALIDATE_TEMPLATE_STRUCTURE(template_data) IF NOT validation_result.is_valid THEN RETURN ERROR(“Template validation failed”, validation_result.errors) END IF</p>
+<pre><code>// Step 2: Security and compliance scanning
+security_scan = PERFORM_SECURITY_SCAN(template_data.content)
+compliance_check = CHECK_COMPLIANCE_POLICIES(template_data.content, template_data.category)
+
+IF security_scan.has_violations OR compliance_check.has_violations THEN
+    violations = MERGE_VIOLATIONS(security_scan.violations, compliance_check.violations)
+    RETURN ERROR(&quot;Security/Compliance violations detected&quot;, violations)
+END IF
+
+// Step 3: Extract and validate template variables
+template_variables = EXTRACT_TEMPLATE_VARIABLES(template_data.content)
+variable_validation = VALIDATE_TEMPLATE_VARIABLES(template_variables)
+
+IF NOT variable_validation.is_valid THEN
+    RETURN ERROR(&quot;Invalid template variables&quot;, variable_validation.errors)
+END IF
+
+// Step 4: Create template record
+template = Template(
+    id = GENERATE_UUID(),
+    name = template_data.name,
+    description = template_data.description,
+    category = template_data.category,
+    content = template_data.content,
+    variables = template_variables,
+    tags = template_data.tags,
+    folder_id = template_data.folder_id,
+    created_by = user_id,
+    created_at = CURRENT_TIMESTAMP(),
+    status = &quot;draft&quot;
+)
+
+// Step 5: Save to repository
+saved_template = SAVE_TEMPLATE_TO_REPOSITORY(template)
+
+// Step 6: Create initial version
+initial_version = CREATE_INITIAL_VERSION(
+    template_id = saved_template.id,
+    content = template.content,
+    user_id = user_id,
+    commit_message = &quot;Initial template creation&quot;
+)
+
+// Step 7: Index for search
+INDEX_TEMPLATE_FOR_SEARCH(saved_template)
+
+// Step 8: Set up default workflow if applicable
+IF template_data.requires_approval THEN
+    INITIATE_APPROVAL_WORKFLOW(saved_template.id, user_id)
+END IF
+
+// Step 9: Send notifications
+SEND_TEMPLATE_CREATION_NOTIFICATIONS(saved_template, user_id)
+
+RETURN TemplateCreationResult(
+    template = saved_template,
+    version = initial_version,
+    security_scan_results = security_scan,
+    compliance_status = compliance_check
+)</code></pre>
+<p>END</p>
+<p>FUNCTION START_AB_TEST_WORKFLOW(experiment_config, user_id) BEGIN // Step 1: Validate experiment configuration validation_result = VALIDATE_EXPERIMENT_CONFIG(experiment_config) IF NOT validation_result.is_valid THEN RETURN ERROR(“Experiment configuration invalid”, validation_result.errors) END IF</p>
+<pre><code>// Step 2: Check template permissions and status
+template = GET_TEMPLATE(experiment_config.template_id)
+IF template.status != &quot;active&quot; THEN
+    RETURN ERROR(&quot;Template must be active to run experiments&quot;)
+END IF
+
+permissions = CHECK_TEMPLATE_EXPERIMENT_PERMISSIONS(template.id, user_id)
+IF NOT permissions.can_run_experiments THEN
+    RETURN ERROR(&quot;Insufficient permissions to run experiments&quot;)
+END IF
+
+// Step 3: Validate template versions
+control_version = GET_TEMPLATE_VERSION(experiment_config.control_version_id)
+treatment_versions = []
+
+FOR version_id IN experiment_config.treatment_version_ids DO
+    treatment_version = GET_TEMPLATE_VERSION(version_id)
+    IF treatment_version IS NULL THEN
+        RETURN ERROR(f&quot;Treatment version {version_id} not found&quot;)
+    END IF
+    treatment_versions.APPEND(treatment_version)
+END FOR
+
+// Step 4: Calculate required sample size
+sample_size = CALCULATE_REQUIRED_SAMPLE_SIZE(
+    baseline_rate = experiment_config.expected_baseline_rate,
+    minimum_detectable_effect = experiment_config.minimum_detectable_effect,
+    statistical_power = experiment_config.statistical_power,
+    significance_level = experiment_config.significance_level
+)
+
+// Step 5: Validate traffic split configuration
+IF SUM(experiment_config.traffic_split.values()) != 100 THEN
+    RETURN ERROR(&quot;Traffic split must sum to 100%&quot;)
+END IF
+
+// Step 6: Check for conflicting experiments
+conflicting_experiments = CHECK_FOR_CONFLICTING_EXPERIMENTS(
+    template_id = experiment_config.template_id,
+    start_date = experiment_config.start_date,
+    end_date = experiment_config.end_date
+)
+
+IF conflicting_experiments.exist THEN
+    RETURN ERROR(&quot;Conflicting experiments detected&quot;, conflicting_experiments.details)
+END IF
+
+// Step 7: Create experiment record
+experiment = Experiment(
+    id = GENERATE_UUID(),
+    name = experiment_config.name,
+    description = experiment_config.description,
+    template_id = experiment_config.template_id,
+    control_version_id = experiment_config.control_version_id,
+    treatment_versions = experiment_config.treatment_version_ids,
+    traffic_split = experiment_config.traffic_split,
+    success_metrics = experiment_config.success_metrics,
+    start_date = experiment_config.start_date,
+    end_date = experiment_config.end_date,
+    required_sample_size = sample_size,
+    status = &quot;created&quot;,
+    created_by = user_id,
+    created_at = CURRENT_TIMESTAMP()
+)
+
+// Step 8: Save experiment
+saved_experiment = SAVE_EXPERIMENT_TO_REPOSITORY(experiment)
+
+// Step 9: Set up traffic routing if experiment starts immediately
+IF experiment_config.start_immediately THEN
+    experiment_start_result = START_EXPERIMENT_EXECUTION(saved_experiment.id)
+    saved_experiment.status = &quot;running&quot;
+    saved_experiment.actual_start_date = CURRENT_TIMESTAMP()
+    UPDATE_EXPERIMENT_STATUS(saved_experiment)
+END IF
+
+// Step 10: Set up monitoring and alerts
+SETUP_EXPERIMENT_MONITORING(
+    experiment_id = saved_experiment.id,
+    monitoring_config = experiment_config.monitoring_config
+)
+
+RETURN ExperimentCreationResult(
+    experiment = saved_experiment,
+    required_sample_size = sample_size,
+    estimated_duration = ESTIMATE_EXPERIMENT_DURATION(sample_size, experiment_config.expected_traffic),
+    monitoring_dashboard_url = GET_EXPERIMENT_DASHBOARD_URL(saved_experiment.id)
+)</code></pre>
+<p>END</p>
+<p>FUNCTION COLLABORATIVE_EDIT_WORKFLOW(edit_operation, user_id) BEGIN // Step 1: Validate collaboration session session = GET_OR_CREATE_COLLABORATION_SESSION(edit_operation.template_id)</p>
+<pre><code>// Step 2: Check if user is authorized to edit
+edit_permissions = CHECK_TEMPLATE_EDIT_PERMISSIONS(edit_operation.template_id, user_id)
+IF NOT edit_permissions.can_edit THEN
+    RETURN ERROR(&quot;User not authorized to edit this template&quot;)
+END IF
+
+// Step 3: Add user to collaboration session if not already present
+IF user_id NOT IN session.participants THEN
+    JOIN_COLLABORATION_SESSION(session.id, user_id)
+    BROADCAST_USER_JOINED_EVENT(session.id, user_id)
+END IF
+
+// Step 4: Process the edit operation
+SWITCH edit_operation.type
+    CASE &quot;text_edit&quot;:
+        result = PROCESS_TEXT_EDIT_OPERATION(edit_operation, session, user_id)
+    CASE &quot;cursor_move&quot;:
+        result = PROCESS_CURSOR_MOVEMENT(edit_operation, session, user_id)
+    CASE &quot;selection_change&quot;:
+        result = PROCESS_SELECTION_CHANGE(edit_operation, session, user_id)
+    DEFAULT:
+        RETURN ERROR(&quot;Unsupported edit operation type&quot;)
+END SWITCH
+
+// Step 5: Update session activity
+UPDATE_SESSION_ACTIVITY(session.id, user_id, CURRENT_TIMESTAMP())
+
+// Step 6: Check for auto-save conditions
+IF SHOULD_AUTO_SAVE(session, edit_operation) THEN
+    auto_save_result = PERFORM_AUTO_SAVE(session, user_id)
+    result.auto_save_result = auto_save_result
+END IF
+
+RETURN result</code></pre>
+<p>END</p>
+<p>FUNCTION PROCESS_TEXT_EDIT_OPERATION(edit_operation, session, user_id) BEGIN // Step 1: Apply operational transformation current_document_state = GET_CURRENT_DOCUMENT_STATE(session.template_id)</p>
+<pre><code>transformed_operation = APPLY_OPERATIONAL_TRANSFORMATION(
+    edit_operation,
+    current_document_state,
+    session.pending_operations
+)
+
+// Step 2: Validate the transformed operation
+validation_result = VALIDATE_EDIT_OPERATION(transformed_operation, current_document_state)
+IF NOT validation_result.is_valid THEN
+    RETURN OperationResult(
+        success = FALSE,
+        error = validation_result.error,
+        operation_id = edit_operation.id
+    )
+END IF
+
+// Step 3: Apply operation to document
+new_document_state = APPLY_OPERATION_TO_DOCUMENT(
+    current_document_state,
+    transformed_operation
+)
+
+// Step 4: Update session document state
+session.document_state = new_document_state
+session.last_modified = CURRENT_TIMESTAMP()
+session.last_modified_by = user_id
+
+// Step 5: Add operation to pending operations queue
+session.pending_operations.APPEND(transformed_operation)
+
+// Step 6: Broadcast operation to other participants
+BROADCAST_OPERATION_TO_PARTICIPANTS(
+    session,
+    transformed_operation,
+    exclude_user = user_id
+)
+
+// Step 7: Track editing metrics
+TRACK_EDIT_METRICS(
+    template_id = session.template_id,
+    user_id = user_id,
+    operation_type = transformed_operation.type,
+    characters_changed = transformed_operation.content.length,
+    timestamp = CURRENT_TIMESTAMP()
+)
+
+// Step 8: Check for security violations in new content
+IF CONTENT_REQUIRES_SECURITY_SCAN(transformed_operation.content) THEN
+    QUEUE_SECURITY_SCAN(session.template_id, new_document_state.content, user_id)
+END IF
+
+RETURN OperationResult(
+    success = TRUE,
+    transformed_operation = transformed_operation,
+    new_document_version = new_document_state.version,
+    operation_id = edit_operation.id,
+    participants_notified = session.participants.keys().length - 1
+)</code></pre>
+<p>END</p>
+<p>FUNCTION DEPLOY_TEMPLATE_WORKFLOW(deployment_config, user_id) BEGIN // Step 1: Validate deployment configuration validation_result = VALIDATE_DEPLOYMENT_CONFIG(deployment_config) IF NOT validation_result.is_valid THEN RETURN ERROR(“Deployment configuration invalid”, validation_result.errors) END IF</p>
+<pre><code>// Step 2: Check deployment permissions
+deployment_permissions = CHECK_DEPLOYMENT_PERMISSIONS(
+    deployment_config.template_id,
+    user_id,
+    deployment_config.target_providers
+)
+IF NOT deployment_permissions.authorized THEN
+    RETURN ERROR(&quot;Insufficient deployment permissions&quot;)
+END IF
+
+// Step 3: Get template and version to deploy
+template = GET_TEMPLATE(deployment_config.template_id)
+version_to_deploy = GET_TEMPLATE_VERSION(deployment_config.version_id)
+
+IF template.status != &quot;active&quot; THEN
+    RETURN ERROR(&quot;Only active templates can be deployed&quot;)
+END IF
+
+// Step 4: Pre-deployment security and compliance checks
+final_security_scan = PERFORM_COMPREHENSIVE_SECURITY_SCAN(
+    version_to_deploy.content,
+    deployment_config.target_providers
+)
+
+compliance_check = PERFORM_DEPLOYMENT_COMPLIANCE_CHECK(
+    template,
+    version_to_deploy,
+    deployment_config
+)
+
+IF final_security_scan.blocks_deployment OR compliance_check.blocks_deployment THEN
+    blocking_issues = MERGE_BLOCKING_ISSUES(final_security_scan.issues, compliance_check.issues)
+    RETURN ERROR(&quot;Deployment blocked by security/compliance issues&quot;, blocking_issues)
+END IF
+
+// Step 5: Create deployment record
+deployment = Deployment(
+    id = GENERATE_UUID(),
+    template_id = deployment_config.template_id,
+    version_id = deployment_config.version_id,
+    target_providers = deployment_config.target_providers,
+    deployment_config = deployment_config.provider_configs,
+    status = &quot;pending&quot;,
+    created_by = user_id,
+    created_at = CURRENT_TIMESTAMP()
+)
+
+// Step 6: Save deployment record
+saved_deployment = SAVE_DEPLOYMENT_TO_REPOSITORY(deployment)
+
+deployment_results = []
+
+// Step 7: Deploy to each target provider
+FOR provider_config IN deployment_config.target_providers DO
+    provider_deployment_result = DEPLOY_TO_PROVIDER(
+        template = template,
+        version = version_to_deploy,
+        provider_config = provider_config,
+        deployment_id = saved_deployment.id
+    )
+    
+    deployment_results.APPEND(provider_deployment_result)
+    
+    // Update deployment status based on individual provider results
+    IF provider_deployment_result.success THEN
+        RECORD_SUCCESSFUL_PROVIDER_DEPLOYMENT(
+            saved_deployment.id,
+            provider_config.provider_name,
+            provider_deployment_result
+        )
+    ELSE
+        RECORD_FAILED_PROVIDER_DEPLOYMENT(
+            saved_deployment.id,
+            provider_config.provider_name,
+            provider_deployment_result.error
+        )
+    END IF
+END FOR
+
+// Step 8: Update overall deployment status
+overall_success = ALL(result.success FOR result IN deployment_results)
+
+IF overall_success THEN
+    saved_deployment.status = &quot;completed&quot;
+    saved_deployment.deployed_at = CURRENT_TIMESTAMP()
+ELSE
+    saved_deployment.status = &quot;partial_failure&quot;
+    saved_deployment.error_summary = SUMMARIZE_DEPLOYMENT_ERRORS(deployment_results)
+END IF
+
+UPDATE_DEPLOYMENT_STATUS(saved_deployment)
+
+// Step 9: Set up monitoring for deployed templates
+FOR successful_result IN FILTER_SUCCESSFUL_DEPLOYMENTS(deployment_results) DO
+    SETUP_DEPLOYMENT_MONITORING(
+        deployment_id = saved_deployment.id,
+        provider = successful_result.provider,
+        endpoint = successful_result.endpoint,
+        monitoring_config = deployment_config.monitoring_config
+    )
+END FOR
+
+// Step 10: Send deployment notifications
+SEND_DEPLOYMENT_NOTIFICATIONS(
+    deployment = saved_deployment,
+    results = deployment_results,
+    recipients = GET_DEPLOYMENT_NOTIFICATION_RECIPIENTS(template.id)
+)
+
+RETURN DeploymentResult(
+    deployment = saved_deployment,
+    provider_results = deployment_results,
+    overall_success = overall_success,
+    monitoring_dashboard_url = GET_DEPLOYMENT_MONITORING_URL(saved_deployment.id)
+)</code></pre>
+<p>END</p>
+<pre><code>
+### A/B Testing Statistical Analysis Workflow
+</code></pre>
+<p>ALGORITHM ComprehensiveABTestAnalysis INPUT: experiment_id, analysis_config OUTPUT: statistical_analysis_result</p>
+<p>BEGIN // Step 1: Validate experiment status and data availability experiment = GET_EXPERIMENT(experiment_id)</p>
+<pre><code>IF experiment.status NOT IN [&quot;running&quot;, &quot;completed&quot;] THEN
+    RETURN ERROR(&quot;Experiment must be running or completed for analysis&quot;)
+END IF
+
+// Step 2: Collect experiment data
+experiment_data = COLLECT_EXPERIMENT_DATA(
+    experiment_id = experiment_id,
+    start_date = experiment.actual_start_date,
+    end_date = experiment.actual_end_date OR CURRENT_TIMESTAMP()
+)
+
+// Step 3: Validate data quality and completeness
+data_quality_check = VALIDATE_EXPERIMENT_DATA_QUALITY(experiment_data)
+
+IF NOT data_quality_check.meets_minimum_requirements THEN
+    RETURN ERROR(&quot;Insufficient or poor quality data for analysis&quot;, data_quality_check.issues)
+END IF
+
+// Step 4: Perform statistical analysis for each success metric
+metric_analyses = {}
+
+FOR metric IN experiment.success_metrics DO
+    // Extract metric data for all variants
+    control_data = EXTRACT_METRIC_DATA(experiment_data, &quot;control&quot;, metric.name)
+    treatment_data = {}
+    
+    FOR treatment_version IN experiment.treatment_versions DO
+        treatment_data[treatment_version] = EXTRACT_METRIC_DATA(
+            experiment_data, treatment_version, metric.name
+        )
+    END FOR
+    
+    // Perform appropriate statistical test based on metric type
+    IF metric.type = &quot;conversion_rate&quot; THEN
+        metric_analysis = ANALYZE_CONVERSION_RATE_METRIC(
+            control_data, treatment_data, metric
+        )
+    ELSE IF metric.type = &quot;continuous&quot; THEN
+        metric_analysis = ANALYZE_CONTINUOUS_METRIC(
+            control_data, treatment_data, metric
+        )
+    ELSE IF metric.type = &quot;count&quot; THEN
+        metric_analysis = ANALYZE_COUNT_METRIC(
+            control_data, treatment_data, metric
+        )
+    END IF
+    
+    metric_analyses[metric.name] = metric_analysis
+END FOR
+
+// Step 5: Apply multiple comparison correction
+corrected_analyses = APPLY_MULTIPLE_COMPARISON_CORRECTION(
+    metric_analyses,
+    correction_method = analysis_config.correction_method OR &quot;bonferroni&quot;
+)
+
+// Step 6: Calculate overall experiment significance
+overall_significance = CALCULATE_OVERALL_EXPERIMENT_SIGNIFICANCE(corrected_analyses)
+
+// Step 7: Perform power analysis
+power_analysis = PERFORM_POST_HOC_POWER_ANALYSIS(
+    experiment_data,
+    corrected_analyses,
+    experiment.required_sample_size
+)
+
+// Step 8: Generate insights and recommendations
+insights = GENERATE_EXPERIMENT_INSIGHTS(
+    experiment,
+    corrected_analyses,
+    power_analysis
+)
+
+recommendations = GENERATE_EXPERIMENT_RECOMMENDATIONS(
+    experiment,
+    corrected_analyses,
+    insights
+)
+
+// Step 9: Calculate business impact estimates
+business_impact = ESTIMATE_BUSINESS_IMPACT(
+    corrected_analyses,
+    analysis_config.business_metrics
+)
+
+// Step 10: Prepare comprehensive analysis report
+analysis_result = StatisticalAnalysisResult(
+    experiment_id = experiment_id,
+    analysis_date = CURRENT_TIMESTAMP(),
+    sample_sizes = experiment_data.sample_sizes,
+    metric_analyses = corrected_analyses,
+    overall_significance = overall_significance,
+    power_analysis = power_analysis,
+    insights = insights,
+    recommendations = recommendations,
+    business_impact = business_impact,
+    confidence_level = analysis_config.confidence_level OR 0.95
+)
+
+// Step 11: Save analysis results
+SAVE_EXPERIMENT_ANALYSIS(analysis_result)
+
+// Step 12: Update experiment status if analysis indicates completion
+IF ANALYSIS_INDICATES_COMPLETION(analysis_result) THEN
+    UPDATE_EXPERIMENT_STATUS(experiment_id, &quot;completed&quot;)
+    SEND_EXPERIMENT_COMPLETION_NOTIFICATIONS(experiment_id, analysis_result)
+END IF
+
+RETURN analysis_result</code></pre>
+<p>END</p>
+<pre><code>
+This completes the comprehensive documentation for Problem Statement 35 - Advanced Prompt Template Management System. The solution provides a complete architecture for managing, versioning, optimizing, and deploying prompt templates across multiple LLM providers with advanced collaboration, A/B testing, security, and analytics capabilities.
+
+Would you like me to continue with Problem Statement 36 (AI Bias Detection and Mitigation Platform) or focus on any other specific problem statements from the remaining list?            # Save tags
+            if template.tags:
+                for tag in template.tags:
+                    await tx.execute(
+                        &quot;INSERT INTO template_tags (template_id, tag) VALUES ($1, $2)&quot;,
+                        template.id, tag
+                    )
+            
+            # Index for search
+            await self.index_template_for_search(template)
+            
+            # Cache frequently accessed metadata
+            await self.cache_template_metadata(template)
+            
+            return template
+    
+    async def get_template_with_content(self, template_id: str, version: Optional[int] = None) -&gt; Template:
+        # Try cache first
+        cache_key = f&quot;template:{template_id}:{version or &#39;latest&#39;}&quot;
+        cached_template = await self.cache.get(cache_key)
+        if cached_template:
+            return Template.from_dict(cached_template)
+        
+        # Get template metadata from primary DB
+        template_record = await self.primary_db.fetchrow(
+            &quot;&quot;&quot;
+            SELECT t.*, array_agg(tt.tag) as tags
+            FROM templates t
+            LEFT JOIN template_tags tt ON t.id = tt.template_id
+            WHERE t.id = $1 AND t.deleted_at IS NULL
+            GROUP BY t.id
+            &quot;&quot;&quot;,
+            template_id
+        )
+        
+        if not template_record:
+            raise TemplateNotFoundError(f&quot;Template {template_id} not found&quot;)
+        
+        # Get content from document store
+        content_query = {&#39;template_id&#39;: template_id}
+        if version:
+            content_query[&#39;version&#39;] = version
+        
+        content_doc = await self.document_store.templates.find_one(
+            content_query,
+            sort=[(&#39;version&#39;, -1)]  # Get latest version if not specified
+        )
+        
+        if not content_doc:
+            raise TemplateContentNotFoundError(f&quot;Content for template {template_id} not found&quot;)
+        
+        # Construct template object
+        template = Template(
+            id=template_record[&#39;id&#39;],
+            name=template_record[&#39;name&#39;],
+            category=template_record[&#39;category&#39;],
+            content=content_doc[&#39;content&#39;],
+            variables=content_doc.get(&#39;variables&#39;, []),
+            metadata=content_doc.get(&#39;metadata&#39;, {}),
+            tags=template_record[&#39;tags&#39;] or [],
+            created_by=template_record[&#39;created_by&#39;],
+            created_at=template_record[&#39;created_at&#39;],
+            updated_at=template_record[&#39;updated_at&#39;],
+            version=content_doc[&#39;version&#39;]
+        )
+        
+        # Cache for future requests
+        await self.cache.setex(cache_key, 3600, template.to_dict())
+        
+        return template
+    
+    async def search_templates(self, query: TemplateSearchQuery) -&gt; SearchResults:
+        # Build Elasticsearch query
+        es_query = {
+            &quot;query&quot;: {
+                &quot;bool&quot;: {
+                    &quot;must&quot;: [],
+                    &quot;filter&quot;: []
+                }
+            },
+            &quot;sort&quot;: [],
+            &quot;aggs&quot;: {
+                &quot;categories&quot;: {&quot;terms&quot;: {&quot;field&quot;: &quot;category.keyword&quot;}},
+                &quot;tags&quot;: {&quot;terms&quot;: {&quot;field&quot;: &quot;tags.keyword&quot;}},
+                &quot;creators&quot;: {&quot;terms&quot;: {&quot;field&quot;: &quot;created_by.keyword&quot;}}
+            }
+        }
+        
+        # Add text search
+        if query.text:
+            es_query[&quot;query&quot;][&quot;bool&quot;][&quot;must&quot;].append({
+                &quot;multi_match&quot;: {
+                    &quot;query&quot;: query.text,
+                    &quot;fields&quot;: [&quot;name^3&quot;, &quot;content^2&quot;, &quot;description&quot;, &quot;tags&quot;],
+                    &quot;fuzziness&quot;: &quot;AUTO&quot;
+                }
+            })
+        
+        # Add filters
+        if query.categories:
+            es_query[&quot;query&quot;][&quot;bool&quot;][&quot;filter&quot;].append({
+                &quot;terms&quot;: {&quot;category.keyword&quot;: query.categories}
+            })
+        
+        if query.tags:
+            es_query[&quot;query&quot;][&quot;bool&quot;][&quot;filter&quot;].append({
+                &quot;terms&quot;: {&quot;tags.keyword&quot;: query.tags}
+            })
+        
+        if query.date_range:
+            es_query[&quot;query&quot;][&quot;bool&quot;][&quot;filter&quot;].append({
+                &quot;range&quot;: {
+                    &quot;created_at&quot;: {
+                        &quot;gte&quot;: query.date_range.start,
+                        &quot;lte&quot;: query.date_range.end
+                    }
+                }
+            })
+        
+        # Add sorting
+        if query.sort_by == &quot;relevance&quot;:
+            es_query[&quot;sort&quot;].append({&quot;_score&quot;: {&quot;order&quot;: &quot;desc&quot;}})
+        elif query.sort_by == &quot;created_at&quot;:
+            es_query[&quot;sort&quot;].append({&quot;created_at&quot;: {&quot;order&quot;: query.sort_order}})
+        elif query.sort_by == &quot;performance&quot;:
+            es_query[&quot;sort&quot;].append({&quot;performance_score&quot;: {&quot;order&quot;: &quot;desc&quot;}})
+        
+        # Execute search
+        search_result = await self.search_index.search(
+            index=&quot;templates&quot;,
+            body=es_query,
+            from_=query.offset,
+            size=query.limit
+        )
+        
+        # Process results
+        templates = []
+        for hit in search_result[&#39;hits&#39;][&#39;hits&#39;]:
+            template_data = hit[&#39;_source&#39;]
+            template_data[&#39;relevance_score&#39;] = hit[&#39;_score&#39;]
+            templates.append(Template.from_search_hit(template_data))
+        
+        return SearchResults(
+            templates=templates,
+            total_count=search_result[&#39;hits&#39;][&#39;total&#39;][&#39;value&#39;],
+            facets=self.process_aggregations(search_result[&#39;aggregations&#39;]),
+            took_ms=search_result[&#39;took&#39;]
+        )
+
+class TemplateSearchEngine:
+    def __init__(self):
+        self.elasticsearch = ElasticsearchConnection()
+        self.query_optimizer = QueryOptimizer()
+        
+    async def index_template(self, template: Template):
+        # Prepare document for indexing
+        doc = {
+            &#39;id&#39;: template.id,
+            &#39;name&#39;: template.name,
+            &#39;category&#39;: template.category,
+            &#39;content&#39;: template.content,
+            &#39;description&#39;: template.metadata.get(&#39;description&#39;, &#39;&#39;),
+            &#39;tags&#39;: template.tags,
+            &#39;created_by&#39;: template.created_by,
+            &#39;created_at&#39;: template.created_at,
+            &#39;updated_at&#39;: template.updated_at,
+            &#39;variables&#39;: [var[&#39;name&#39;] for var in template.variables],
+            &#39;complexity_score&#39;: self.calculate_complexity_score(template),
+            &#39;performance_score&#39;: await self.get_performance_score(template.id),
+            &#39;usage_count&#39;: await self.get_usage_count(template.id),
+            &#39;folder_path&#39;: await self.get_folder_path(template.folder_id)
+        }
+        
+        # Index document
+        await self.elasticsearch.index(
+            index=&quot;templates&quot;,
+            id=template.id,
+            document=doc
+        )
+    
+    def calculate_complexity_score(self, template: Template) -&gt; float:
+        &quot;&quot;&quot;Calculate template complexity based on various factors&quot;&quot;&quot;
+        complexity_factors = {
+            &#39;content_length&#39;: len(template.content),
+            &#39;variable_count&#39;: len(template.variables),
+            &#39;conditional_logic&#39;: template.content.count(&#39;{{#if&#39;) + template.content.count(&#39;{{#each&#39;),
+            &#39;nested_variables&#39;: template.content.count(&#39;{{&#39;) - template.content.count(&#39;}}&#39;)/2
+        }
+        
+        # Normalize and weight factors
+        normalized_score = (
+            min(complexity_factors[&#39;content_length&#39;] / 10000, 1.0) * 0.3 +
+            min(complexity_factors[&#39;variable_count&#39;] / 20, 1.0) * 0.3 +
+            min(complexity_factors[&#39;conditional_logic&#39;] / 10, 1.0) * 0.2 +
+            min(complexity_factors[&#39;nested_variables&#39;] / 30, 1.0) * 0.2
+        )
+        
+        return normalized_score</code></pre>
+<h4 id="advanced-ab-testing-statistical-engine">2. Advanced A/B Testing Statistical Engine</h4>
+<h5 id="statistical-analysis-framework">Statistical Analysis Framework</h5>
+<div class="sourceCode" id="cb15"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb15-1" title="1"><span class="kw">class</span> StatisticalEngine:</a>
+<a class="sourceLine" id="cb15-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb15-3" title="3">        <span class="va">self</span>.power_analyzer <span class="op">=</span> PowerAnalyzer()</a>
+<a class="sourceLine" id="cb15-4" title="4">        <span class="va">self</span>.effect_estimator <span class="op">=</span> EffectEstimator()</a>
+<a class="sourceLine" id="cb15-5" title="5">        <span class="va">self</span>.confidence_calculator <span class="op">=</span> ConfidenceCalculator()</a>
+<a class="sourceLine" id="cb15-6" title="6">        </a>
+<a class="sourceLine" id="cb15-7" title="7">    <span class="kw">def</span> calculate_sample_size(</a>
+<a class="sourceLine" id="cb15-8" title="8">        <span class="va">self</span>, </a>
+<a class="sourceLine" id="cb15-9" title="9">        baseline_rate: <span class="bu">float</span>, </a>
+<a class="sourceLine" id="cb15-10" title="10">        minimum_detectable_effect: <span class="bu">float</span>,</a>
+<a class="sourceLine" id="cb15-11" title="11">        statistical_power: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.8</span>,</a>
+<a class="sourceLine" id="cb15-12" title="12">        significance_level: <span class="bu">float</span> <span class="op">=</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb15-13" title="13">    ) <span class="op">-&gt;</span> <span class="bu">int</span>:</a>
+<a class="sourceLine" id="cb15-14" title="14">        <span class="co">&quot;&quot;&quot;Calculate required sample size using power analysis&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb15-15" title="15">        <span class="im">from</span> scipy.stats <span class="im">import</span> norm</a>
+<a class="sourceLine" id="cb15-16" title="16">        <span class="im">import</span> math</a>
+<a class="sourceLine" id="cb15-17" title="17">        </a>
+<a class="sourceLine" id="cb15-18" title="18">        <span class="co"># Convert to effect size (Cohen&#39;s h for proportions)</span></a>
+<a class="sourceLine" id="cb15-19" title="19">        p1 <span class="op">=</span> baseline_rate</a>
+<a class="sourceLine" id="cb15-20" title="20">        p2 <span class="op">=</span> baseline_rate <span class="op">*</span> (<span class="dv">1</span> <span class="op">+</span> minimum_detectable_effect)</a>
+<a class="sourceLine" id="cb15-21" title="21">        </a>
+<a class="sourceLine" id="cb15-22" title="22">        <span class="co"># Cohen&#39;s h formula</span></a>
+<a class="sourceLine" id="cb15-23" title="23">        effect_size <span class="op">=</span> <span class="dv">2</span> <span class="op">*</span> (math.asin(math.sqrt(p1)) <span class="op">-</span> math.asin(math.sqrt(p2)))</a>
+<a class="sourceLine" id="cb15-24" title="24">        </a>
+<a class="sourceLine" id="cb15-25" title="25">        <span class="co"># Power analysis calculation</span></a>
+<a class="sourceLine" id="cb15-26" title="26">        alpha <span class="op">=</span> significance_level</a>
+<a class="sourceLine" id="cb15-27" title="27">        beta <span class="op">=</span> <span class="dv">1</span> <span class="op">-</span> statistical_power</a>
+<a class="sourceLine" id="cb15-28" title="28">        </a>
+<a class="sourceLine" id="cb15-29" title="29">        z_alpha <span class="op">=</span> norm.ppf(<span class="dv">1</span> <span class="op">-</span> alpha<span class="op">/</span><span class="dv">2</span>)  <span class="co"># Two-tailed test</span></a>
+<a class="sourceLine" id="cb15-30" title="30">        z_beta <span class="op">=</span> norm.ppf(statistical_power)</a>
+<a class="sourceLine" id="cb15-31" title="31">        </a>
+<a class="sourceLine" id="cb15-32" title="32">        <span class="co"># Sample size per group</span></a>
+<a class="sourceLine" id="cb15-33" title="33">        n_per_group <span class="op">=</span> ((z_alpha <span class="op">+</span> z_beta) <span class="op">/</span> effect_size) <span class="op">**</span> <span class="dv">2</span></a>
+<a class="sourceLine" id="cb15-34" title="34">        </a>
+<a class="sourceLine" id="cb15-35" title="35">        <span class="co"># Total sample size (both groups)</span></a>
+<a class="sourceLine" id="cb15-36" title="36">        total_sample_size <span class="op">=</span> <span class="bu">int</span>(math.ceil(n_per_group <span class="op">*</span> <span class="dv">2</span>))</a>
+<a class="sourceLine" id="cb15-37" title="37">        </a>
+<a class="sourceLine" id="cb15-38" title="38">        <span class="cf">return</span> <span class="bu">max</span>(total_sample_size, <span class="dv">100</span>)  <span class="co"># Minimum sample size</span></a>
+<a class="sourceLine" id="cb15-39" title="39">    </a>
+<a class="sourceLine" id="cb15-40" title="40">    <span class="cf">async</span> <span class="kw">def</span> analyze_experiment(</a>
+<a class="sourceLine" id="cb15-41" title="41">        <span class="va">self</span>,</a>
+<a class="sourceLine" id="cb15-42" title="42">        control_data: ExperimentData,</a>
+<a class="sourceLine" id="cb15-43" title="43">        treatment_data: List[ExperimentData],</a>
+<a class="sourceLine" id="cb15-44" title="44">        success_metrics: List[SuccessMetric]</a>
+<a class="sourceLine" id="cb15-45" title="45">    ) <span class="op">-&gt;</span> StatisticalAnalysis:</a>
+<a class="sourceLine" id="cb15-46" title="46">        </a>
+<a class="sourceLine" id="cb15-47" title="47">        analysis_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb15-48" title="48">        </a>
+<a class="sourceLine" id="cb15-49" title="49">        <span class="cf">for</span> metric <span class="kw">in</span> success_metrics:</a>
+<a class="sourceLine" id="cb15-50" title="50">            metric_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb15-51" title="51">            </a>
+<a class="sourceLine" id="cb15-52" title="52">            <span class="cf">for</span> i, treatment <span class="kw">in</span> <span class="bu">enumerate</span>(treatment_data):</a>
+<a class="sourceLine" id="cb15-53" title="53">                <span class="co"># Perform statistical test based on metric type</span></a>
+<a class="sourceLine" id="cb15-54" title="54">                <span class="cf">if</span> metric.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;conversion_rate&#39;</span>:</a>
+<a class="sourceLine" id="cb15-55" title="55">                    test_result <span class="op">=</span> <span class="va">self</span>.analyze_conversion_rate(</a>
+<a class="sourceLine" id="cb15-56" title="56">                        control_data.get_metric_data(metric.name),</a>
+<a class="sourceLine" id="cb15-57" title="57">                        treatment.get_metric_data(metric.name)</a>
+<a class="sourceLine" id="cb15-58" title="58">                    )</a>
+<a class="sourceLine" id="cb15-59" title="59">                <span class="cf">elif</span> metric.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;continuous&#39;</span>:</a>
+<a class="sourceLine" id="cb15-60" title="60">                    test_result <span class="op">=</span> <span class="va">self</span>.analyze_continuous_metric(</a>
+<a class="sourceLine" id="cb15-61" title="61">                        control_data.get_metric_data(metric.name),</a>
+<a class="sourceLine" id="cb15-62" title="62">                        treatment.get_metric_data(metric.name)</a>
+<a class="sourceLine" id="cb15-63" title="63">                    )</a>
+<a class="sourceLine" id="cb15-64" title="64">                <span class="cf">elif</span> metric.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;count&#39;</span>:</a>
+<a class="sourceLine" id="cb15-65" title="65">                    test_result <span class="op">=</span> <span class="va">self</span>.analyze_count_metric(</a>
+<a class="sourceLine" id="cb15-66" title="66">                        control_data.get_metric_data(metric.name),</a>
+<a class="sourceLine" id="cb15-67" title="67">                        treatment.get_metric_data(metric.name)</a>
+<a class="sourceLine" id="cb15-68" title="68">                    )</a>
+<a class="sourceLine" id="cb15-69" title="69">                </a>
+<a class="sourceLine" id="cb15-70" title="70">                metric_results[<span class="ss">f&#39;treatment_</span><span class="sc">{i</span><span class="op">+</span><span class="dv">1</span><span class="sc">}</span><span class="ss">&#39;</span>] <span class="op">=</span> test_result</a>
+<a class="sourceLine" id="cb15-71" title="71">            </a>
+<a class="sourceLine" id="cb15-72" title="72">            analysis_results[metric.name] <span class="op">=</span> metric_results</a>
+<a class="sourceLine" id="cb15-73" title="73">        </a>
+<a class="sourceLine" id="cb15-74" title="74">        <span class="co"># Perform multiple comparison correction</span></a>
+<a class="sourceLine" id="cb15-75" title="75">        corrected_results <span class="op">=</span> <span class="va">self</span>.apply_multiple_comparison_correction(</a>
+<a class="sourceLine" id="cb15-76" title="76">            analysis_results, method<span class="op">=</span><span class="st">&#39;bonferroni&#39;</span></a>
+<a class="sourceLine" id="cb15-77" title="77">        )</a>
+<a class="sourceLine" id="cb15-78" title="78">        </a>
+<a class="sourceLine" id="cb15-79" title="79">        <span class="co"># Calculate overall experiment significance</span></a>
+<a class="sourceLine" id="cb15-80" title="80">        overall_significance <span class="op">=</span> <span class="va">self</span>.calculate_overall_significance(corrected_results)</a>
+<a class="sourceLine" id="cb15-81" title="81">        </a>
+<a class="sourceLine" id="cb15-82" title="82">        <span class="cf">return</span> StatisticalAnalysis(</a>
+<a class="sourceLine" id="cb15-83" title="83">            metric_results<span class="op">=</span>corrected_results,</a>
+<a class="sourceLine" id="cb15-84" title="84">            overall_significant<span class="op">=</span>overall_significance.is_significant,</a>
+<a class="sourceLine" id="cb15-85" title="85">            confidence_level<span class="op">=</span>overall_significance.confidence_level,</a>
+<a class="sourceLine" id="cb15-86" title="86">            effect_sizes<span class="op">=</span><span class="va">self</span>.calculate_effect_sizes(analysis_results),</a>
+<a class="sourceLine" id="cb15-87" title="87">            recommendations<span class="op">=</span><span class="va">self</span>.generate_statistical_recommendations(corrected_results)</a>
+<a class="sourceLine" id="cb15-88" title="88">        )</a>
+<a class="sourceLine" id="cb15-89" title="89">    </a>
+<a class="sourceLine" id="cb15-90" title="90">    <span class="kw">def</span> analyze_conversion_rate(<span class="va">self</span>, control_data: MetricData, treatment_data: MetricData) <span class="op">-&gt;</span> TestResult:</a>
+<a class="sourceLine" id="cb15-91" title="91">        <span class="co">&quot;&quot;&quot;Analyze conversion rate using Chi-square test or Fisher&#39;s exact test&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb15-92" title="92">        <span class="im">from</span> scipy.stats <span class="im">import</span> chi2_contingency, fisher_exact</a>
+<a class="sourceLine" id="cb15-93" title="93">        <span class="im">import</span> numpy <span class="im">as</span> np</a>
+<a class="sourceLine" id="cb15-94" title="94">        </a>
+<a class="sourceLine" id="cb15-95" title="95">        <span class="co"># Prepare contingency table</span></a>
+<a class="sourceLine" id="cb15-96" title="96">        control_successes <span class="op">=</span> control_data.successes</a>
+<a class="sourceLine" id="cb15-97" title="97">        control_total <span class="op">=</span> control_data.total_samples</a>
+<a class="sourceLine" id="cb15-98" title="98">        control_failures <span class="op">=</span> control_total <span class="op">-</span> control_successes</a>
+<a class="sourceLine" id="cb15-99" title="99">        </a>
+<a class="sourceLine" id="cb15-100" title="100">        treatment_successes <span class="op">=</span> treatment_data.successes</a>
+<a class="sourceLine" id="cb15-101" title="101">        treatment_total <span class="op">=</span> treatment_data.total_samples</a>
+<a class="sourceLine" id="cb15-102" title="102">        treatment_failures <span class="op">=</span> treatment_total <span class="op">-</span> treatment_successes</a>
+<a class="sourceLine" id="cb15-103" title="103">        </a>
+<a class="sourceLine" id="cb15-104" title="104">        contingency_table <span class="op">=</span> np.array([</a>
+<a class="sourceLine" id="cb15-105" title="105">            [control_successes, control_failures],</a>
+<a class="sourceLine" id="cb15-106" title="106">            [treatment_successes, treatment_failures]</a>
+<a class="sourceLine" id="cb15-107" title="107">        ])</a>
+<a class="sourceLine" id="cb15-108" title="108">        </a>
+<a class="sourceLine" id="cb15-109" title="109">        <span class="co"># Choose appropriate test</span></a>
+<a class="sourceLine" id="cb15-110" title="110">        <span class="cf">if</span> <span class="bu">min</span>(contingency_table.flatten()) <span class="op">&lt;</span> <span class="dv">5</span>:</a>
+<a class="sourceLine" id="cb15-111" title="111">            <span class="co"># Use Fisher&#39;s exact test for small samples</span></a>
+<a class="sourceLine" id="cb15-112" title="112">            odds_ratio, p_value <span class="op">=</span> fisher_exact(contingency_table)</a>
+<a class="sourceLine" id="cb15-113" title="113">            test_statistic <span class="op">=</span> odds_ratio</a>
+<a class="sourceLine" id="cb15-114" title="114">            test_name <span class="op">=</span> <span class="st">&quot;Fisher&#39;s Exact Test&quot;</span></a>
+<a class="sourceLine" id="cb15-115" title="115">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb15-116" title="116">            <span class="co"># Use Chi-square test for larger samples</span></a>
+<a class="sourceLine" id="cb15-117" title="117">            test_statistic, p_value, dof, expected <span class="op">=</span> chi2_contingency(contingency_table)</a>
+<a class="sourceLine" id="cb15-118" title="118">            test_name <span class="op">=</span> <span class="st">&quot;Chi-square Test&quot;</span></a>
+<a class="sourceLine" id="cb15-119" title="119">        </a>
+<a class="sourceLine" id="cb15-120" title="120">        <span class="co"># Calculate confidence interval for difference in proportions</span></a>
+<a class="sourceLine" id="cb15-121" title="121">        control_rate <span class="op">=</span> control_successes <span class="op">/</span> control_total</a>
+<a class="sourceLine" id="cb15-122" title="122">        treatment_rate <span class="op">=</span> treatment_successes <span class="op">/</span> treatment_total</a>
+<a class="sourceLine" id="cb15-123" title="123">        </a>
+<a class="sourceLine" id="cb15-124" title="124">        confidence_interval <span class="op">=</span> <span class="va">self</span>.calculate_proportion_difference_ci(</a>
+<a class="sourceLine" id="cb15-125" title="125">            control_rate, treatment_rate, control_total, treatment_total</a>
+<a class="sourceLine" id="cb15-126" title="126">        )</a>
+<a class="sourceLine" id="cb15-127" title="127">        </a>
+<a class="sourceLine" id="cb15-128" title="128">        <span class="co"># Calculate effect size (relative improvement)</span></a>
+<a class="sourceLine" id="cb15-129" title="129">        relative_improvement <span class="op">=</span> (treatment_rate <span class="op">-</span> control_rate) <span class="op">/</span> control_rate <span class="cf">if</span> control_rate <span class="op">&gt;</span> <span class="dv">0</span> <span class="cf">else</span> <span class="dv">0</span></a>
+<a class="sourceLine" id="cb15-130" title="130">        </a>
+<a class="sourceLine" id="cb15-131" title="131">        <span class="cf">return</span> TestResult(</a>
+<a class="sourceLine" id="cb15-132" title="132">            test_name<span class="op">=</span>test_name,</a>
+<a class="sourceLine" id="cb15-133" title="133">            test_statistic<span class="op">=</span>test_statistic,</a>
+<a class="sourceLine" id="cb15-134" title="134">            p_value<span class="op">=</span>p_value,</a>
+<a class="sourceLine" id="cb15-135" title="135">            is_significant<span class="op">=</span>p_value <span class="op">&lt;</span> <span class="fl">0.05</span>,</a>
+<a class="sourceLine" id="cb15-136" title="136">            confidence_interval<span class="op">=</span>confidence_interval,</a>
+<a class="sourceLine" id="cb15-137" title="137">            effect_size<span class="op">=</span>relative_improvement,</a>
+<a class="sourceLine" id="cb15-138" title="138">            control_metric<span class="op">=</span>control_rate,</a>
+<a class="sourceLine" id="cb15-139" title="139">            treatment_metric<span class="op">=</span>treatment_rate,</a>
+<a class="sourceLine" id="cb15-140" title="140">            sample_sizes<span class="op">=</span>{<span class="st">&#39;control&#39;</span>: control_total, <span class="st">&#39;treatment&#39;</span>: treatment_total}</a>
+<a class="sourceLine" id="cb15-141" title="141">        )</a>
+<a class="sourceLine" id="cb15-142" title="142">    </a>
+<a class="sourceLine" id="cb15-143" title="143">    <span class="kw">def</span> analyze_continuous_metric(<span class="va">self</span>, control_data: MetricData, treatment_data: MetricData) <span class="op">-&gt;</span> TestResult:</a>
+<a class="sourceLine" id="cb15-144" title="144">        <span class="co">&quot;&quot;&quot;Analyze continuous metrics using t-test or Mann-Whitney U test&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb15-145" title="145">        <span class="im">from</span> scipy.stats <span class="im">import</span> ttest_ind, mannwhitneyu, levene</a>
+<a class="sourceLine" id="cb15-146" title="146">        <span class="im">import</span> numpy <span class="im">as</span> np</a>
+<a class="sourceLine" id="cb15-147" title="147">        </a>
+<a class="sourceLine" id="cb15-148" title="148">        control_values <span class="op">=</span> np.array(control_data.values)</a>
+<a class="sourceLine" id="cb15-149" title="149">        treatment_values <span class="op">=</span> np.array(treatment_data.values)</a>
+<a class="sourceLine" id="cb15-150" title="150">        </a>
+<a class="sourceLine" id="cb15-151" title="151">        <span class="co"># Test for equal variances</span></a>
+<a class="sourceLine" id="cb15-152" title="152">        levene_stat, levene_p <span class="op">=</span> levene(control_values, treatment_values)</a>
+<a class="sourceLine" id="cb15-153" title="153">        equal_variances <span class="op">=</span> levene_p <span class="op">&gt;</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb15-154" title="154">        </a>
+<a class="sourceLine" id="cb15-155" title="155">        <span class="co"># Check for normality (simplified)</span></a>
+<a class="sourceLine" id="cb15-156" title="156">        control_normal <span class="op">=</span> <span class="bu">len</span>(control_values) <span class="op">&gt;=</span> <span class="dv">30</span>  <span class="co"># Central limit theorem approximation</span></a>
+<a class="sourceLine" id="cb15-157" title="157">        treatment_normal <span class="op">=</span> <span class="bu">len</span>(treatment_values) <span class="op">&gt;=</span> <span class="dv">30</span></a>
+<a class="sourceLine" id="cb15-158" title="158">        </a>
+<a class="sourceLine" id="cb15-159" title="159">        <span class="cf">if</span> control_normal <span class="kw">and</span> treatment_normal:</a>
+<a class="sourceLine" id="cb15-160" title="160">            <span class="co"># Use t-test</span></a>
+<a class="sourceLine" id="cb15-161" title="161">            t_stat, p_value <span class="op">=</span> ttest_ind(</a>
+<a class="sourceLine" id="cb15-162" title="162">                control_values, </a>
+<a class="sourceLine" id="cb15-163" title="163">                treatment_values, </a>
+<a class="sourceLine" id="cb15-164" title="164">                equal_var<span class="op">=</span>equal_variances</a>
+<a class="sourceLine" id="cb15-165" title="165">            )</a>
+<a class="sourceLine" id="cb15-166" title="166">            test_name <span class="op">=</span> <span class="st">&quot;Student&#39;s t-test&quot;</span> <span class="cf">if</span> equal_variances <span class="cf">else</span> <span class="st">&quot;Welch&#39;s t-test&quot;</span></a>
+<a class="sourceLine" id="cb15-167" title="167">            test_statistic <span class="op">=</span> t_stat</a>
+<a class="sourceLine" id="cb15-168" title="168">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb15-169" title="169">            <span class="co"># Use non-parametric test</span></a>
+<a class="sourceLine" id="cb15-170" title="170">            u_stat, p_value <span class="op">=</span> mannwhitneyu(</a>
+<a class="sourceLine" id="cb15-171" title="171">                control_values, </a>
+<a class="sourceLine" id="cb15-172" title="172">                treatment_values, </a>
+<a class="sourceLine" id="cb15-173" title="173">                alternative<span class="op">=</span><span class="st">&#39;two-sided&#39;</span></a>
+<a class="sourceLine" id="cb15-174" title="174">            )</a>
+<a class="sourceLine" id="cb15-175" title="175">            test_name <span class="op">=</span> <span class="st">&quot;Mann-Whitney U test&quot;</span></a>
+<a class="sourceLine" id="cb15-176" title="176">            test_statistic <span class="op">=</span> u_stat</a>
+<a class="sourceLine" id="cb15-177" title="177">        </a>
+<a class="sourceLine" id="cb15-178" title="178">        <span class="co"># Calculate effect size (Cohen&#39;s d)</span></a>
+<a class="sourceLine" id="cb15-179" title="179">        pooled_std <span class="op">=</span> np.sqrt((np.var(control_values) <span class="op">+</span> np.var(treatment_values)) <span class="op">/</span> <span class="dv">2</span>)</a>
+<a class="sourceLine" id="cb15-180" title="180">        cohens_d <span class="op">=</span> (np.mean(treatment_values) <span class="op">-</span> np.mean(control_values)) <span class="op">/</span> pooled_std</a>
+<a class="sourceLine" id="cb15-181" title="181">        </a>
+<a class="sourceLine" id="cb15-182" title="182">        <span class="co"># Calculate confidence interval for mean difference</span></a>
+<a class="sourceLine" id="cb15-183" title="183">        confidence_interval <span class="op">=</span> <span class="va">self</span>.calculate_mean_difference_ci(</a>
+<a class="sourceLine" id="cb15-184" title="184">            control_values, treatment_values</a>
+<a class="sourceLine" id="cb15-185" title="185">        )</a>
+<a class="sourceLine" id="cb15-186" title="186">        </a>
+<a class="sourceLine" id="cb15-187" title="187">        <span class="cf">return</span> TestResult(</a>
+<a class="sourceLine" id="cb15-188" title="188">            test_name<span class="op">=</span>test_name,</a>
+<a class="sourceLine" id="cb15-189" title="189">            test_statistic<span class="op">=</span>test_statistic,</a>
+<a class="sourceLine" id="cb15-190" title="190">            p_value<span class="op">=</span>p_value,</a>
+<a class="sourceLine" id="cb15-191" title="191">            is_significant<span class="op">=</span>p_value <span class="op">&lt;</span> <span class="fl">0.05</span>,</a>
+<a class="sourceLine" id="cb15-192" title="192">            confidence_interval<span class="op">=</span>confidence_interval,</a>
+<a class="sourceLine" id="cb15-193" title="193">            effect_size<span class="op">=</span>cohens_d,</a>
+<a class="sourceLine" id="cb15-194" title="194">            control_metric<span class="op">=</span>np.mean(control_values),</a>
+<a class="sourceLine" id="cb15-195" title="195">            treatment_metric<span class="op">=</span>np.mean(treatment_values),</a>
+<a class="sourceLine" id="cb15-196" title="196">            sample_sizes<span class="op">=</span>{<span class="st">&#39;control&#39;</span>: <span class="bu">len</span>(control_values), <span class="st">&#39;treatment&#39;</span>: <span class="bu">len</span>(treatment_values)}</a>
+<a class="sourceLine" id="cb15-197" title="197">        )</a>
+<a class="sourceLine" id="cb15-198" title="198">    </a>
+<a class="sourceLine" id="cb15-199" title="199">    <span class="kw">def</span> apply_multiple_comparison_correction(<span class="va">self</span>, analysis_results: <span class="bu">dict</span>, method: <span class="bu">str</span> <span class="op">=</span> <span class="st">&#39;bonferroni&#39;</span>) <span class="op">-&gt;</span> <span class="bu">dict</span>:</a>
+<a class="sourceLine" id="cb15-200" title="200">        <span class="co">&quot;&quot;&quot;Apply correction for multiple comparisons&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb15-201" title="201">        <span class="im">from</span> statsmodels.stats.multitest <span class="im">import</span> multipletests</a>
+<a class="sourceLine" id="cb15-202" title="202">        </a>
+<a class="sourceLine" id="cb15-203" title="203">        <span class="co"># Collect all p-values</span></a>
+<a class="sourceLine" id="cb15-204" title="204">        p_values <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb15-205" title="205">        result_mapping <span class="op">=</span> []</a>
+<a class="sourceLine" id="cb15-206" title="206">        </a>
+<a class="sourceLine" id="cb15-207" title="207">        <span class="cf">for</span> metric_name, metric_results <span class="kw">in</span> analysis_results.items():</a>
+<a class="sourceLine" id="cb15-208" title="208">            <span class="cf">for</span> treatment_name, test_result <span class="kw">in</span> metric_results.items():</a>
+<a class="sourceLine" id="cb15-209" title="209">                p_values.append(test_result.p_value)</a>
+<a class="sourceLine" id="cb15-210" title="210">                result_mapping.append((metric_name, treatment_name))</a>
+<a class="sourceLine" id="cb15-211" title="211">        </a>
+<a class="sourceLine" id="cb15-212" title="212">        <span class="co"># Apply correction</span></a>
+<a class="sourceLine" id="cb15-213" title="213">        <span class="cf">if</span> method <span class="op">==</span> <span class="st">&#39;bonferroni&#39;</span>:</a>
+<a class="sourceLine" id="cb15-214" title="214">            corrected_p_values <span class="op">=</span> [p <span class="op">*</span> <span class="bu">len</span>(p_values) <span class="cf">for</span> p <span class="kw">in</span> p_values]</a>
+<a class="sourceLine" id="cb15-215" title="215">            corrected_p_values <span class="op">=</span> [<span class="bu">min</span>(p, <span class="fl">1.0</span>) <span class="cf">for</span> p <span class="kw">in</span> corrected_p_values]  <span class="co"># Cap at 1.0</span></a>
+<a class="sourceLine" id="cb15-216" title="216">        <span class="cf">elif</span> method <span class="op">==</span> <span class="st">&#39;benjamini_hochberg&#39;</span>:</a>
+<a class="sourceLine" id="cb15-217" title="217">            _, corrected_p_values, _, _ <span class="op">=</span> multipletests(p_values, method<span class="op">=</span><span class="st">&#39;fdr_bh&#39;</span>)</a>
+<a class="sourceLine" id="cb15-218" title="218">        </a>
+<a class="sourceLine" id="cb15-219" title="219">        <span class="co"># Update results with corrected p-values</span></a>
+<a class="sourceLine" id="cb15-220" title="220">        corrected_results <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb15-221" title="221">        <span class="cf">for</span> i, (metric_name, treatment_name) <span class="kw">in</span> <span class="bu">enumerate</span>(result_mapping):</a>
+<a class="sourceLine" id="cb15-222" title="222">            <span class="cf">if</span> metric_name <span class="kw">not</span> <span class="kw">in</span> corrected_results:</a>
+<a class="sourceLine" id="cb15-223" title="223">                corrected_results[metric_name] <span class="op">=</span> {}</a>
+<a class="sourceLine" id="cb15-224" title="224">            </a>
+<a class="sourceLine" id="cb15-225" title="225">            original_result <span class="op">=</span> analysis_results[metric_name][treatment_name]</a>
+<a class="sourceLine" id="cb15-226" title="226">            corrected_result <span class="op">=</span> original_result.copy()</a>
+<a class="sourceLine" id="cb15-227" title="227">            corrected_result.corrected_p_value <span class="op">=</span> corrected_p_values[i]</a>
+<a class="sourceLine" id="cb15-228" title="228">            corrected_result.is_significant_corrected <span class="op">=</span> corrected_p_values[i] <span class="op">&lt;</span> <span class="fl">0.05</span></a>
+<a class="sourceLine" id="cb15-229" title="229">            </a>
+<a class="sourceLine" id="cb15-230" title="230">            corrected_results[metric_name][treatment_name] <span class="op">=</span> corrected_result</a>
+<a class="sourceLine" id="cb15-231" title="231">        </a>
+<a class="sourceLine" id="cb15-232" title="232">        <span class="cf">return</span> corrected_results</a></code></pre></div>
+<h4 id="collaborative-editing-engine">3. Collaborative Editing Engine</h4>
+<h5 id="real-time-collaboration-system">Real-Time Collaboration System</h5>
+<div class="sourceCode" id="cb16"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb16-1" title="1"><span class="kw">class</span> CollaborationEngine:</a>
+<a class="sourceLine" id="cb16-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb16-3" title="3">        <span class="va">self</span>.websocket_manager <span class="op">=</span> WebSocketManager()</a>
+<a class="sourceLine" id="cb16-4" title="4">        <span class="va">self</span>.operational_transform <span class="op">=</span> OperationalTransform()</a>
+<a class="sourceLine" id="cb16-5" title="5">        <span class="va">self</span>.conflict_resolver <span class="op">=</span> ConflictResolver()</a>
+<a class="sourceLine" id="cb16-6" title="6">        <span class="va">self</span>.activity_tracker <span class="op">=</span> ActivityTracker()</a>
+<a class="sourceLine" id="cb16-7" title="7">        </a>
+<a class="sourceLine" id="cb16-8" title="8">    <span class="cf">async</span> <span class="kw">def</span> join_collaboration_session(<span class="va">self</span>, template_id: <span class="bu">str</span>, user_id: <span class="bu">str</span>) <span class="op">-&gt;</span> CollaborationSession:</a>
+<a class="sourceLine" id="cb16-9" title="9">        <span class="co"># Get or create collaboration session</span></a>
+<a class="sourceLine" id="cb16-10" title="10">        session <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.get_or_create_session(template_id)</a>
+<a class="sourceLine" id="cb16-11" title="11">        </a>
+<a class="sourceLine" id="cb16-12" title="12">        <span class="co"># Add user to session</span></a>
+<a class="sourceLine" id="cb16-13" title="13">        participant <span class="op">=</span> CollaborationParticipant(</a>
+<a class="sourceLine" id="cb16-14" title="14">            user_id<span class="op">=</span>user_id,</a>
+<a class="sourceLine" id="cb16-15" title="15">            joined_at<span class="op">=</span>datetime.utcnow(),</a>
+<a class="sourceLine" id="cb16-16" title="16">            cursor_position<span class="op">=</span><span class="dv">0</span>,</a>
+<a class="sourceLine" id="cb16-17" title="17">            is_active<span class="op">=</span><span class="va">True</span></a>
+<a class="sourceLine" id="cb16-18" title="18">        )</a>
+<a class="sourceLine" id="cb16-19" title="19">        </a>
+<a class="sourceLine" id="cb16-20" title="20">        session.participants[user_id] <span class="op">=</span> participant</a>
+<a class="sourceLine" id="cb16-21" title="21">        </a>
+<a class="sourceLine" id="cb16-22" title="22">        <span class="co"># Get current document state</span></a>
+<a class="sourceLine" id="cb16-23" title="23">        current_state <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.get_document_state(template_id)</a>
+<a class="sourceLine" id="cb16-24" title="24">        </a>
+<a class="sourceLine" id="cb16-25" title="25">        <span class="co"># Send current state to new participant</span></a>
+<a class="sourceLine" id="cb16-26" title="26">        <span class="cf">await</span> <span class="va">self</span>.websocket_manager.send_to_user(user_id, {</a>
+<a class="sourceLine" id="cb16-27" title="27">            <span class="st">&#39;type&#39;</span>: <span class="st">&#39;document_state&#39;</span>,</a>
+<a class="sourceLine" id="cb16-28" title="28">            <span class="st">&#39;content&#39;</span>: current_state.content,</a>
+<a class="sourceLine" id="cb16-29" title="29">            <span class="st">&#39;version&#39;</span>: current_state.version,</a>
+<a class="sourceLine" id="cb16-30" title="30">            <span class="st">&#39;participants&#39;</span>: [p.to_dict() <span class="cf">for</span> p <span class="kw">in</span> session.participants.values()]</a>
+<a class="sourceLine" id="cb16-31" title="31">        })</a>
+<a class="sourceLine" id="cb16-32" title="32">        </a>
+<a class="sourceLine" id="cb16-33" title="33">        <span class="co"># Notify other participants</span></a>
+<a class="sourceLine" id="cb16-34" title="34">        <span class="cf">await</span> <span class="va">self</span>.broadcast_to_session(session.<span class="bu">id</span>, {</a>
+<a class="sourceLine" id="cb16-35" title="35">            <span class="st">&#39;type&#39;</span>: <span class="st">&#39;user_joined&#39;</span>,</a>
+<a class="sourceLine" id="cb16-36" title="36">            <span class="st">&#39;user_id&#39;</span>: user_id,</a>
+<a class="sourceLine" id="cb16-37" title="37">            <span class="st">&#39;participant_count&#39;</span>: <span class="bu">len</span>(session.participants)</a>
+<a class="sourceLine" id="cb16-38" title="38">        }, exclude_user<span class="op">=</span>user_id)</a>
+<a class="sourceLine" id="cb16-39" title="39">        </a>
+<a class="sourceLine" id="cb16-40" title="40">        <span class="cf">return</span> session</a>
+<a class="sourceLine" id="cb16-41" title="41">    </a>
+<a class="sourceLine" id="cb16-42" title="42">    <span class="cf">async</span> <span class="kw">def</span> handle_text_operation(<span class="va">self</span>, operation: TextOperation) <span class="op">-&gt;</span> OperationResult:</a>
+<a class="sourceLine" id="cb16-43" title="43">        session <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.get_session(operation.template_id)</a>
+<a class="sourceLine" id="cb16-44" title="44">        </a>
+<a class="sourceLine" id="cb16-45" title="45">        <span class="co"># Apply operational transformation</span></a>
+<a class="sourceLine" id="cb16-46" title="46">        transformed_operation <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.operational_transform.transform_operation(</a>
+<a class="sourceLine" id="cb16-47" title="47">            operation, session.document_state</a>
+<a class="sourceLine" id="cb16-48" title="48">        )</a>
+<a class="sourceLine" id="cb16-49" title="49">        </a>
+<a class="sourceLine" id="cb16-50" title="50">        <span class="co"># Validate operation</span></a>
+<a class="sourceLine" id="cb16-51" title="51">        validation_result <span class="op">=</span> <span class="va">self</span>.validate_operation(transformed_operation, session)</a>
+<a class="sourceLine" id="cb16-52" title="52">        <span class="cf">if</span> <span class="kw">not</span> validation_result.is_valid:</a>
+<a class="sourceLine" id="cb16-53" title="53">            <span class="cf">return</span> OperationResult(</a>
+<a class="sourceLine" id="cb16-54" title="54">                success<span class="op">=</span><span class="va">False</span>,</a>
+<a class="sourceLine" id="cb16-55" title="55">                error<span class="op">=</span>validation_result.error,</a>
+<a class="sourceLine" id="cb16-56" title="56">                operation_id<span class="op">=</span>operation.<span class="bu">id</span></a>
+<a class="sourceLine" id="cb16-57" title="57">            )</a>
+<a class="sourceLine" id="cb16-58" title="58">        </a>
+<a class="sourceLine" id="cb16-59" title="59">        <span class="co"># Apply operation to document</span></a>
+<a class="sourceLine" id="cb16-60" title="60">        new_document_state <span class="op">=</span> <span class="va">self</span>.apply_operation_to_document(</a>
+<a class="sourceLine" id="cb16-61" title="61">            session.document_state, transformed_operation</a>
+<a class="sourceLine" id="cb16-62" title="62">        )</a>
+<a class="sourceLine" id="cb16-63" title="63">        </a>
+<a class="sourceLine" id="cb16-64" title="64">        <span class="co"># Update session state</span></a>
+<a class="sourceLine" id="cb16-65" title="65">        session.document_state <span class="op">=</span> new_document_state</a>
+<a class="sourceLine" id="cb16-66" title="66">        session.last_modified <span class="op">=</span> datetime.utcnow()</a>
+<a class="sourceLine" id="cb16-67" title="67">        session.last_modified_by <span class="op">=</span> operation.user_id</a>
+<a class="sourceLine" id="cb16-68" title="68">        </a>
+<a class="sourceLine" id="cb16-69" title="69">        <span class="co"># Broadcast operation to other participants</span></a>
+<a class="sourceLine" id="cb16-70" title="70">        <span class="cf">await</span> <span class="va">self</span>.broadcast_operation_to_participants(</a>
+<a class="sourceLine" id="cb16-71" title="71">            session, transformed_operation, exclude_user<span class="op">=</span>operation.user_id</a>
+<a class="sourceLine" id="cb16-72" title="72">        )</a>
+<a class="sourceLine" id="cb16-73" title="73">        </a>
+<a class="sourceLine" id="cb16-74" title="74">        <span class="co"># Track activity</span></a>
+<a class="sourceLine" id="cb16-75" title="75">        <span class="cf">await</span> <span class="va">self</span>.activity_tracker.track_edit_activity(</a>
+<a class="sourceLine" id="cb16-76" title="76">            template_id<span class="op">=</span>operation.template_id,</a>
+<a class="sourceLine" id="cb16-77" title="77">            user_id<span class="op">=</span>operation.user_id,</a>
+<a class="sourceLine" id="cb16-78" title="78">            operation_type<span class="op">=</span>operation.<span class="bu">type</span>,</a>
+<a class="sourceLine" id="cb16-79" title="79">            operation_size<span class="op">=</span><span class="bu">len</span>(operation.content)</a>
+<a class="sourceLine" id="cb16-80" title="80">        )</a>
+<a class="sourceLine" id="cb16-81" title="81">        </a>
+<a class="sourceLine" id="cb16-82" title="82">        <span class="cf">return</span> OperationResult(</a>
+<a class="sourceLine" id="cb16-83" title="83">            success<span class="op">=</span><span class="va">True</span>,</a>
+<a class="sourceLine" id="cb16-84" title="84">            transformed_operation<span class="op">=</span>transformed_operation,</a>
+<a class="sourceLine" id="cb16-85" title="85">            new_version<span class="op">=</span>new_document_state.version,</a>
+<a class="sourceLine" id="cb16-86" title="86">            operation_id<span class="op">=</span>operation.<span class="bu">id</span></a>
+<a class="sourceLine" id="cb16-87" title="87">        )</a>
+<a class="sourceLine" id="cb16-88" title="88">    </a>
+<a class="sourceLine" id="cb16-89" title="89">    <span class="cf">async</span> <span class="kw">def</span> handle_cursor_movement(<span class="va">self</span>, cursor_update: CursorUpdate):</a>
+<a class="sourceLine" id="cb16-90" title="90">        session <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.get_session(cursor_update.template_id)</a>
+<a class="sourceLine" id="cb16-91" title="91">        </a>
+<a class="sourceLine" id="cb16-92" title="92">        <span class="co"># Update participant cursor position</span></a>
+<a class="sourceLine" id="cb16-93" title="93">        <span class="cf">if</span> cursor_update.user_id <span class="kw">in</span> session.participants:</a>
+<a class="sourceLine" id="cb16-94" title="94">            participant <span class="op">=</span> session.participants[cursor_update.user_id]</a>
+<a class="sourceLine" id="cb16-95" title="95">            participant.cursor_position <span class="op">=</span> cursor_update.position</a>
+<a class="sourceLine" id="cb16-96" title="96">            participant.selection_range <span class="op">=</span> cursor_update.selection_range</a>
+<a class="sourceLine" id="cb16-97" title="97">            participant.last_activity <span class="op">=</span> datetime.utcnow()</a>
+<a class="sourceLine" id="cb16-98" title="98">            </a>
+<a class="sourceLine" id="cb16-99" title="99">            <span class="co"># Broadcast cursor update to other participants</span></a>
+<a class="sourceLine" id="cb16-100" title="100">            <span class="cf">await</span> <span class="va">self</span>.broadcast_to_session(session.<span class="bu">id</span>, {</a>
+<a class="sourceLine" id="cb16-101" title="101">                <span class="st">&#39;type&#39;</span>: <span class="st">&#39;cursor_update&#39;</span>,</a>
+<a class="sourceLine" id="cb16-102" title="102">                <span class="st">&#39;user_id&#39;</span>: cursor_update.user_id,</a>
+<a class="sourceLine" id="cb16-103" title="103">                <span class="st">&#39;position&#39;</span>: cursor_update.position,</a>
+<a class="sourceLine" id="cb16-104" title="104">                <span class="st">&#39;selection_range&#39;</span>: cursor_update.selection_range</a>
+<a class="sourceLine" id="cb16-105" title="105">            }, exclude_user<span class="op">=</span>cursor_update.user_id)</a>
+<a class="sourceLine" id="cb16-106" title="106"></a>
+<a class="sourceLine" id="cb16-107" title="107"><span class="kw">class</span> OperationalTransform:</a>
+<a class="sourceLine" id="cb16-108" title="108">    <span class="co">&quot;&quot;&quot;Implements operational transformation for conflict-free collaborative editing&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb16-109" title="109">    </a>
+<a class="sourceLine" id="cb16-110" title="110">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb16-111" title="111">        <span class="va">self</span>.operation_queue <span class="op">=</span> OperationQueue()</a>
+<a class="sourceLine" id="cb16-112" title="112">        </a>
+<a class="sourceLine" id="cb16-113" title="113">    <span class="cf">async</span> <span class="kw">def</span> transform_operation(<span class="va">self</span>, operation: TextOperation, document_state: DocumentState) <span class="op">-&gt;</span> TextOperation:</a>
+<a class="sourceLine" id="cb16-114" title="114">        <span class="co"># Get all operations that happened after this operation&#39;s base version</span></a>
+<a class="sourceLine" id="cb16-115" title="115">        concurrent_operations <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.get_concurrent_operations(</a>
+<a class="sourceLine" id="cb16-116" title="116">            operation.base_version, </a>
+<a class="sourceLine" id="cb16-117" title="117">            document_state.version,</a>
+<a class="sourceLine" id="cb16-118" title="118">            operation.template_id</a>
+<a class="sourceLine" id="cb16-119" title="119">        )</a>
+<a class="sourceLine" id="cb16-120" title="120">        </a>
+<a class="sourceLine" id="cb16-121" title="121">        transformed_operation <span class="op">=</span> operation</a>
+<a class="sourceLine" id="cb16-122" title="122">        </a>
+<a class="sourceLine" id="cb16-123" title="123">        <span class="co"># Transform against each concurrent operation</span></a>
+<a class="sourceLine" id="cb16-124" title="124">        <span class="cf">for</span> concurrent_op <span class="kw">in</span> concurrent_operations:</a>
+<a class="sourceLine" id="cb16-125" title="125">            transformed_operation <span class="op">=</span> <span class="va">self</span>.transform_against_operation(</a>
+<a class="sourceLine" id="cb16-126" title="126">                transformed_operation, concurrent_op</a>
+<a class="sourceLine" id="cb16-127" title="127">            )</a>
+<a class="sourceLine" id="cb16-128" title="128">        </a>
+<a class="sourceLine" id="cb16-129" title="129">        <span class="cf">return</span> transformed_operation</a>
+<a class="sourceLine" id="cb16-130" title="130">    </a>
+<a class="sourceLine" id="cb16-131" title="131">    <span class="kw">def</span> transform_against_operation(<span class="va">self</span>, op1: TextOperation, op2: TextOperation) <span class="op">-&gt;</span> TextOperation:</a>
+<a class="sourceLine" id="cb16-132" title="132">        <span class="co">&quot;&quot;&quot;Transform op1 against op2 using operational transformation rules&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb16-133" title="133">        </a>
+<a class="sourceLine" id="cb16-134" title="134">        <span class="cf">if</span> op1.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;insert&#39;</span> <span class="kw">and</span> op2.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;insert&#39;</span>:</a>
+<a class="sourceLine" id="cb16-135" title="135">            <span class="cf">return</span> <span class="va">self</span>.transform_insert_insert(op1, op2)</a>
+<a class="sourceLine" id="cb16-136" title="136">        <span class="cf">elif</span> op1.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;insert&#39;</span> <span class="kw">and</span> op2.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;delete&#39;</span>:</a>
+<a class="sourceLine" id="cb16-137" title="137">            <span class="cf">return</span> <span class="va">self</span>.transform_insert_delete(op1, op2)</a>
+<a class="sourceLine" id="cb16-138" title="138">        <span class="cf">elif</span> op1.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;delete&#39;</span> <span class="kw">and</span> op2.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;insert&#39;</span>:</a>
+<a class="sourceLine" id="cb16-139" title="139">            <span class="cf">return</span> <span class="va">self</span>.transform_delete_insert(op1, op2)</a>
+<a class="sourceLine" id="cb16-140" title="140">        <span class="cf">elif</span> op1.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;delete&#39;</span> <span class="kw">and</span> op2.<span class="bu">type</span> <span class="op">==</span> <span class="st">&#39;delete&#39;</span>:</a>
+<a class="sourceLine" id="cb16-141" title="141">            <span class="cf">return</span> <span class="va">self</span>.transform_delete_delete(op1, op2)</a>
+<a class="sourceLine" id="cb16-142" title="142">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb16-143" title="143">            <span class="cf">return</span> op1</a>
+<a class="sourceLine" id="cb16-144" title="144">    </a>
+<a class="sourceLine" id="cb16-145" title="145">    <span class="kw">def</span> transform_insert_insert(<span class="va">self</span>, op1: TextOperation, op2: TextOperation) <span class="op">-&gt;</span> TextOperation:</a>
+<a class="sourceLine" id="cb16-146" title="146">        <span class="co">&quot;&quot;&quot;Transform insert operation against another insert operation&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb16-147" title="147">        <span class="cf">if</span> op1.position <span class="op">&lt;=</span> op2.position:</a>
+<a class="sourceLine" id="cb16-148" title="148">            <span class="co"># op1 position is before or at op2 position - no change needed</span></a>
+<a class="sourceLine" id="cb16-149" title="149">            <span class="cf">return</span> op1</a>
+<a class="sourceLine" id="cb16-150" title="150">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb16-151" title="151">            <span class="co"># op1 position is after op2 position - adjust by length of op2 insertion</span></a>
+<a class="sourceLine" id="cb16-152" title="152">            transformed_op <span class="op">=</span> op1.copy()</a>
+<a class="sourceLine" id="cb16-153" title="153">            transformed_op.position <span class="op">+=</span> <span class="bu">len</span>(op2.content)</a>
+<a class="sourceLine" id="cb16-154" title="154">            <span class="cf">return</span> transformed_op</a>
+<a class="sourceLine" id="cb16-155" title="155">    </a>
+<a class="sourceLine" id="cb16-156" title="156">    <span class="kw">def</span> transform_insert_delete(<span class="va">self</span>, op1: TextOperation, op2: TextOperation) <span class="op">-&gt;</span> TextOperation:</a>
+<a class="sourceLine" id="cb16-157" title="157">        <span class="co">&quot;&quot;&quot;Transform insert operation against delete operation&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb16-158" title="158">        <span class="cf">if</span> op1.position <span class="op">&lt;=</span> op2.position:</a>
+<a class="sourceLine" id="cb16-159" title="159">            <span class="co"># Insert is before delete - no change needed</span></a>
+<a class="sourceLine" id="cb16-160" title="160">            <span class="cf">return</span> op1</a>
+<a class="sourceLine" id="cb16-161" title="161">        <span class="cf">elif</span> op1.position <span class="op">&gt;=</span> op2.position <span class="op">+</span> op2.length:</a>
+<a class="sourceLine" id="cb16-162" title="162">            <span class="co"># Insert is after delete - adjust position</span></a>
+<a class="sourceLine" id="cb16-163" title="163">            transformed_op <span class="op">=</span> op1.copy()</a>
+<a class="sourceLine" id="cb16-164" title="164">            transformed_op.position <span class="op">-=</span> op2.length</a>
+<a class="sourceLine" id="cb16-165" title="165">            <span class="cf">return</span> transformed_op</a>
+<a class="sourceLine" id="cb16-166" title="166">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb16-167" title="167">            <span class="co"># Insert is within delete range - adjust to delete position</span></a>
+<a class="sourceLine" id="cb16-168" title="168">            transformed_op <span class="op">=</span> op1.copy()</a>
+<a class="sourceLine" id="cb16-169" title="169">            transformed_op.position <span class="op">=</span> op2.position</a>
+<a class="sourceLine" id="cb16-170" title="170">            <span class="cf">return</span> transformed_op</a>
+<a class="sourceLine" id="cb16-171" title="171">    </a>
+<a class="sourceLine" id="cb16-172" title="172">    <span class="kw">def</span> transform_delete_insert(<span class="va">self</span>, op1: TextOperation, op2: TextOperation) <span class="op">-&gt;</span> TextOperation:</a>
+<a class="sourceLine" id="cb16-173" title="173">        <span class="co">&quot;&quot;&quot;Transform delete operation against insert operation&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb16-174" title="174">        <span class="cf">if</span> op2.position <span class="op">&lt;=</span> op1.position:</a>
+<a class="sourceLine" id="cb16-175" title="175">            <span class="co"># Insert is before delete - adjust delete position</span></a>
+<a class="sourceLine" id="cb16-176" title="176">            transformed_op <span class="op">=</span> op1.copy()</a>
+<a class="sourceLine" id="cb16-177" title="177">            transformed_op.position <span class="op">+=</span> <span class="bu">len</span>(op2.content)</a>
+<a class="sourceLine" id="cb16-178" title="178">            <span class="cf">return</span> transformed_op</a>
+<a class="sourceLine" id="cb16-179" title="179">        <span class="cf">elif</span> op2.position <span class="op">&gt;=</span> op1.position <span class="op">+</span> op1.length:</a>
+<a class="sourceLine" id="cb16-180" title="180">            <span class="co"># Insert is after delete - no change needed</span></a>
+<a class="sourceLine" id="cb16-181" title="181">            <span class="cf">return</span> op1</a>
+<a class="sourceLine" id="cb16-182" title="182">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb16-183" title="183">            <span class="co"># Insert is within delete range - split delete operation</span></a>
+<a class="sourceLine" id="cb16-184" title="184">            <span class="co"># This is a complex case that may require splitting into multiple operations</span></a>
+<a class="sourceLine" id="cb16-185" title="185">            <span class="co"># For simplicity, we&#39;ll adjust the length</span></a>
+<a class="sourceLine" id="cb16-186" title="186">            transformed_op <span class="op">=</span> op1.copy()</a>
+<a class="sourceLine" id="cb16-187" title="187">            transformed_op.length <span class="op">+=</span> <span class="bu">len</span>(op2.content)</a>
+<a class="sourceLine" id="cb16-188" title="188">            <span class="cf">return</span> transformed_op</a>
+<a class="sourceLine" id="cb16-189" title="189">    </a>
+<a class="sourceLine" id="cb16-190" title="190">    <span class="kw">def</span> transform_delete_delete(<span class="va">self</span>, op1: TextOperation, op2: TextOperation) <span class="op">-&gt;</span> TextOperation:</a>
+<a class="sourceLine" id="cb16-191" title="191">        <span class="co">&quot;&quot;&quot;Transform delete operation against another delete operation&quot;&quot;&quot;</span></a>
+<a class="sourceLine" id="cb16-192" title="192">        <span class="cf">if</span> op1.position <span class="op">+</span> op1.length <span class="op">&lt;=</span> op2.position:</a>
+<a class="sourceLine" id="cb16-193" title="193">            <span class="co"># op1 is completely before op2 - no change needed</span></a>
+<a class="sourceLine" id="cb16-194" title="194">            <span class="cf">return</span> op1</a>
+<a class="sourceLine" id="cb16-195" title="195">        <span class="cf">elif</span> op1.position <span class="op">&gt;=</span> op2.position <span class="op">+</span> op2.length:</a>
+<a class="sourceLine" id="cb16-196" title="196">            <span class="co"># op1 is completely after op2 - adjust position</span></a>
+<a class="sourceLine" id="cb16-197" title="197">            transformed_op <span class="op">=</span> op1.copy()</a>
+<a class="sourceLine" id="cb16-198" title="198">            transformed_op.position <span class="op">-=</span> op2.length</a>
+<a class="sourceLine" id="cb16-199" title="199">            <span class="cf">return</span> transformed_op</a>
+<a class="sourceLine" id="cb16-200" title="200">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb16-201" title="201">            <span class="co"># Overlapping deletes - complex case</span></a>
+<a class="sourceLine" id="cb16-202" title="202">            <span class="co"># Calculate the intersection and adjust accordingly</span></a>
+<a class="sourceLine" id="cb16-203" title="203">            overlap_start <span class="op">=</span> <span class="bu">max</span>(op1.position, op2.position)</a>
+<a class="sourceLine" id="cb16-204" title="204">            overlap_end <span class="op">=</span> <span class="bu">min</span>(op1.position <span class="op">+</span> op1.length, op2.position <span class="op">+</span> op2.length)</a>
+<a class="sourceLine" id="cb16-205" title="205">            overlap_length <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, overlap_end <span class="op">-</span> overlap_start)</a>
+<a class="sourceLine" id="cb16-206" title="206">            </a>
+<a class="sourceLine" id="cb16-207" title="207">            transformed_op <span class="op">=</span> op1.copy()</a>
+<a class="sourceLine" id="cb16-208" title="208">            </a>
+<a class="sourceLine" id="cb16-209" title="209">            <span class="cf">if</span> op2.position <span class="op">&lt;=</span> op1.position:</a>
+<a class="sourceLine" id="cb16-210" title="210">                <span class="co"># op2 starts before or at op1</span></a>
+<a class="sourceLine" id="cb16-211" title="211">                transformed_op.position <span class="op">=</span> op2.position</a>
+<a class="sourceLine" id="cb16-212" title="212">                transformed_op.length <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, op1.length <span class="op">-</span> overlap_length)</a>
+<a class="sourceLine" id="cb16-213" title="213">            <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb16-214" title="214">                <span class="co"># op2 starts within op1</span></a>
+<a class="sourceLine" id="cb16-215" title="215">                transformed_op.length <span class="op">=</span> <span class="bu">max</span>(<span class="dv">0</span>, op1.length <span class="op">-</span> overlap_length)</a>
+<a class="sourceLine" id="cb16-216" title="216">            </a>
+<a class="sourceLine" id="cb16-217" title="217">            <span class="cf">return</span> transformed_op</a></code></pre></div>
+<h4 id="database-schema-implementation">4. Database Schema Implementation</h4>
+<h5 id="postgresql-schema">PostgreSQL Schema</h5>
+<p>```sql – Core templates table CREATE TABLE templates ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name VARCHAR(255) NOT NULL, description TEXT, category VARCHAR(100) NOT NULL, folder_id UUID REFERENCES template_folders(id), created_by UUID NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, updated_by UUID, status VARCHAR(50) DEFAULT ‘draft’, – ‘draft’, ‘active’, ‘archived’, ‘deprecated’ deleted_at TIMESTAMP, performance_score FLOAT DEFAULT 0.0, usage_count INTEGER DEFAULT 0,</p>
+<pre><code>CONSTRAINT valid_status CHECK (status IN (&#39;draft&#39;, &#39;active&#39;, &#39;archived&#39;, &#39;deprecated&#39;))</code></pre>
+<p>);</p>
+<p>– Template folders for organization CREATE TABLE template_folders ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name VARCHAR(255) NOT NULL, parent_folder_id UUID REFERENCES template_folders(id), created_by UUID NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, folder_path TEXT, – Materialized path for efficient queries</p>
+<pre><code>UNIQUE(parent_folder_id, name)</code></pre>
+<p>);</p>
+<p>– Template tags CREATE TABLE template_tags ( template_id UUID REFERENCES templates(id) ON DELETE CASCADE, tag VARCHAR(100) NOT NULL,</p>
+<pre><code>PRIMARY KEY(template_id, tag)</code></pre>
+<p>);</p>
+<p>– Template versions CREATE TABLE template_versions ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), template_id UUID REFERENCES templates(id) ON DELETE CASCADE, version_number INTEGER NOT NULL, content TEXT NOT NULL, variables JSONB DEFAULT ‘[]’, metadata JSONB DEFAULT ‘{}’, commit_message TEXT, created_by UUID NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, parent_version_id UUID REFERENCES template_versions(id), branch_name VARCHAR(100) DEFAULT ‘main’,</p>
+<pre><code>UNIQUE(template_id, version_number)</code></pre>
+<p>);</p>
+<p>– A/B Testing experiments CREATE TABLE ab_experiments ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), name VARCHAR(255) NOT NULL, description TEXT, template_id UUID REFERENCES templates(id) ON DELETE CASCADE, control_version_id UUID REFERENCES template_versions(id), treatment_versions JSONB NOT NULL, – Array of version IDs traffic_split JSONB NOT NULL, – Traffic allocation percentages success_metrics JSONB NOT NULL, start_date TIMESTAMP, end_date TIMESTAMP, actual_start_date TIMESTAMP, actual_end_date TIMESTAMP, status VARCHAR(50) DEFAULT ‘created’, required_sample_size INTEGER, current_sample_size INTEGER DEFAULT 0, statistical_significance FLOAT, created_by UUID NOT NULL, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</p>
+<pre><code>CONSTRAINT valid_experiment_status CHECK (
+    status IN (&#39;created&#39;, &#39;running&#39;, &#39;paused&#39;, &#39;completed&#39;, &#39;cancelled&#39;)
+)</code></pre>
+<p>);</p>
+<p>– Experiment results CREATE TABLE ab_experiment_results ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), experiment_id UUID REFERENCES ab_experiments(id) ON DELETE CASCADE, version_id UUID REFERENCES template_versions(id), metric_name VARCHAR(100) NOT NULL, metric_value FLOAT NOT NULL, sample_size INTEGER NOT NULL, recorded_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, session_id VARCHAR(255), – For grouping related metrics</p>
+<pre><code>INDEX(experiment_id, version_id, metric_name),
+INDEX(recorded_at)</code></pre>
+<p>);</p>
+<p>– Template executions for performance tracking CREATE TABLE template_executions ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), template_id UUID REFERENCES templates(id) ON DELETE CASCADE, version_id UUID REFERENCES template_versions(id), provider VARCHAR(50) NOT NULL, model VARCHAR(100) NOT NULL, execution_time_ms INTEGER, tokens_used INTEGER, cost_usd DECIMAL(10, 6), success BOOLEAN NOT NULL, error_message TEXT, quality_score FLOAT, executed_by UUID, executed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,</p>
+<pre><code>INDEX(template_id, executed_at),
+INDEX(provider, model, executed_at)</code></pre>
+<p>);</p>
+<p>– Collaboration sessions CREATE TABLE collaboration_sessions ( id UUID PRIMARY KEY DEFAULT gen_random_uuid(), template_id UUID REFERENCES templates(id) ON DELETE CASCADE, created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, last_activity TIMESTAMP DEFAULT CURRENT_TIMESTAMP, participant_count INTEGER DEFAULT 0, document_version INTEGER NOT NULL, session_state JSONB DEFAULT ‘{}’ );</p>
+<p>– Collaboration participants CREATE TABLE collaboration_participants ( session_id UUID REFERENCES collaboration_sessions(id) ON DELETE CASCADE, user_id UUID NOT NULL, joined_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP, left_at TIMESTAMP, cursor_position INTEGER DEFAULT 0, is_active BOOLEAN DEFAULT TRUE,</p>
+<pre><code>PRIMARY# 140509_35.md - Advanced Prompt Template Management System</code></pre>
+<h2 id="readme">README</h2>
+<p><strong>Summary:</strong> Create a comprehensive system for managing, versioning, and optimizing prompt templates across different proprietary LLM providers.</p>
+<p><strong>Problem Statement:</strong> Managing prompts across different providers and use cases requires systematic organization and optimization. Your task is to build a prompt management system that stores, versions, and optimizes prompt templates for various proprietary models. The system should enable A/B testing, performance tracking, and collaborative prompt development while maintaining security and compliance.</p>
+<p><strong>Steps:</strong> - Design prompt template storage with versioning and metadata management - Implement A/B testing framework for prompt optimization - Create collaborative editing and review workflows for prompt development - Build performance tracking and quality metrics across different providers - Develop prompt security scanning and compliance checking - Include automated prompt generation and improvement suggestions</p>
+<p><strong>Suggested Data Requirements:</strong> - Prompt template libraries with performance metadata - A/B testing results and optimization histories - Security and compliance requirements for prompt content - User collaboration and editing logs</p>
+<p><strong>Themes:</strong> Proprietary models, GenAI &amp; its techniques</p>
+<hr />
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision">Product Vision</h3>
+<p>Create a comprehensive prompt management platform that enables organizations to systematically develop, optimize, and deploy prompt templates across multiple LLM providers while ensuring security, compliance, and optimal performance through data-driven insights and collaborative workflows.</p>
+<h3 id="target-users">Target Users</h3>
+<ul>
+<li><strong>Primary:</strong> AI Engineers, Prompt Engineers, ML Operations Teams</li>
+<li><strong>Secondary:</strong> Product Managers, Content Teams, AI Researchers</li>
+<li><strong>Tertiary:</strong> Compliance Officers, Security Teams, Business Analysts</li>
+</ul>
+<h3 id="core-value-propositions">Core Value Propositions</h3>
+<ol type="1">
+<li><strong>Centralized Management:</strong> Single source of truth for all prompt templates across providers</li>
+<li><strong>Performance Optimization:</strong> Data-driven prompt improvement through A/B testing and analytics</li>
+<li><strong>Collaboration Excellence:</strong> Streamlined workflows for team-based prompt development</li>
+<li><strong>Security &amp; Compliance:</strong> Automated scanning and policy enforcement</li>
+<li><strong>Cross-Provider Compatibility:</strong> Seamless deployment across different LLM providers</li>
+</ol>
+<h3 id="key-features">Key Features</h3>
+<ol type="1">
+<li><strong>Prompt Template Library:</strong> Hierarchical organization with tagging and search capabilities</li>
+<li><strong>Version Control System:</strong> Git-like versioning with branching and merging</li>
+<li><strong>A/B Testing Platform:</strong> Automated experimentation with statistical significance testing</li>
+<li><strong>Performance Analytics:</strong> Comprehensive metrics tracking across providers and use cases</li>
+<li><strong>Collaborative Editing:</strong> Real-time collaboration with review and approval workflows</li>
+<li><strong>Security Scanner:</strong> Automated detection of sensitive content and compliance violations</li>
+<li><strong>Multi-Provider Deployment:</strong> Unified interface for deploying to various LLM APIs</li>
+</ol>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li>Prompt performance improvement: &gt;25% average improvement in task success rates</li>
+<li>Development velocity: 50% reduction in prompt development time</li>
+<li>Collaboration efficiency: &gt;90% of prompts reviewed within 24 hours</li>
+<li>Security compliance: 100% automated detection of policy violations</li>
+<li>Provider coverage: Support for 10+ major LLM providers within 6 months</li>
+</ul>
+<hr />
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<h3 id="core-functional-requirements">Core Functional Requirements</h3>
+<h4 id="f1-prompt-template-storage-and-organization">F1: Prompt Template Storage and Organization</h4>
+<ul>
+<li><strong>F1.1:</strong> Hierarchical folder structure with unlimited nesting depth</li>
+<li><strong>F1.2:</strong> Rich metadata support (tags, categories, use cases, performance metrics)</li>
+<li><strong>F1.3:</strong> Template inheritance and composition capabilities</li>
+<li><strong>F1.4:</strong> Cross-reference linking between related prompts</li>
+<li><strong>F1.5:</strong> Bulk import/export functionality for template libraries</li>
+</ul>
+<h4 id="f2-version-control-and-change-management">F2: Version Control and Change Management</h4>
+<ul>
+<li><strong>F2.1:</strong> Git-style versioning with commit history and messages</li>
+<li><strong>F2.2:</strong> Branching and merging capabilities for parallel development</li>
+<li><strong>F2.3:</strong> Diff visualization showing changes between versions</li>
+<li><strong>F2.4:</strong> Rollback functionality to previous versions</li>
+<li><strong>F2.5:</strong> Automated backup and recovery systems</li>
+</ul>
+<h4 id="f3-ab-testing-and-experimentation-framework">F3: A/B Testing and Experimentation Framework</h4>
+<ul>
+<li><strong>F3.1:</strong> Automated test setup with control and variant groups</li>
+<li><strong>F3.2:</strong> Statistical significance calculation and early stopping</li>
+<li><strong>F3.3:</strong> Multi-variate testing support for complex experiments</li>
+<li><strong>F3.4:</strong> Custom success metrics definition and tracking</li>
+<li><strong>F3.5:</strong> Integration with external analytics and monitoring systems</li>
+</ul>
+<h4 id="f4-performance-tracking-and-analytics">F4: Performance Tracking and Analytics</h4>
+<ul>
+<li><strong>F4.1:</strong> Real-time performance metrics collection across providers</li>
+<li><strong>F4.2:</strong> Cost tracking and optimization recommendations</li>
+<li><strong>F4.3:</strong> Latency and throughput monitoring</li>
+<li><strong>F4.4:</strong> Quality metrics (accuracy, relevance, coherence) assessment</li>
+<li><strong>F4.5:</strong> Comparative analysis between providers and models</li>
+</ul>
+<h4 id="f5-collaborative-development-workflows">F5: Collaborative Development Workflows</h4>
+<ul>
+<li><strong>F5.1:</strong> Real-time collaborative editing with conflict resolution</li>
+<li><strong>F5.2:</strong> Review and approval processes with customizable workflows</li>
+<li><strong>F5.3:</strong> Comment and annotation systems for feedback</li>
+<li><strong>F5.4:</strong> Role-based access control and permissions management</li>
+<li><strong>F5.5:</strong> Integration with project management and communication tools</li>
+</ul>
+<h4 id="f6-security-and-compliance-management">F6: Security and Compliance Management</h4>
+<ul>
+<li><strong>F6.1:</strong> Automated scanning for PII and sensitive data</li>
+<li><strong>F6.2:</strong> Policy enforcement and compliance checking</li>
+<li><strong>F6.3:</strong> Audit trail for all prompt modifications and deployments</li>
+<li><strong>F6.4:</strong> Data residency and regional compliance controls</li>
+<li><strong>F6.5:</strong> Integration with enterprise security systems</li>
+</ul>
+<h4 id="f7-multi-provider-deployment-and-management">F7: Multi-Provider Deployment and Management</h4>
+<ul>
+<li><strong>F7.1:</strong> Unified API interface for multiple LLM providers</li>
+<li><strong>F7.2:</strong> Provider-specific optimization and formatting</li>
+<li><strong>F7.3:</strong> Failover and load balancing across providers</li>
+<li><strong>F7.4:</strong> Cost optimization through intelligent provider routing</li>
+<li><strong>F7.5:</strong> Performance monitoring across all deployed instances</li>
+</ul>
+<hr />
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li><strong>NFR-P1:</strong> Prompt retrieval latency: &lt;50ms for cached templates</li>
+<li><strong>NFR-P2:</strong> A/B test result calculation: &lt;5 seconds for standard experiments</li>
+<li><strong>NFR-P3:</strong> Collaborative editing response time: &lt;200ms for real-time updates</li>
+<li><strong>NFR-P4:</strong> Bulk operations: Process 10,000+ templates in &lt;10 minutes</li>
+<li><strong>NFR-P5:</strong> Analytics dashboard loading: &lt;3 seconds for standard reports</li>
+</ul>
+<h3 id="scalability-requirements">Scalability Requirements</h3>
+<ul>
+<li><strong>NFR-S1:</strong> Support for 1M+ prompt templates with full-text search</li>
+<li><strong>NFR-S2:</strong> Concurrent users: 1000+ simultaneous collaborative editors</li>
+<li><strong>NFR-S3:</strong> A/B test scale: 100+ concurrent experiments</li>
+<li><strong>NFR-S4:</strong> Provider API calls: Handle 1M+ requests per hour</li>
+<li><strong>NFR-S5:</strong> Storage scaling: Petabyte-scale template and analytics data</li>
+</ul>
+<h3 id="reliability-requirements">Reliability Requirements</h3>
+<ul>
+<li><strong>NFR-R1:</strong> System availability: 99.9% uptime for core services</li>
+<li><strong>NFR-R2:</strong> Data durability: 99.999% for prompt templates and version history</li>
+<li><strong>NFR-R3:</strong> Backup and recovery: RPO 15 minutes, RTO 30 minutes</li>
+<li><strong>NFR-R4:</strong> Cross-region replication for disaster recovery</li>
+<li><strong>NFR-R5:</strong> Graceful degradation during provider API outages</li>
+</ul>
+<h3 id="security-requirements">Security Requirements</h3>
+<ul>
+<li><strong>NFR-SE1:</strong> End-to-end encryption for sensitive prompt content</li>
+<li><strong>NFR-SE2:</strong> Multi-factor authentication and SSO integration</li>
+<li><strong>NFR-SE3:</strong> Role-based access control with fine-grained permissions</li>
+<li><strong>NFR-SE4:</strong> Audit logging with immutable records</li>
+<li><strong>NFR-SE5:</strong> Compliance with SOC 2, GDPR, and industry-specific regulations</li>
+</ul>
+<h3 id="usability-requirements">Usability Requirements</h3>
+<ul>
+<li><strong>NFR-U1:</strong> Intuitive interface: &lt;5 minutes learning curve for basic operations</li>
+<li><strong>NFR-U2:</strong> Mobile responsiveness for review and approval workflows</li>
+<li><strong>NFR-U3:</strong> Accessibility compliance (WCAG 2.1 AA)</li>
+<li><strong>NFR-U4:</strong> Multi-language support for global teams</li>
+<li><strong>NFR-U5:</strong> Comprehensive API documentation and SDKs</li>
+</ul>
+<h3 id="integration-requirements">Integration Requirements</h3>
+<ul>
+<li><strong>NFR-I1:</strong> REST API with OpenAPI 3.0 specification</li>
+<li><strong>NFR-I2:</strong> Webhook support for real-time notifications</li>
+<li><strong>NFR-I3:</strong> CI/CD pipeline integration for automated deployments</li>
+<li><strong>NFR-I4:</strong> Enterprise tool integration (Slack, Teams, Jira, GitHub)</li>
+<li><strong>NFR-I5:</strong> Third-party analytics and monitoring platform integration</li>
+</ul>
+<hr />
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<pre class="mermaid"><code>graph TB
+    subgraph &quot;Client Layer&quot;
+        WEB_UI[Web Application]
+        MOBILE[Mobile App]
+        IDE_PLUGINS[IDE Plugins]
+        API_CLIENTS[API Clients]
+    end
+    
+    subgraph &quot;API Gateway &amp; Security&quot;
+        LB[Load Balancer]
+        API_GW[API Gateway]
+        AUTH_SVC[Authentication Service]
+        RATE_LIMIT[Rate Limiter]
+    end
+    
+    subgraph &quot;Core Services&quot;
+        TEMPLATE_MGR[Template Manager]
+        VERSION_CTRL[Version Control Service]
+        COLLAB_ENGINE[Collaboration Engine]
+        AB_TEST_MGR[A/B Testing Manager]
+        ANALYTICS_SVC[Analytics Service]
+        DEPLOY_MGR[Deployment Manager]
+    end
+    
+    subgraph &quot;Specialized Services&quot;
+        SECURITY_SCANNER[Security Scanner]
+        COMPLIANCE_CHECKER[Compliance Checker]
+        PERFORMANCE_MONITOR[Performance Monitor]
+        OPTIMIZATION_ENGINE[Optimization Engine]
+        WORKFLOW_ENGINE[Workflow Engine]
+    end
+    
+    subgraph &quot;LLM Provider Integration&quot;
+        PROVIDER_GATEWAY[Provider Gateway]
+        OPENAI_ADAPTER[OpenAI Adapter]
+        ANTHROPIC_ADAPTER[Anthropic Adapter]
+        GOOGLE_ADAPTER[Google Adapter]
+        AZURE_ADAPTER[Azure Adapter]
+        AWS_ADAPTER[AWS Adapter]
+    end
+    
+    subgraph &quot;Data Layer&quot;
+        POSTGRES[PostgreSQL - Core Data]
+        MONGODB[MongoDB - Templates]
+        REDIS[Redis - Cache &amp; Sessions]
+        ELASTICSEARCH[Elasticsearch - Search]
+        TIMESERIES[InfluxDB - Metrics]
+        BLOB_STORAGE[Object Storage - Assets]
+    end
+    
+    subgraph &quot;Message Queue &amp; Processing&quot;
+        MESSAGE_QUEUE[Message Queue]
+        TASK_PROCESSOR[Task Processor]
+        NOTIFICATION_SVC[Notification Service]
+        WEBHOOK_DISPATCHER[Webhook Dispatcher]
+    end
+    
+    subgraph &quot;External Integrations&quot;
+        SLACK_API[Slack Integration]
+        TEAMS_API[Teams Integration]
+        JIRA_API[Jira Integration]
+        GITHUB_API[GitHub Integration]
+        ANALYTICS_TOOLS[External Analytics]
+    end
+    
+    WEB_UI --&gt; LB
+    MOBILE --&gt; LB
+    IDE_PLUGINS --&gt; LB
+    API_CLIENTS --&gt; LB
+    
+    LB --&gt; API_GW
+    API_GW --&gt; AUTH_SVC
+    API_GW --&gt; RATE_LIMIT
+    
+    API_GW --&gt; TEMPLATE_MGR
+    API_GW --&gt; VERSION_CTRL
+    API_GW --&gt; COLLAB_ENGINE
+    API_GW --&gt; AB_TEST_MGR
+    API_GW --&gt; ANALYTICS_SVC
+    API_GW --&gt; DEPLOY_MGR
+    
+    TEMPLATE_MGR --&gt; SECURITY_SCANNER
+    TEMPLATE_MGR --&gt; COMPLIANCE_CHECKER
+    DEPLOY_MGR --&gt; PERFORMANCE_MONITOR
+    AB_TEST_MGR --&gt; OPTIMIZATION_ENGINE
+    COLLAB_ENGINE --&gt; WORKFLOW_ENGINE
+    
+    DEPLOY_MGR --&gt; PROVIDER_GATEWAY
+    PROVIDER_GATEWAY --&gt; OPENAI_ADAPTER
+    PROVIDER_GATEWAY --&gt; ANTHROPIC_ADAPTER
+    PROVIDER_GATEWAY --&gt; GOOGLE_ADAPTER
+    PROVIDER_GATEWAY --&gt; AZURE_ADAPTER
+    PROVIDER_GATEWAY --&gt; AWS_ADAPTER
+    
+    TEMPLATE_MGR --&gt; POSTGRES
+    VERSION_CTRL --&gt; MONGODB
+    COLLAB_ENGINE --&gt; REDIS
+    ANALYTICS_SVC --&gt; ELASTICSEARCH
+    PERFORMANCE_MONITOR --&gt; TIMESERIES
+    TEMPLATE_MGR --&gt; BLOB_STORAGE
+    
+    WORKFLOW_ENGINE --&gt; MESSAGE_QUEUE
+    MESSAGE_QUEUE --&gt; TASK_PROCESSOR
+    TASK_PROCESSOR --&gt; NOTIFICATION_SVC
+    NOTIFICATION_SVC --&gt; WEBHOOK_DISPATCHER
+    
+    NOTIFICATION_SVC --&gt; SLACK_API
+    NOTIFICATION_SVC --&gt; TEAMS_API
+    WORKFLOW_ENGINE --&gt; JIRA_API
+    VERSION_CTRL --&gt; GITHUB_API
+    ANALYTICS_SVC --&gt; ANALYTICS_TOOLS</code></pre>
+<hr />
+<h2 id="hld-high-level-design">HLD (High Level Design)</h2>
+<h3 id="system-architecture-overview">System Architecture Overview</h3>
+<p>The Advanced Prompt Template Management System uses a microservices architecture optimized for collaborative development, performance tracking, and multi-provider deployment with enterprise-grade security and compliance features.</p>
+<h4 id="template-management-core">1. Template Management Core</h4>
+<h5 id="hierarchical-template-organization">Hierarchical Template Organization</h5>
+<div class="sourceCode" id="cb26"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb26-1" title="1"><span class="kw">class</span> TemplateManager:</a>
+<a class="sourceLine" id="cb26-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb26-3" title="3">        <span class="va">self</span>.template_repository <span class="op">=</span> TemplateRepository()</a>
+<a class="sourceLine" id="cb26-4" title="4">        <span class="va">self</span>.metadata_manager <span class="op">=</span> MetadataManager()</a>
+<a class="sourceLine" id="cb26-5" title="5">        <span class="va">self</span>.search_engine <span class="op">=</span> TemplateSearchEngine()</a>
+<a class="sourceLine" id="cb26-6" title="6">        <span class="va">self</span>.security_scanner <span class="op">=</span> SecurityScanner()</a>
+<a class="sourceLine" id="cb26-7" title="7">        </a>
+<a class="sourceLine" id="cb26-8" title="8">    <span class="cf">async</span> <span class="kw">def</span> create_template(<span class="va">self</span>, template_data: TemplateCreationRequest) <span class="op">-&gt;</span> Template:</a>
+<a class="sourceLine" id="cb26-9" title="9">        <span class="co"># Validate template structure and content</span></a>
+<a class="sourceLine" id="cb26-10" title="10">        validation_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.validate_template_structure(template_data)</a>
+<a class="sourceLine" id="cb26-11" title="11">        <span class="cf">if</span> <span class="kw">not</span> validation_result.is_valid:</a>
+<a class="sourceLine" id="cb26-12" title="12">            <span class="cf">raise</span> TemplateValidationError(validation_result.errors)</a>
+<a class="sourceLine" id="cb26-13" title="13">        </a>
+<a class="sourceLine" id="cb26-14" title="14">        <span class="co"># Security and compliance scanning</span></a>
+<a class="sourceLine" id="cb26-15" title="15">        security_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.security_scanner.scan_template(template_data.content)</a>
+<a class="sourceLine" id="cb26-16" title="16">        <span class="cf">if</span> security_result.has_violations:</a>
+<a class="sourceLine" id="cb26-17" title="17">            <span class="cf">raise</span> SecurityViolationError(security_result.violations)</a>
+<a class="sourceLine" id="cb26-18" title="18">        </a>
+<a class="sourceLine" id="cb26-19" title="19">        <span class="co"># Create template with metadata</span></a>
+<a class="sourceLine" id="cb26-20" title="20">        template <span class="op">=</span> Template(</a>
+<a class="sourceLine" id="cb26-21" title="21">            <span class="bu">id</span><span class="op">=</span>generate_uuid(),</a>
+<a class="sourceLine" id="cb26-22" title="22">            name<span class="op">=</span>template_data.name,</a>
+<a class="sourceLine" id="cb26-23" title="23">            content<span class="op">=</span>template_data.content,</a>
+<a class="sourceLine" id="cb26-24" title="24">            category<span class="op">=</span>template_data.category,</a>
+<a class="sourceLine" id="cb26-25" title="25">            tags<span class="op">=</span>template_data.tags,</a>
+<a class="sourceLine" id="cb26-26" title="26">            metadata<span class="op">=</span><span class="va">self</span>.extract_template_metadata(template_data),</a>
+<a class="sourceLine" id="cb26-27" title="27">            created_by<span class="op">=</span>template_data.user_id,</a>
+<a class="sourceLine" id="cb26-28" title="28">            created_at<span class="op">=</span>datetime.utcnow(),</a>
+<a class="sourceLine" id="cb26-29" title="29">            version<span class="op">=</span><span class="dv">1</span></a>
+<a class="sourceLine" id="cb26-30" title="30">        )</a>
+<a class="sourceLine" id="cb26-31" title="31">        </a>
+<a class="sourceLine" id="cb26-32" title="32">        <span class="co"># Store in repository</span></a>
+<a class="sourceLine" id="cb26-33" title="33">        stored_template <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.template_repository.save_template(template)</a>
+<a class="sourceLine" id="cb26-34" title="34">        </a>
+<a class="sourceLine" id="cb26-35" title="35">        <span class="co"># Index for search</span></a>
+<a class="sourceLine" id="cb26-36" title="36">        <span class="cf">await</span> <span class="va">self</span>.search_engine.index_template(stored_template)</a>
+<a class="sourceLine" id="cb26-37" title="37">        </a>
+<a class="sourceLine" id="cb26-38" title="38">        <span class="co"># Track creation event</span></a>
+<a class="sourceLine" id="cb26-39" title="39">        <span class="cf">await</span> <span class="va">self</span>.track_template_event(<span class="st">&#39;template_created&#39;</span>, stored_template.<span class="bu">id</span>, template_data.user_id)</a>
+<a class="sourceLine" id="cb26-40" title="40">        </a>
+<a class="sourceLine" id="cb26-41" title="41">        <span class="cf">return</span> stored_template</a>
+<a class="sourceLine" id="cb26-42" title="42">    </a>
+<a class="sourceLine" id="cb26-43" title="43">    <span class="cf">async</span> <span class="kw">def</span> search_templates(<span class="va">self</span>, search_query: TemplateSearchQuery) <span class="op">-&gt;</span> SearchResults:</a>
+<a class="sourceLine" id="cb26-44" title="44">        <span class="co"># Build search criteria</span></a>
+<a class="sourceLine" id="cb26-45" title="45">        search_criteria <span class="op">=</span> <span class="va">self</span>.build_search_criteria(search_query)</a>
+<a class="sourceLine" id="cb26-46" title="46">        </a>
+<a class="sourceLine" id="cb26-47" title="47">        <span class="co"># Execute search with filters</span></a>
+<a class="sourceLine" id="cb26-48" title="48">        search_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.search_engine.search(</a>
+<a class="sourceLine" id="cb26-49" title="49">            query<span class="op">=</span>search_query.text,</a>
+<a class="sourceLine" id="cb26-50" title="50">            filters<span class="op">=</span>search_criteria.filters,</a>
+<a class="sourceLine" id="cb26-51" title="51">            sort<span class="op">=</span>search_criteria.sort_criteria,</a>
+<a class="sourceLine" id="cb26-52" title="52">            pagination<span class="op">=</span>search_query.pagination</a>
+<a class="sourceLine" id="cb26-53" title="53">        )</a>
+<a class="sourceLine" id="cb26-54" title="54">        </a>
+<a class="sourceLine" id="cb26-55" title="55">        <span class="co"># Enhance results with performance data</span></a>
+<a class="sourceLine" id="cb26-56" title="56">        enhanced_results <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.enhance_results_with_performance(search_results)</a>
+<a class="sourceLine" id="cb26-57" title="57">        </a>
+<a class="sourceLine" id="cb26-58" title="58">        <span class="cf">return</span> SearchResults(</a>
+<a class="sourceLine" id="cb26-59" title="59">            templates<span class="op">=</span>enhanced_results,</a>
+<a class="sourceLine" id="cb26-60" title="60">            total_count<span class="op">=</span>search_results.total_count,</a>
+<a class="sourceLine" id="cb26-61" title="61">            facets<span class="op">=</span>search_results.facets,</a>
+<a class="sourceLine" id="cb26-62" title="62">            suggestions<span class="op">=</span>search_results.suggestions</a>
+<a class="sourceLine" id="cb26-63" title="63">        )</a></code></pre></div>
+<h4 id="version-control-system">2. Version Control System</h4>
+<h5 id="git-style-versioning-for-prompts">Git-Style Versioning for Prompts</h5>
+<div class="sourceCode" id="cb27"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb27-1" title="1"><span class="kw">class</span> VersionControlService:</a>
+<a class="sourceLine" id="cb27-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb27-3" title="3">        <span class="va">self</span>.version_repository <span class="op">=</span> VersionRepository()</a>
+<a class="sourceLine" id="cb27-4" title="4">        <span class="va">self</span>.diff_calculator <span class="op">=</span> DiffCalculator()</a>
+<a class="sourceLine" id="cb27-5" title="5">        <span class="va">self</span>.merge_resolver <span class="op">=</span> MergeResolver()</a>
+<a class="sourceLine" id="cb27-6" title="6">        <span class="va">self</span>.branch_manager <span class="op">=</span> BranchManager()</a>
+<a class="sourceLine" id="cb27-7" title="7">        </a>
+<a class="sourceLine" id="cb27-8" title="8">    <span class="cf">async</span> <span class="kw">def</span> create_version(<span class="va">self</span>, template_id: <span class="bu">str</span>, changes: TemplateChanges, commit_message: <span class="bu">str</span>) <span class="op">-&gt;</span> Version:</a>
+<a class="sourceLine" id="cb27-9" title="9">        <span class="co"># Get current version</span></a>
+<a class="sourceLine" id="cb27-10" title="10">        current_version <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.version_repository.get_latest_version(template_id)</a>
+<a class="sourceLine" id="cb27-11" title="11">        </a>
+<a class="sourceLine" id="cb27-12" title="12">        <span class="co"># Calculate diff</span></a>
+<a class="sourceLine" id="cb27-13" title="13">        diff <span class="op">=</span> <span class="va">self</span>.diff_calculator.calculate_diff(</a>
+<a class="sourceLine" id="cb27-14" title="14">            current_version.content,</a>
+<a class="sourceLine" id="cb27-15" title="15">            changes.new_content</a>
+<a class="sourceLine" id="cb27-16" title="16">        )</a>
+<a class="sourceLine" id="cb27-17" title="17">        </a>
+<a class="sourceLine" id="cb27-18" title="18">        <span class="co"># Create new version</span></a>
+<a class="sourceLine" id="cb27-19" title="19">        new_version <span class="op">=</span> Version(</a>
+<a class="sourceLine" id="cb27-20" title="20">            <span class="bu">id</span><span class="op">=</span>generate_uuid(),</a>
+<a class="sourceLine" id="cb27-21" title="21">            template_id<span class="op">=</span>template_id,</a>
+<a class="sourceLine" id="cb27-22" title="22">            version_number<span class="op">=</span>current_version.version_number <span class="op">+</span> <span class="dv">1</span>,</a>
+<a class="sourceLine" id="cb27-23" title="23">            content<span class="op">=</span>changes.new_content,</a>
+<a class="sourceLine" id="cb27-24" title="24">            diff<span class="op">=</span>diff,</a>
+<a class="sourceLine" id="cb27-25" title="25">            commit_message<span class="op">=</span>commit_message,</a>
+<a class="sourceLine" id="cb27-26" title="26">            author<span class="op">=</span>changes.user_id,</a>
+<a class="sourceLine" id="cb27-27" title="27">            parent_version<span class="op">=</span>current_version.<span class="bu">id</span>,</a>
+<a class="sourceLine" id="cb27-28" title="28">            created_at<span class="op">=</span>datetime.utcnow(),</a>
+<a class="sourceLine" id="cb27-29" title="29">            metadata<span class="op">=</span>changes.metadata_updates</a>
+<a class="sourceLine" id="cb27-30" title="30">        )</a>
+<a class="sourceLine" id="cb27-31" title="31">        </a>
+<a class="sourceLine" id="cb27-32" title="32">        <span class="co"># Validate version integrity</span></a>
+<a class="sourceLine" id="cb27-33" title="33">        validation_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.validate_version_integrity(new_version)</a>
+<a class="sourceLine" id="cb27-34" title="34">        <span class="cf">if</span> <span class="kw">not</span> validation_result.is_valid:</a>
+<a class="sourceLine" id="cb27-35" title="35">            <span class="cf">raise</span> VersionIntegrityError(validation_result.errors)</a>
+<a class="sourceLine" id="cb27-36" title="36">        </a>
+<a class="sourceLine" id="cb27-37" title="37">        <span class="co"># Save version</span></a>
+<a class="sourceLine" id="cb27-38" title="38">        saved_version <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.version_repository.save_version(new_version)</a>
+<a class="sourceLine" id="cb27-39" title="39">        </a>
+<a class="sourceLine" id="cb27-40" title="40">        <span class="co"># Update template current version</span></a>
+<a class="sourceLine" id="cb27-41" title="41">        <span class="cf">await</span> <span class="va">self</span>.template_repository.update_current_version(template_id, saved_version.<span class="bu">id</span>)</a>
+<a class="sourceLine" id="cb27-42" title="42">        </a>
+<a class="sourceLine" id="cb27-43" title="43">        <span class="cf">return</span> saved_version</a>
+<a class="sourceLine" id="cb27-44" title="44">    </a>
+<a class="sourceLine" id="cb27-45" title="45">    <span class="cf">async</span> <span class="kw">def</span> create_branch(<span class="va">self</span>, template_id: <span class="bu">str</span>, branch_name: <span class="bu">str</span>, base_version_id: <span class="bu">str</span>) <span class="op">-&gt;</span> Branch:</a>
+<a class="sourceLine" id="cb27-46" title="46">        <span class="co"># Validate branch name</span></a>
+<a class="sourceLine" id="cb27-47" title="47">        <span class="cf">if</span> <span class="kw">not</span> <span class="va">self</span>.is_valid_branch_name(branch_name):</a>
+<a class="sourceLine" id="cb27-48" title="48">            <span class="cf">raise</span> InvalidBranchNameError(<span class="ss">f&quot;Invalid branch name: </span><span class="sc">{</span>branch_name<span class="sc">}</span><span class="ss">&quot;</span>)</a>
+<a class="sourceLine" id="cb27-49" title="49">        </a>
+<a class="sourceLine" id="cb27-50" title="50">        <span class="co"># Check if branch already exists</span></a>
+<a class="sourceLine" id="cb27-51" title="51">        existing_branch <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.branch_manager.get_branch(template_id, branch_name)</a>
+<a class="sourceLine" id="cb27-52" title="52">        <span class="cf">if</span> existing_branch:</a>
+<a class="sourceLine" id="cb27-53" title="53">            <span class="cf">raise</span> BranchAlreadyExistsError(<span class="ss">f&quot;Branch </span><span class="sc">{</span>branch_name<span class="sc">}</span><span class="ss"> already exists&quot;</span>)</a>
+<a class="sourceLine" id="cb27-54" title="54">        </a>
+<a class="sourceLine" id="cb27-55" title="55">        <span class="co"># Get base version</span></a>
+<a class="sourceLine" id="cb27-56" title="56">        base_version <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.version_repository.get_version(base_version_id)</a>
+<a class="sourceLine" id="cb27-57" title="57">        </a>
+<a class="sourceLine" id="cb27-58" title="58">        <span class="co"># Create branch</span></a>
+<a class="sourceLine" id="cb27-59" title="59">        branch <span class="op">=</span> Branch(</a>
+<a class="sourceLine" id="cb27-60" title="60">            <span class="bu">id</span><span class="op">=</span>generate_uuid(),</a>
+<a class="sourceLine" id="cb27-61" title="61">            template_id<span class="op">=</span>template_id,</a>
+<a class="sourceLine" id="cb27-62" title="62">            name<span class="op">=</span>branch_name,</a>
+<a class="sourceLine" id="cb27-63" title="63">            base_version_id<span class="op">=</span>base_version_id,</a>
+<a class="sourceLine" id="cb27-64" title="64">            head_version_id<span class="op">=</span>base_version_id,</a>
+<a class="sourceLine" id="cb27-65" title="65">            created_by<span class="op">=</span>base_version.author,</a>
+<a class="sourceLine" id="cb27-66" title="66">            created_at<span class="op">=</span>datetime.utcnow(),</a>
+<a class="sourceLine" id="cb27-67" title="67">            status<span class="op">=</span><span class="st">&#39;active&#39;</span></a>
+<a class="sourceLine" id="cb27-68" title="68">        )</a>
+<a class="sourceLine" id="cb27-69" title="69">        </a>
+<a class="sourceLine" id="cb27-70" title="70">        <span class="co"># Save branch</span></a>
+<a class="sourceLine" id="cb27-71" title="71">        saved_branch <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.branch_manager.save_branch(branch)</a>
+<a class="sourceLine" id="cb27-72" title="72">        </a>
+<a class="sourceLine" id="cb27-73" title="73">        <span class="cf">return</span> saved_branch</a>
+<a class="sourceLine" id="cb27-74" title="74">    </a>
+<a class="sourceLine" id="cb27-75" title="75">    <span class="cf">async</span> <span class="kw">def</span> merge_branches(<span class="va">self</span>, template_id: <span class="bu">str</span>, source_branch: <span class="bu">str</span>, target_branch: <span class="bu">str</span>, merge_strategy: <span class="bu">str</span> <span class="op">=</span> <span class="st">&#39;auto&#39;</span>) <span class="op">-&gt;</span> MergeResult:</a>
+<a class="sourceLine" id="cb27-76" title="76">        <span class="co"># Get branch information</span></a>
+<a class="sourceLine" id="cb27-77" title="77">        source_branch_info <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.branch_manager.get_branch(template_id, source_branch)</a>
+<a class="sourceLine" id="cb27-78" title="78">        target_branch_info <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.branch_manager.get_branch(template_id, target_branch)</a>
+<a class="sourceLine" id="cb27-79" title="79">        </a>
+<a class="sourceLine" id="cb27-80" title="80">        <span class="co"># Get versions to merge</span></a>
+<a class="sourceLine" id="cb27-81" title="81">        source_version <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.version_repository.get_version(source_branch_info.head_version_id)</a>
+<a class="sourceLine" id="cb27-82" title="82">        target_version <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.version_repository.get_version(target_branch_info.head_version_id)</a>
+<a class="sourceLine" id="cb27-83" title="83">        </a>
+<a class="sourceLine" id="cb27-84" title="84">        <span class="co"># Detect conflicts</span></a>
+<a class="sourceLine" id="cb27-85" title="85">        merge_analysis <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.analyze_merge_conflicts(source_version, target_version)</a>
+<a class="sourceLine" id="cb27-86" title="86">        </a>
+<a class="sourceLine" id="cb27-87" title="87">        <span class="cf">if</span> merge_analysis.has_conflicts <span class="kw">and</span> merge_strategy <span class="op">==</span> <span class="st">&#39;auto&#39;</span>:</a>
+<a class="sourceLine" id="cb27-88" title="88">            <span class="cf">return</span> MergeResult(</a>
+<a class="sourceLine" id="cb27-89" title="89">                success<span class="op">=</span><span class="va">False</span>,</a>
+<a class="sourceLine" id="cb27-90" title="90">                conflicts<span class="op">=</span>merge_analysis.conflicts,</a>
+<a class="sourceLine" id="cb27-91" title="91">                requires_manual_resolution<span class="op">=</span><span class="va">True</span></a>
+<a class="sourceLine" id="cb27-92" title="92">            )</a>
+<a class="sourceLine" id="cb27-93" title="93">        </a>
+<a class="sourceLine" id="cb27-94" title="94">        <span class="co"># Perform merge</span></a>
+<a class="sourceLine" id="cb27-95" title="95">        merged_content <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.merge_resolver.resolve_merge(</a>
+<a class="sourceLine" id="cb27-96" title="96">            source_version.content,</a>
+<a class="sourceLine" id="cb27-97" title="97">            target_version.content,</a>
+<a class="sourceLine" id="cb27-98" title="98">            merge_strategy<span class="op">=</span>merge_strategy</a>
+<a class="sourceLine" id="cb27-99" title="99">        )</a>
+<a class="sourceLine" id="cb27-100" title="100">        </a>
+<a class="sourceLine" id="cb27-101" title="101">        <span class="co"># Create merge commit</span></a>
+<a class="sourceLine" id="cb27-102" title="102">        merge_commit <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.create_merge_commit(</a>
+<a class="sourceLine" id="cb27-103" title="103">            template_id<span class="op">=</span>template_id,</a>
+<a class="sourceLine" id="cb27-104" title="104">            merged_content<span class="op">=</span>merged_content,</a>
+<a class="sourceLine" id="cb27-105" title="105">            source_version<span class="op">=</span>source_version,</a>
+<a class="sourceLine" id="cb27-106" title="106">            target_version<span class="op">=</span>target_version,</a>
+<a class="sourceLine" id="cb27-107" title="107">            target_branch<span class="op">=</span>target_branch</a>
+<a class="sourceLine" id="cb27-108" title="108">        )</a>
+<a class="sourceLine" id="cb27-109" title="109">        </a>
+<a class="sourceLine" id="cb27-110" title="110">        <span class="cf">return</span> MergeResult(</a>
+<a class="sourceLine" id="cb27-111" title="111">            success<span class="op">=</span><span class="va">True</span>,</a>
+<a class="sourceLine" id="cb27-112" title="112">            merge_commit<span class="op">=</span>merge_commit,</a>
+<a class="sourceLine" id="cb27-113" title="113">            merged_content<span class="op">=</span>merged_content</a>
+<a class="sourceLine" id="cb27-114" title="114">        )</a></code></pre></div>
+<h4 id="ab-testing-framework">3. A/B Testing Framework</h4>
+<h5 id="statistical-experimentation-engine">Statistical Experimentation Engine</h5>
+<div class="sourceCode" id="cb28"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb28-1" title="1"><span class="kw">class</span> ABTestingManager:</a>
+<a class="sourceLine" id="cb28-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb28-3" title="3">        <span class="va">self</span>.experiment_repository <span class="op">=</span> ExperimentRepository()</a>
+<a class="sourceLine" id="cb28-4" title="4">        <span class="va">self</span>.statistical_engine <span class="op">=</span> StatisticalEngine()</a>
+<a class="sourceLine" id="cb28-5" title="5">        <span class="va">self</span>.traffic_splitter <span class="op">=</span> TrafficSplitter()</a>
+<a class="sourceLine" id="cb28-6" title="6">        <span class="va">self</span>.metrics_collector <span class="op">=</span> MetricsCollector()</a>
+<a class="sourceLine" id="cb28-7" title="7">        </a>
+<a class="sourceLine" id="cb28-8" title="8">    <span class="cf">async</span> <span class="kw">def</span> create_experiment(<span class="va">self</span>, experiment_config: ExperimentConfig) <span class="op">-&gt;</span> Experiment:</a>
+<a class="sourceLine" id="cb28-9" title="9">        <span class="co"># Validate experiment configuration</span></a>
+<a class="sourceLine" id="cb28-10" title="10">        validation_result <span class="op">=</span> <span class="va">self</span>.validate_experiment_config(experiment_config)</a>
+<a class="sourceLine" id="cb28-11" title="11">        <span class="cf">if</span> <span class="kw">not</span> validation_result.is_valid:</a>
+<a class="sourceLine" id="cb28-12" title="12">            <span class="cf">raise</span> ExperimentConfigError(validation_result.errors)</a>
+<a class="sourceLine" id="cb28-13" title="13">        </a>
+<a class="sourceLine" id="cb28-14" title="14">        <span class="co"># Calculate required sample size</span></a>
+<a class="sourceLine" id="cb28-15" title="15">        sample_size <span class="op">=</span> <span class="va">self</span>.statistical_engine.calculate_sample_size(</a>
+<a class="sourceLine" id="cb28-16" title="16">            baseline_rate<span class="op">=</span>experiment_config.expected_baseline_rate,</a>
+<a class="sourceLine" id="cb28-17" title="17">            minimum_detectable_effect<span class="op">=</span>experiment_config.minimum_detectable_effect,</a>
+<a class="sourceLine" id="cb28-18" title="18">            statistical_power<span class="op">=</span>experiment_config.statistical_power,</a>
+<a class="sourceLine" id="cb28-19" title="19">            significance_level<span class="op">=</span>experiment_config.significance_level</a>
+<a class="sourceLine" id="cb28-20" title="20">        )</a>
+<a class="sourceLine" id="cb28-21" title="21">        </a>
+<a class="sourceLine" id="cb28-22" title="22">        <span class="co"># Create experiment</span></a>
+<a class="sourceLine" id="cb28-23" title="23">        experiment <span class="op">=</span> Experiment(</a>
+<a class="sourceLine" id="cb28-24" title="24">            <span class="bu">id</span><span class="op">=</span>generate_uuid(),</a>
+<a class="sourceLine" id="cb28-25" title="25">            name<span class="op">=</span>experiment_config.name,</a>
+<a class="sourceLine" id="cb28-26" title="26">            description<span class="op">=</span>experiment_config.description,</a>
+<a class="sourceLine" id="cb28-27" title="27">            template_id<span class="op">=</span>experiment_config.template_id,</a>
+<a class="sourceLine" id="cb28-28" title="28">            control_version_id<span class="op">=</span>experiment_config.control_version_id,</a>
+<a class="sourceLine" id="cb28-29" title="29">            treatment_versions<span class="op">=</span>experiment_config.treatment_versions,</a>
+<a class="sourceLine" id="cb28-30" title="30">            traffic_split<span class="op">=</span>experiment_config.traffic_split,</a>
+<a class="sourceLine" id="cb28-31" title="31">            success_metrics<span class="op">=</span>experiment_config.success_metrics,</a>
+<a class="sourceLine" id="cb28-32" title="32">            required_sample_size<span class="op">=</span>sample_size,</a>
+<a class="sourceLine" id="cb28-33" title="33">            start_date<span class="op">=</span>experiment_config.start_date,</a>
+<a class="sourceLine" id="cb28-34" title="34">            end_date<span class="op">=</span>experiment_config.end_date,</a>
+<a class="sourceLine" id="cb28-35" title="35">            status<span class="op">=</span><span class="st">&#39;created&#39;</span>,</a>
+<a class="sourceLine" id="cb28-36" title="36">            created_by<span class="op">=</span>experiment_config.user_id,</a>
+<a class="sourceLine" id="cb28-37" title="37">            created_at<span class="op">=</span>datetime.utcnow()</a>
+<a class="sourceLine" id="cb28-38" title="38">        )</a>
+<a class="sourceLine" id="cb28-39" title="39">        </a>
+<a class="sourceLine" id="cb28-40" title="40">        <span class="co"># Save experiment</span></a>
+<a class="sourceLine" id="cb28-41" title="41">        saved_experiment <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.experiment_repository.save_experiment(experiment)</a>
+<a class="sourceLine" id="cb28-42" title="42">        </a>
+<a class="sourceLine" id="cb28-43" title="43">        <span class="cf">return</span> saved_experiment</a>
+<a class="sourceLine" id="cb28-44" title="44">    </a>
+<a class="sourceLine" id="cb28-45" title="45">    <span class="cf">async</span> <span class="kw">def</span> start_experiment(<span class="va">self</span>, experiment_id: <span class="bu">str</span>) <span class="op">-&gt;</span> ExperimentStartResult:</a>
+<a class="sourceLine" id="cb28-46" title="46">        experiment <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.experiment_repository.get_experiment(experiment_id)</a>
+<a class="sourceLine" id="cb28-47" title="47">        </a>
+<a class="sourceLine" id="cb28-48" title="48">        <span class="co"># Pre-flight checks</span></a>
+<a class="sourceLine" id="cb28-49" title="49">        preflight_result <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.run_preflight_checks(experiment)</a>
+<a class="sourceLine" id="cb28-50" title="50">        <span class="cf">if</span> <span class="kw">not</span> preflight_result.passed:</a>
+<a class="sourceLine" id="cb28-51" title="51">            <span class="cf">raise</span> ExperimentPreflightError(preflight_result.issues)</a>
+<a class="sourceLine" id="cb28-52" title="52">        </a>
+<a class="sourceLine" id="cb28-53" title="53">        <span class="co"># Configure traffic splitting</span></a>
+<a class="sourceLine" id="cb28-54" title="54">        <span class="cf">await</span> <span class="va">self</span>.traffic_splitter.configure_experiment_routing(</a>
+<a class="sourceLine" id="cb28-55" title="55">            experiment_id<span class="op">=</span>experiment.<span class="bu">id</span>,</a>
+<a class="sourceLine" id="cb28-56" title="56">            template_id<span class="op">=</span>experiment.template_id,</a>
+<a class="sourceLine" id="cb28-57" title="57">            traffic_split<span class="op">=</span>experiment.traffic_split,</a>
+<a class="sourceLine" id="cb28-58" title="58">            treatment_versions<span class="op">=</span>experiment.treatment_versions</a>
+<a class="sourceLine" id="cb28-59" title="59">        )</a>
+<a class="sourceLine" id="cb28-60" title="60">        </a>
+<a class="sourceLine" id="cb28-61" title="61">        <span class="co"># Start metrics collection</span></a>
+<a class="sourceLine" id="cb28-62" title="62">        <span class="cf">await</span> <span class="va">self</span>.metrics_collector.start_experiment_tracking(experiment)</a>
+<a class="sourceLine" id="cb28-63" title="63">        </a>
+<a class="sourceLine" id="cb28-64" title="64">        <span class="co"># Update experiment status</span></a>
+<a class="sourceLine" id="cb28-65" title="65">        experiment.status <span class="op">=</span> <span class="st">&#39;running&#39;</span></a>
+<a class="sourceLine" id="cb28-66" title="66">        experiment.actual_start_date <span class="op">=</span> datetime.utcnow()</a>
+<a class="sourceLine" id="cb28-67" title="67">        <span class="cf">await</span> <span class="va">self</span>.experiment_repository.update_experiment(experiment)</a>
+<a class="sourceLine" id="cb28-68" title="68">        </a>
+<a class="sourceLine" id="cb28-69" title="69">        <span class="cf">return</span> ExperimentStartResult(</a>
+<a class="sourceLine" id="cb28-70" title="70">            experiment_id<span class="op">=</span>experiment.<span class="bu">id</span>,</a>
+<a class="sourceLine" id="cb28-71" title="71">            started_at<span class="op">=</span>experiment.actual_start_date,</a>
+<a class="sourceLine" id="cb28-72" title="72">            estimated_completion<span class="op">=</span><span class="va">self</span>.estimate_completion_date(experiment)</a>
+<a class="sourceLine" id="cb28-73" title="73">        )</a>
+<a class="sourceLine" id="cb28-74" title="74">    </a>
+<a class="sourceLine" id="cb28-75" title="75">    <span class="cf">async</span> <span class="kw">def</span> analyze_experiment_results(<span class="va">self</span>, experiment_id: <span class="bu">str</span>) <span class="op">-&gt;</span> ExperimentAnalysis:</a>
+<a class="sourceLine" id="cb28-76" title="76">        experiment <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.experiment_repository.get_experiment(experiment_id)</a>
+<a class="sourceLine" id="cb28-77" title="77">        </a>
+<a class="sourceLine" id="cb28-78" title="78">        <span class="co"># Collect experiment data</span></a>
+<a class="sourceLine" id="cb28-79" title="79">        experiment_data <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.metrics_collector.get_experiment_data(experiment_id)</a>
+<a class="sourceLine" id="cb28-80" title="80">        </a>
+<a class="sourceLine" id="cb28-81" title="81">        <span class="co"># Perform statistical analysis</span></a>
+<a class="sourceLine" id="cb28-82" title="82">        statistical_analysis <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.statistical_engine.analyze_experiment(</a>
+<a class="sourceLine" id="cb28-83" title="83">            control_data<span class="op">=</span>experiment_data.control_metrics,</a>
+<a class="sourceLine" id="cb28-84" title="84">            treatment_data<span class="op">=</span>experiment_data.treatment_metrics,</a>
+<a class="sourceLine" id="cb28-85" title="85">            success_metrics<span class="op">=</span>experiment.success_metrics</a>
+<a class="sourceLine" id="cb28-86" title="86">        )</a>
+<a class="sourceLine" id="cb28-87" title="87">        </a>
+<a class="sourceLine" id="cb28-88" title="88">        <span class="co"># Generate insights and recommendations</span></a>
+<a class="sourceLine" id="cb28-89" title="89">        insights <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.generate_experiment_insights(</a>
+<a class="sourceLine" id="cb28-90" title="90">            experiment, experiment_data, statistical_analysis</a>
+<a class="sourceLine" id="cb28-91" title="91">        )</a>
+<a class="sourceLine" id="cb28-92" title="92">        </a>
+<a class="sourceLine" id="cb28-93" title="93">        <span class="cf">return</span> ExperimentAnalysis(</a>
+<a class="sourceLine" id="cb28-94" title="94">            experiment_id<span class="op">=</span>experiment.<span class="bu">id</span>,</a>
+<a class="sourceLine" id="cb28-95" title="95">            statistical_results<span class="op">=</span>statistical_analysis,</a>
+<a class="sourceLine" id="cb28-96" title="96">            insights<span class="op">=</span>insights,</a>
+<a class="sourceLine" id="cb28-97" title="97">            recommendation<span class="op">=</span><span class="va">self</span>.generate_recommendation(statistical_analysis),</a>
+<a class="sourceLine" id="cb28-98" title="98">            confidence_level<span class="op">=</span>statistical_analysis.confidence_level,</a>
+<a class="sourceLine" id="cb28-99" title="99">            sample_size_achieved<span class="op">=</span>experiment_data.total_samples</a>
+<a class="sourceLine" id="cb28-100" title="100">        )</a></code></pre></div>
+<h4 id="multi-provider-integration">4. Multi-Provider Integration</h4>
+<h5 id="universal-llm-provider-gateway">Universal LLM Provider Gateway</h5>
+<div class="sourceCode" id="cb29"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb29-1" title="1"><span class="kw">class</span> ProviderGateway:</a>
+<a class="sourceLine" id="cb29-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb29-3" title="3">        <span class="va">self</span>.provider_adapters <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb29-4" title="4">            <span class="st">&#39;openai&#39;</span>: OpenAIAdapter(),</a>
+<a class="sourceLine" id="cb29-5" title="5">            <span class="st">&#39;anthropic&#39;</span>: AnthropicAdapter(),</a>
+<a class="sourceLine" id="cb29-6" title="6">            <span class="st">&#39;google&#39;</span>: GoogleAdapter(),</a>
+<a class="sourceLine" id="cb29-7" title="7">            <span class="st">&#39;azure&#39;</span>: AzureAdapter(),</a>
+<a class="sourceLine" id="cb29-8" title="8">            <span class="st">&#39;aws&#39;</span>: AWSAdapter()</a>
+<a class="sourceLine" id="cb29-9" title="9">        }</a>
+<a class="sourceLine" id="cb29-10" title="10">        <span class="va">self</span>.load_balancer <span class="op">=</span> ProviderLoadBalancer()</a>
+<a class="sourceLine" id="cb29-11" title="11">        <span class="va">self</span>.cost_optimizer <span class="op">=</span> CostOptimizer()</a>
+<a class="sourceLine" id="cb29-12" title="12">        <span class="va">self</span>.performance_monitor <span class="op">=</span> ProviderPerformanceMonitor()</a>
+<a class="sourceLine" id="cb29-13" title="13">        </a>
+<a class="sourceLine" id="cb29-14" title="14">    <span class="cf">async</span> <span class="kw">def</span> execute_prompt(<span class="va">self</span>, request: PromptExecutionRequest) <span class="op">-&gt;</span> PromptResponse:</a>
+<a class="sourceLine" id="cb29-15" title="15">        <span class="co"># Select optimal provider</span></a>
+<a class="sourceLine" id="cb29-16" title="16">        provider_selection <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.select_optimal_provider(request)</a>
+<a class="sourceLine" id="cb29-17" title="17">        </a>
+<a class="sourceLine" id="cb29-18" title="18">        <span class="co"># Get provider adapter</span></a>
+<a class="sourceLine" id="cb29-19" title="19">        adapter <span class="op">=</span> <span class="va">self</span>.provider_adapters[provider_selection.provider_name]</a>
+<a class="sourceLine" id="cb29-20" title="20">        </a>
+<a class="sourceLine" id="cb29-21" title="21">        <span class="co"># Transform request for provider-specific format</span></a>
+<a class="sourceLine" id="cb29-22" title="22">        provider_request <span class="op">=</span> <span class="cf">await</span> adapter.transform_request(request)</a>
+<a class="sourceLine" id="cb29-23" title="23">        </a>
+<a class="sourceLine" id="cb29-24" title="24">        <span class="co"># Execute with performance monitoring</span></a>
+<a class="sourceLine" id="cb29-25" title="25">        start_time <span class="op">=</span> time.time()</a>
+<a class="sourceLine" id="cb29-26" title="26">        </a>
+<a class="sourceLine" id="cb29-27" title="27">        <span class="cf">try</span>:</a>
+<a class="sourceLine" id="cb29-28" title="28">            response <span class="op">=</span> <span class="cf">await</span> adapter.execute_prompt(provider_request)</a>
+<a class="sourceLine" id="cb29-29" title="29">            execution_time <span class="op">=</span> time.time() <span class="op">-</span> start_time</a>
+<a class="sourceLine" id="cb29-30" title="30">            </a>
+<a class="sourceLine" id="cb29-31" title="31">            <span class="co"># Record successful execution metrics</span></a>
+<a class="sourceLine" id="cb29-32" title="32">            <span class="cf">await</span> <span class="va">self</span>.performance_monitor.record_success(</a>
+<a class="sourceLine" id="cb29-33" title="33">                provider<span class="op">=</span>provider_selection.provider_name,</a>
+<a class="sourceLine" id="cb29-34" title="34">                model<span class="op">=</span>provider_request.model,</a>
+<a class="sourceLine" id="cb29-35" title="35">                execution_time<span class="op">=</span>execution_time,</a>
+<a class="sourceLine" id="cb29-36" title="36">                token_usage<span class="op">=</span>response.token_usage,</a>
+<a class="sourceLine" id="cb29-37" title="37">                cost<span class="op">=</span><span class="va">self</span>.calculate_cost(response.token_usage, provider_selection.provider_name)</a>
+<a class="sourceLine" id="cb29-38" title="38">            )</a>
+<a class="sourceLine" id="cb29-39" title="39">            </a>
+<a class="sourceLine" id="cb29-40" title="40">            <span class="cf">return</span> <span class="va">self</span>.transform_provider_response(response, request.template_id)</a>
+<a class="sourceLine" id="cb29-41" title="41">            </a>
+<a class="sourceLine" id="cb29-42" title="42">        <span class="cf">except</span> ProviderError <span class="im">as</span> e:</a>
+<a class="sourceLine" id="cb29-43" title="43">            <span class="co"># Record failure metrics</span></a>
+<a class="sourceLine" id="cb29-44" title="44">            <span class="cf">await</span> <span class="va">self</span>.performance_monitor.record_failure(</a>
+<a class="sourceLine" id="cb29-45" title="45">                provider<span class="op">=</span>provider_selection.provider_name,</a>
+<a class="sourceLine" id="cb29-46" title="46">                error_type<span class="op">=</span><span class="bu">type</span>(e).<span class="va">__name__</span>,</a>
+<a class="sourceLine" id="cb29-47" title="47">                error_message<span class="op">=</span><span class="bu">str</span>(e)</a>
+<a class="sourceLine" id="cb29-48" title="48">            )</a>
+<a class="sourceLine" id="cb29-49" title="49">            </a>
+<a class="sourceLine" id="cb29-50" title="50">            <span class="co"># Attempt failover if configured</span></a>
+<a class="sourceLine" id="cb29-51" title="51">            <span class="cf">if</span> request.enable_failover:</a>
+<a class="sourceLine" id="cb29-52" title="52">                <span class="cf">return</span> <span class="cf">await</span> <span class="va">self</span>.execute_with_failover(request, provider_selection.provider_name)</a>
+<a class="sourceLine" id="cb29-53" title="53">            </a>
+<a class="sourceLine" id="cb29-54" title="54">            <span class="cf">raise</span> e</a>
+<a class="sourceLine" id="cb29-55" title="55">    </a>
+<a class="sourceLine" id="cb29-56" title="56">    <span class="cf">async</span> <span class="kw">def</span> select_optimal_provider(<span class="va">self</span>, request: PromptExecutionRequest) <span class="op">-&gt;</span> ProviderSelection:</a>
+<a class="sourceLine" id="cb29-57" title="57">        <span class="co"># Get available providers for template</span></a>
+<a class="sourceLine" id="cb29-58" title="58">        available_providers <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.get_available_providers(request.template_id)</a>
+<a class="sourceLine" id="cb29-59" title="59">        </a>
+<a class="sourceLine" id="cb29-60" title="60">        <span class="co"># Filter by requirements (model capabilities, cost constraints, etc.)</span></a>
+<a class="sourceLine" id="cb29-61" title="61">        suitable_providers <span class="op">=</span> <span class="va">self</span>.filter_suitable_providers(</a>
+<a class="sourceLine" id="cb29-62" title="62">            available_providers, </a>
+<a class="sourceLine" id="cb29-63" title="63">            request.requirements</a>
+<a class="sourceLine" id="cb29-64" title="64">        )</a>
+<a class="sourceLine" id="cb29-65" title="65">        </a>
+<a class="sourceLine" id="cb29-66" title="66">        <span class="cf">if</span> <span class="kw">not</span> suitable_providers:</a>
+<a class="sourceLine" id="cb29-67" title="67">            <span class="cf">raise</span> NoSuitableProviderError(<span class="st">&quot;No providers match the specified requirements&quot;</span>)</a>
+<a class="sourceLine" id="cb29-68" title="68">        </a>
+<a class="sourceLine" id="cb29-69" title="69">        <span class="co"># Multi-criteria decision making</span></a>
+<a class="sourceLine" id="cb29-70" title="70">        selection_criteria <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb29-71" title="71">            <span class="st">&#39;cost&#39;</span>: request.optimization_preferences.cost_weight,</a>
+<a class="sourceLine" id="cb29-72" title="72">            <span class="st">&#39;latency&#39;</span>: request.optimization_preferences.latency_weight,</a>
+<a class="sourceLine" id="cb29-73" title="73">            <span class="st">&#39;quality&#39;</span>: request.optimization_preferences.quality_weight,</a>
+<a class="sourceLine" id="cb29-74" title="74">            <span class="st">&#39;reliability&#39;</span>: request.optimization_preferences.reliability_weight</a>
+<a class="sourceLine" id="cb29-75" title="75">        }</a>
+<a class="sourceLine" id="cb29-76" title="76">        </a>
+<a class="sourceLine" id="cb29-77" title="77">        optimal_provider <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.cost_optimizer.select_optimal_provider(</a>
+<a class="sourceLine" id="cb29-78" title="78">            suitable_providers,</a>
+<a class="sourceLine" id="cb29-79" title="79">            selection_criteria,</a>
+<a class="sourceLine" id="cb29-80" title="80">            request.expected_usage</a>
+<a class="sourceLine" id="cb29-81" title="81">        )</a>
+<a class="sourceLine" id="cb29-82" title="82">        </a>
+<a class="sourceLine" id="cb29-83" title="83">        <span class="cf">return</span> ProviderSelection(</a>
+<a class="sourceLine" id="cb29-84" title="84">            provider_name<span class="op">=</span>optimal_provider.name,</a>
+<a class="sourceLine" id="cb29-85" title="85">            model<span class="op">=</span>optimal_provider.recommended_model,</a>
+<a class="sourceLine" id="cb29-86" title="86">            estimated_cost<span class="op">=</span>optimal_provider.estimated_cost,</a>
+<a class="sourceLine" id="cb29-87" title="87">            expected_latency<span class="op">=</span>optimal_provider.expected_latency</a>
+<a class="sourceLine" id="cb29-88" title="88">        )</a>
+<a class="sourceLine" id="cb29-89" title="89"></a>
+<a class="sourceLine" id="cb29-90" title="90"><span class="kw">class</span> OpenAIAdapter(BaseProviderAdapter):</a>
+<a class="sourceLine" id="cb29-91" title="91">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb29-92" title="92">        <span class="va">self</span>.client <span class="op">=</span> OpenAI()</a>
+<a class="sourceLine" id="cb29-93" title="93">        <span class="va">self</span>.model_mappings <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb29-94" title="94">            <span class="st">&#39;gpt-4&#39;</span>: <span class="st">&#39;gpt-4-1106-preview&#39;</span>,</a>
+<a class="sourceLine" id="cb29-95" title="95">            <span class="st">&#39;gpt-3.5&#39;</span>: <span class="st">&#39;gpt-3.5-turbo&#39;</span>,</a>
+<a class="sourceLine" id="cb29-96" title="96">            <span class="st">&#39;gpt-4-turbo&#39;</span>: <span class="st">&#39;gpt-4-turbo-preview&#39;</span></a>
+<a class="sourceLine" id="cb29-97" title="97">        }</a>
+<a class="sourceLine" id="cb29-98" title="98">        </a>
+<a class="sourceLine" id="cb29-99" title="99">    <span class="cf">async</span> <span class="kw">def</span> execute_prompt(<span class="va">self</span>, request: ProviderRequest) <span class="op">-&gt;</span> ProviderResponse:</a>
+<a class="sourceLine" id="cb29-100" title="100">        <span class="co"># Transform prompt template to OpenAI format</span></a>
+<a class="sourceLine" id="cb29-101" title="101">        messages <span class="op">=</span> <span class="va">self</span>.transform_to_messages_format(</a>
+<a class="sourceLine" id="cb29-102" title="102">            request.prompt_template,</a>
+<a class="sourceLine" id="cb29-103" title="103">            request.variables</a>
+<a class="sourceLine" id="cb29-104" title="104">        )</a>
+<a class="sourceLine" id="cb29-105" title="105">        </a>
+<a class="sourceLine" id="cb29-106" title="106">        <span class="co"># Execute API call</span></a>
+<a class="sourceLine" id="cb29-107" title="107">        response <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.client.chat.completions.create(</a>
+<a class="sourceLine" id="cb29-108" title="108">            model<span class="op">=</span>request.model,</a>
+<a class="sourceLine" id="cb29-109" title="109">            messages<span class="op">=</span>messages,</a>
+<a class="sourceLine" id="cb29-110" title="110">            temperature<span class="op">=</span>request.parameters.get(<span class="st">&#39;temperature&#39;</span>, <span class="fl">0.7</span>),</a>
+<a class="sourceLine" id="cb29-111" title="111">            max_tokens<span class="op">=</span>request.parameters.get(<span class="st">&#39;max_tokens&#39;</span>, <span class="dv">1000</span>),</a>
+<a class="sourceLine" id="cb29-112" title="112">            top_p<span class="op">=</span>request.parameters.get(<span class="st">&#39;top_p&#39;</span>, <span class="fl">1.0</span>),</a>
+<a class="sourceLine" id="cb29-113" title="113">            frequency_penalty<span class="op">=</span>request.parameters.get(<span class="st">&#39;frequency_penalty&#39;</span>, <span class="dv">0</span>),</a>
+<a class="sourceLine" id="cb29-114" title="114">            presence_penalty<span class="op">=</span>request.parameters.get(<span class="st">&#39;presence_penalty&#39;</span>, <span class="dv">0</span>)</a>
+<a class="sourceLine" id="cb29-115" title="115">        )</a>
+<a class="sourceLine" id="cb29-116" title="116">        </a>
+<a class="sourceLine" id="cb29-117" title="117">        <span class="cf">return</span> ProviderResponse(</a>
+<a class="sourceLine" id="cb29-118" title="118">            content<span class="op">=</span>response.choices[<span class="dv">0</span>].message.content,</a>
+<a class="sourceLine" id="cb29-119" title="119">            token_usage<span class="op">=</span>{</a>
+<a class="sourceLine" id="cb29-120" title="120">                <span class="st">&#39;prompt_tokens&#39;</span>: response.usage.prompt_tokens,</a>
+<a class="sourceLine" id="cb29-121" title="121">                <span class="st">&#39;completion_tokens&#39;</span>: response.usage.completion_tokens,</a>
+<a class="sourceLine" id="cb29-122" title="122">                <span class="st">&#39;total_tokens&#39;</span>: response.usage.total_tokens</a>
+<a class="sourceLine" id="cb29-123" title="123">            },</a>
+<a class="sourceLine" id="cb29-124" title="124">            model_used<span class="op">=</span>response.model,</a>
+<a class="sourceLine" id="cb29-125" title="125">            provider<span class="op">=</span><span class="st">&#39;openai&#39;</span>,</a>
+<a class="sourceLine" id="cb29-126" title="126">            response_metadata<span class="op">=</span><span class="va">self</span>.extract_metadata(response)</a>
+<a class="sourceLine" id="cb29-127" title="127">        )</a>
+<a class="sourceLine" id="cb29-128" title="128">    </a>
+<a class="sourceLine" id="cb29-129" title="129">    <span class="kw">def</span> transform_to_messages_format(<span class="va">self</span>, prompt_template: <span class="bu">str</span>, variables: <span class="bu">dict</span>) <span class="op">-&gt;</span> <span class="bu">list</span>:</a>
+<a class="sourceLine" id="cb29-130" title="130">        <span class="co"># Parse template and replace variables</span></a>
+<a class="sourceLine" id="cb29-131" title="131">        rendered_prompt <span class="op">=</span> <span class="va">self</span>.render_template(prompt_template, variables)</a>
+<a class="sourceLine" id="cb29-132" title="132">        </a>
+<a class="sourceLine" id="cb29-133" title="133">        <span class="co"># Convert to OpenAI messages format</span></a>
+<a class="sourceLine" id="cb29-134" title="134">        <span class="cf">if</span> <span class="st">&#39;</span><span class="sc">{{</span><span class="st">system</span><span class="sc">}}</span><span class="st">&#39;</span> <span class="kw">in</span> rendered_prompt <span class="kw">and</span> <span class="st">&#39;</span><span class="sc">{{</span><span class="st">user</span><span class="sc">}}</span><span class="st">&#39;</span> <span class="kw">in</span> rendered_prompt:</a>
+<a class="sourceLine" id="cb29-135" title="135">            <span class="co"># Multi-turn format</span></a>
+<a class="sourceLine" id="cb29-136" title="136">            parts <span class="op">=</span> rendered_prompt.split(<span class="st">&#39;</span><span class="sc">{{</span><span class="st">user</span><span class="sc">}}</span><span class="st">&#39;</span>)</a>
+<a class="sourceLine" id="cb29-137" title="137">            system_part <span class="op">=</span> parts[<span class="dv">0</span>].replace(<span class="st">&#39;</span><span class="sc">{{</span><span class="st">system</span><span class="sc">}}</span><span class="st">&#39;</span>, <span class="st">&#39;&#39;</span>).strip()</a>
+<a class="sourceLine" id="cb29-138" title="138">            user_part <span class="op">=</span> parts[<span class="dv">1</span>].strip()</a>
+<a class="sourceLine" id="cb29-139" title="139">            </a>
+<a class="sourceLine" id="cb29-140" title="140">            messages <span class="op">=</span> [</a>
+<a class="sourceLine" id="cb29-141" title="141">                {<span class="st">&quot;role&quot;</span>: <span class="st">&quot;system&quot;</span>, <span class="st">&quot;content&quot;</span>: system_part},</a>
+<a class="sourceLine" id="cb29-142" title="142">                {<span class="st">&quot;role&quot;</span>: <span class="st">&quot;user&quot;</span>, <span class="st">&quot;content&quot;</span>: user_part}</a>
+<a class="sourceLine" id="cb29-143" title="143">            ]</a>
+<a class="sourceLine" id="cb29-144" title="144">        <span class="cf">else</span>:</a>
+<a class="sourceLine" id="cb29-145" title="145">            <span class="co"># Simple user message</span></a>
+<a class="sourceLine" id="cb29-146" title="146">            messages <span class="op">=</span> [{<span class="st">&quot;role&quot;</span>: <span class="st">&quot;user&quot;</span>, <span class="st">&quot;content&quot;</span>: rendered_prompt}]</a>
+<a class="sourceLine" id="cb29-147" title="147">        </a>
+<a class="sourceLine" id="cb29-148" title="148">        <span class="cf">return</span> messages</a></code></pre></div>
+<h3 id="performance-analytics-and-monitoring">Performance Analytics and Monitoring</h3>
+<h4 id="real-time-metrics-collection">Real-Time Metrics Collection</h4>
+<ul>
+<li><strong>Response Time Tracking:</strong> Latency monitoring across all providers</li>
+<li><strong>Cost Analytics:</strong> Real-time cost tracking and budget alerts<br />
+</li>
+<li><strong>Quality Metrics:</strong> Automated quality scoring using various techniques</li>
+<li><strong>Success Rate Monitoring:</strong> Template performance and error rate tracking</li>
+<li><strong>Usage Pattern Analysis:</strong> User behavior and prompt effectiveness insights</li>
+</ul>
+<h4 id="advanced-analytics-dashboard">Advanced Analytics Dashboard</h4>
+<ul>
+<li><strong>Provider Comparison:</strong> Side-by-side performance analysis</li>
+<li><strong>Template Performance Trends:</strong> Historical performance tracking</li>
+<li><strong>Cost Optimization Insights:</strong> Recommendations for cost reduction</li>
+<li><strong>A/B Test Results:</strong> Statistical analysis and confidence intervals</li>
+<li><strong>Collaboration Metrics:</strong> Team productivity and workflow efficiency</li>
+</ul>
+<h3 id="security-and-compliance-framework">Security and Compliance Framework</h3>
+<h4 id="content-security-scanning">Content Security Scanning</h4>
+<ul>
+<li><strong>PII Detection:</strong> Automated identification of personal information</li>
+<li><strong>Sensitive Data Classification:</strong> Content categorization and handling</li>
+<li><strong>Policy Enforcement:</strong> Automated compliance rule enforcement</li>
+<li><strong>Audit Trail:</strong> Comprehensive logging of all security events</li>
+<li><strong>Access Control:</strong> Fine-grained permissions and role management</li>
+</ul>
+<hr />
+<h2 id="lld-low-level-design">LLD (Low Level Design)</h2>
+<h3 id="detailed-component-implementation">Detailed Component Implementation</h3>
+<h4 id="template-storage-and-metadata-management">1. Template Storage and Metadata Management</h4>
+<h5 id="advanced-template-repository">Advanced Template Repository</h5>
+<p>```python class TemplateRepository: def <strong>init</strong>(self): self.primary_db = PostgreSQLConnection() self.document_store = MongoDBConnection() self.search_index = ElasticsearchConnection() self.cache = RedisConnection()</p>
+<pre><code>async def save_template(self, template: Template) -&gt; Template:
+    async with self.primary_db.transaction() as tx:
+        # Save core template data
+        template_record = await tx.execute(
+            &quot;&quot;&quot;
+            INSERT INTO templates 
+            (id, name, category, created_by, created_at, status, folder_id)
+            VALUES ($1, $2, $3, $4, $5, $6, $7)
+            RETURNING *
+            &quot;&quot;&quot;,
+            template.id, template.name, template.category,
+            template.created_by, template.created_at, template.status,
+            template.folder_id
+        )
+        
+        # Save template content in document store
+        content_doc = {
+            &#39;template_id&#39;: template.id,
+            &#39;content&#39;: template.content,
+            &#39;variables&#39;: template.variables,
+            &#39;metadata&#39;: template.metadata,
+            &#39;version&#39;: template.version
+        }
+        
+        await self.document_store.templates.insert_one(content_doc)
+        
+        # Save tags
+        if template.tags</code></pre>

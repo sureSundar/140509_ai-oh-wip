@@ -1,0 +1,743 @@
+<h1 id="md---3d-model-generation-and-customization-tool">140509_31.md - 3D Model Generation and Customization Tool</h1>
+<h2 id="readme">README</h2>
+<p><strong>Summary:</strong> Develop an AI system that generates and customizes 3D models based on text descriptions, sketches, or reference images for various applications.</p>
+<p><strong>Problem Statement:</strong> 3D model creation requires specialized skills and significant time investment. Your task is to create an AI tool that generates 3D models from natural language descriptions, 2D sketches, or reference images. The system should enable model customization, provide different levels of detail, and export models in various formats for different use cases (gaming, architecture, manufacturing).</p>
+<p><strong>Steps:</strong> - Design text-to-3D and image-to-3D generation pipelines - Implement model customization tools for geometry, textures, and materials - Create level-of-detail generation for different application requirements - Build export capabilities for various 3D formats (OBJ, FBX, GLTF) - Develop quality assessment and optimization tools for generated models - Include integration with popular 3D software and game engines</p>
+<p><strong>Suggested Data Requirements:</strong> - 3D model datasets with text descriptions and metadata - Reference image collections with corresponding 3D models - Material and texture libraries - Application-specific model requirements and constraints</p>
+<p><strong>Themes:</strong> AI for creative, 3D modelling</p>
+<hr />
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision">Product Vision</h3>
+<p>Create an AI-powered 3D model generation and customization platform that democratizes 3D content creation by enabling users to generate professional-quality 3D models from natural language descriptions, sketches, or reference images without requiring specialized 3D modeling expertise.</p>
+<h3 id="target-users">Target Users</h3>
+<ul>
+<li><strong>Primary:</strong> Game developers, indie studios, AR/VR content creators</li>
+<li><strong>Secondary:</strong> Architects, product designers, educators, hobbyists</li>
+<li><strong>Tertiary:</strong> Manufacturing companies, e-commerce platforms, marketing agencies</li>
+</ul>
+<h3 id="core-value-propositions">Core Value Propositions</h3>
+<ol type="1">
+<li><strong>Accessibility:</strong> Enable non-3D artists to create professional models</li>
+<li><strong>Speed:</strong> Generate 3D models in minutes instead of hours/days</li>
+<li><strong>Flexibility:</strong> Support multiple input modalities (text, sketch, image)</li>
+<li><strong>Customization:</strong> Extensive model editing and refinement capabilities</li>
+<li><strong>Industry Integration:</strong> Seamless export to popular 3D software and engines</li>
+</ol>
+<h3 id="key-features">Key Features</h3>
+<ol type="1">
+<li><strong>Multi-Modal Input Processing:</strong> Text descriptions, 2D sketches, reference images</li>
+<li><strong>3D Model Generation:</strong> Neural radiance fields, mesh generation, point clouds</li>
+<li><strong>Advanced Customization:</strong> Geometry editing, texture application, material assignment</li>
+<li><strong>Level-of-Detail (LOD) Generation:</strong> Optimized models for different use cases</li>
+<li><strong>Format Export:</strong> Support for OBJ, FBX, GLTF, STL, PLY formats</li>
+<li><strong>Quality Assessment:</strong> Automated model validation and optimization</li>
+<li><strong>Software Integration:</strong> Plugins for Blender, Maya, Unity, Unreal Engine</li>
+</ol>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li>Model generation accuracy: &gt;85% user satisfaction</li>
+<li>Generation time: &lt;5 minutes for simple models, &lt;20 minutes for complex</li>
+<li>Export success rate: &gt;98% across all supported formats</li>
+<li>User retention: &gt;60% monthly active users</li>
+<li>Integration adoption: 50+ software partnerships</li>
+</ul>
+<hr />
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<h3 id="core-functional-requirements">Core Functional Requirements</h3>
+<h4 id="f1-multi-modal-input-processing">F1: Multi-Modal Input Processing</h4>
+<ul>
+<li><strong>F1.1:</strong> Process natural language text descriptions for 3D model generation</li>
+<li><strong>F1.2:</strong> Accept and interpret 2D sketches and line drawings</li>
+<li><strong>F1.3:</strong> Analyze reference images for 3D reconstruction</li>
+<li><strong>F1.4:</strong> Support multi-view image input for enhanced accuracy</li>
+<li><strong>F1.5:</strong> Enable hybrid input combinations (text + image, sketch + description)</li>
+</ul>
+<h4 id="f2-3d-model-generation-pipeline">F2: 3D Model Generation Pipeline</h4>
+<ul>
+<li><strong>F2.1:</strong> Generate base 3D geometry from processed inputs</li>
+<li><strong>F2.2:</strong> Create detailed mesh structures with proper topology</li>
+<li><strong>F2.3:</strong> Apply procedural texturing and material assignment</li>
+<li><strong>F2.4:</strong> Generate multiple model variations for user selection</li>
+<li><strong>F2.5:</strong> Support style transfer between different 3D models</li>
+</ul>
+<h4 id="f3-model-customization-tools">F3: Model Customization Tools</h4>
+<ul>
+<li><strong>F3.1:</strong> Real-time geometry editing (vertex manipulation, scaling, rotation)</li>
+<li><strong>F3.2:</strong> Texture customization and UV mapping adjustment</li>
+<li><strong>F3.3:</strong> Material property modification (metallic, roughness, transparency)</li>
+<li><strong>F3.4:</strong> Color palette application and customization</li>
+<li><strong>F3.5:</strong> Anatomical and structural constraint enforcement</li>
+</ul>
+<h4 id="f4-level-of-detail-generation">F4: Level-of-Detail Generation</h4>
+<ul>
+<li><strong>F4.1:</strong> Generate high-poly models for rendering and visualization</li>
+<li><strong>F4.2:</strong> Create optimized low-poly versions for real-time applications</li>
+<li><strong>F4.3:</strong> Automatic LOD chain generation with multiple detail levels</li>
+<li><strong>F4.4:</strong> Performance-based optimization for target platforms</li>
+<li><strong>F4.5:</strong> Quality-preserving mesh decimation algorithms</li>
+</ul>
+<h4 id="f5-export-and-integration-capabilities">F5: Export and Integration Capabilities</h4>
+<ul>
+<li><strong>F5.1:</strong> Export to standard 3D formats (OBJ, FBX, GLTF, STL, PLY)</li>
+<li><strong>F5.2:</strong> Include material and texture data in exports</li>
+<li><strong>F5.3:</strong> Generate format-specific optimizations</li>
+<li><strong>F5.4:</strong> Plugin integration for popular 3D software</li>
+<li><strong>F5.5:</strong> Direct upload to 3D asset marketplaces</li>
+</ul>
+<h4 id="f6-quality-assessment-and-optimization">F6: Quality Assessment and Optimization</h4>
+<ul>
+<li><strong>F6.1:</strong> Validate mesh topology and identify issues</li>
+<li><strong>F6.2:</strong> Check UV mapping quality and texture resolution</li>
+<li><strong>F6.3:</strong> Assess geometric accuracy against reference inputs</li>
+<li><strong>F6.4:</strong> Optimize polygon count while preserving detail</li>
+<li><strong>F6.5:</strong> Generate quality reports and improvement suggestions</li>
+</ul>
+<h4 id="f7-application-specific-features">F7: Application-Specific Features</h4>
+<ul>
+<li><strong>F7.1:</strong> Gaming-optimized models with proper LOD chains</li>
+<li><strong>F7.2:</strong> Architecture visualization with accurate proportions</li>
+<li><strong>F7.3:</strong> Manufacturing-ready models with precise dimensions</li>
+<li><strong>F7.4:</strong> 3D printing preparation and validation</li>
+<li><strong>F7.5:</strong> AR/VR optimization with performance constraints</li>
+</ul>
+<hr />
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li><strong>NFR-P1:</strong> 3D model generation time: &lt;5 minutes for simple models, &lt;20 minutes for complex</li>
+<li><strong>NFR-P2:</strong> Real-time preview updates during customization: &lt;2 seconds</li>
+<li><strong>NFR-P3:</strong> Export processing time: &lt;30 seconds for standard formats</li>
+<li><strong>NFR-P4:</strong> System response time: &lt;1 second for UI interactions</li>
+<li><strong>NFR-P5:</strong> Concurrent model generation support: 1000+ simultaneous users</li>
+</ul>
+<h3 id="scalability-requirements">Scalability Requirements</h3>
+<ul>
+<li><strong>NFR-S1:</strong> GPU cluster scaling for compute-intensive 3D generation</li>
+<li><strong>NFR-S2:</strong> Auto-scaling based on generation queue length</li>
+<li><strong>NFR-S3:</strong> Distributed processing across multiple GPU nodes</li>
+<li><strong>NFR-S4:</strong> Storage scaling for large 3D asset libraries</li>
+<li><strong>NFR-S5:</strong> CDN optimization for 3D model streaming and preview</li>
+</ul>
+<h3 id="quality-requirements">Quality Requirements</h3>
+<ul>
+<li><strong>NFR-Q1:</strong> Generated model accuracy: &gt;85% similarity to reference</li>
+<li><strong>NFR-Q2:</strong> Mesh topology quality: Manifold meshes with proper edge flow</li>
+<li><strong>NFR-Q3:</strong> Texture resolution: Support up to 4K textures</li>
+<li><strong>NFR-Q4:</strong> Geometric precision: Sub-millimeter accuracy for manufacturing</li>
+<li><strong>NFR-Q5:</strong> LOD quality preservation: &lt;10% visual difference between levels</li>
+</ul>
+<h3 id="compatibility-requirements">Compatibility Requirements</h3>
+<ul>
+<li><strong>NFR-C1:</strong> Support for major 3D software (Blender, Maya, 3ds Max, Cinema 4D)</li>
+<li><strong>NFR-C2:</strong> Game engine compatibility (Unity, Unreal Engine, Godot)</li>
+<li><strong>NFR-C3:</strong> Web browser 3D viewing (WebGL, Three.js)</li>
+<li><strong>NFR-C4:</strong> Mobile device optimization for AR applications</li>
+<li><strong>NFR-C5:</strong> Industry-standard format compliance</li>
+</ul>
+<h3 id="security-requirements">Security Requirements</h3>
+<ul>
+<li><strong>NFR-SE1:</strong> Secure model storage with encryption at rest</li>
+<li><strong>NFR-SE2:</strong> User authentication and authorization for model access</li>
+<li><strong>NFR-SE3:</strong> Intellectual property protection for generated models</li>
+<li><strong>NFR-SE4:</strong> API security for third-party integrations</li>
+<li><strong>NFR-SE5:</strong> Regular security audits for data protection compliance</li>
+</ul>
+<h3 id="usability-requirements">Usability Requirements</h3>
+<ul>
+<li><strong>NFR-U1:</strong> Intuitive 3D viewport with standard navigation controls</li>
+<li><strong>NFR-U2:</strong> Mobile-responsive interface for tablets</li>
+<li><strong>NFR-U3:</strong> Accessibility features for users with disabilities</li>
+<li><strong>NFR-U4:</strong> Multi-language support for global markets</li>
+<li><strong>NFR-U5:</strong> Context-sensitive help and tutorials</li>
+</ul>
+<hr />
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<pre class="mermaid"><code>graph TB
+    subgraph &quot;Client Layer&quot;
+        WEB[Web Application]
+        MOBILE[Mobile App]
+        PLUGINS[3D Software Plugins]
+        API_CLIENTS[API Clients]
+    end
+    
+    subgraph &quot;Load Balancer &amp; CDN&quot;
+        LB[Load Balancer]
+        CDN[Content Delivery Network]
+    end
+    
+    subgraph &quot;API Gateway&quot;
+        GATEWAY[API Gateway]
+        AUTH[Authentication Service]
+        RATE_LIMIT[Rate Limiter]
+    end
+    
+    subgraph &quot;Core Services&quot;
+        INPUT_PROC[Input Processing Service]
+        MODEL_GEN[Model Generation Service]
+        CUSTOM[Customization Service]
+        EXPORT[Export Service]
+        QUALITY[Quality Assessment Service]
+    end
+    
+    subgraph &quot;AI/ML Pipeline&quot;
+        TEXT_PROC[Text Processing (CLIP/BERT)]
+        IMG_PROC[Image Processing (CNN)]
+        SKETCH_PROC[Sketch Processing]
+        NERF[Neural Radiance Fields]
+        MESH_GEN[Mesh Generation (DMTet)]
+        TEXTURE_GEN[Texture Generation (GAN)]
+        LOD_GEN[LOD Generator]
+    end
+    
+    subgraph &quot;GPU Compute Cluster&quot;
+        GPU_SCHED[GPU Scheduler]
+        GPU_NODE1[GPU Node 1]
+        GPU_NODE2[GPU Node 2]
+        GPU_NODEN[GPU Node N]
+    end
+    
+    subgraph &quot;Data Layer&quot;
+        POSTGRES[PostgreSQL - Metadata]
+        MONGO[MongoDB - Model Data]
+        REDIS[Redis - Cache]
+        S3[Object Storage - 3D Assets]
+        ELASTIC[Elasticsearch - Search]
+    end
+    
+    subgraph &quot;External Services&quot;
+        TEXTURE_DB[Texture Libraries]
+        MATERIAL_DB[Material Databases]
+        REFERENCE_DB[Reference Model DB]
+        MARKETPLACE[3D Marketplaces]
+    end
+    
+    WEB --&gt; LB
+    MOBILE --&gt; LB
+    PLUGINS --&gt; LB
+    API_CLIENTS --&gt; LB
+    
+    LB --&gt; GATEWAY
+    GATEWAY --&gt; AUTH
+    GATEWAY --&gt; RATE_LIMIT
+    
+    GATEWAY --&gt; INPUT_PROC
+    GATEWAY --&gt; MODEL_GEN
+    GATEWAY --&gt; CUSTOM
+    GATEWAY --&gt; EXPORT
+    GATEWAY --&gt; QUALITY
+    
+    INPUT_PROC --&gt; TEXT_PROC
+    INPUT_PROC --&gt; IMG_PROC
+    INPUT_PROC --&gt; SKETCH_PROC
+    
+    MODEL_GEN --&gt; NERF
+    MODEL_GEN --&gt; MESH_GEN
+    MODEL_GEN --&gt; TEXTURE_GEN
+    MODEL_GEN --&gt; LOD_GEN
+    
+    MODEL_GEN --&gt; GPU_SCHED
+    GPU_SCHED --&gt; GPU_NODE1
+    GPU_SCHED --&gt; GPU_NODE2
+    GPU_SCHED --&gt; GPU_NODEN
+    
+    INPUT_PROC --&gt; POSTGRES
+    MODEL_GEN --&gt; MONGO
+    CUSTOM --&gt; REDIS
+    EXPORT --&gt; S3
+    QUALITY --&gt; ELASTIC
+    
+    MODEL_GEN --&gt; TEXTURE_DB
+    MODEL_GEN --&gt; MATERIAL_DB
+    QUALITY --&gt; REFERENCE_DB
+    EXPORT --&gt; MARKETPLACE
+    
+    CDN --&gt; S3</code></pre>
+<hr />
+<h2 id="hld-high-level-design">HLD (High Level Design)</h2>
+<h3 id="system-architecture-overview">System Architecture Overview</h3>
+<p>The 3D Model Generation and Customization Tool employs a distributed architecture optimized for GPU-intensive AI workloads with real-time user interactions.</p>
+<h4 id="client-layer-architecture">1. Client Layer Architecture</h4>
+<ul>
+<li><strong>Web Application:</strong> React-based 3D viewport using Three.js/Babylon.js</li>
+<li><strong>Mobile Application:</strong> React Native with WebGL integration for 3D preview</li>
+<li><strong>Plugin System:</strong> Native plugins for Blender, Maya, Unity, Unreal Engine</li>
+<li><strong>API Clients:</strong> RESTful and WebSocket APIs for third-party integrations</li>
+</ul>
+<h4 id="input-processing-pipeline">2. Input Processing Pipeline</h4>
+<h5 id="multi-modal-input-handler">Multi-Modal Input Handler</h5>
+<ul>
+<li><strong>Text Processing:</strong> CLIP/BERT models for semantic understanding</li>
+<li><strong>Image Analysis:</strong> CNN-based feature extraction and depth estimation</li>
+<li><strong>Sketch Interpretation:</strong> Specialized neural networks for line drawing analysis</li>
+<li><strong>Multi-View Reconstruction:</strong> Photogrammetry and stereo vision algorithms</li>
+</ul>
+<h4 id="core-aiml-pipeline">3. Core AI/ML Pipeline</h4>
+<h5 id="neural-3d-generation">Neural 3D Generation</h5>
+<div class="sourceCode" id="cb2"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb2-1" title="1"><span class="kw">class</span> Neural3DGenerator:</a>
+<a class="sourceLine" id="cb2-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb2-3" title="3">        <span class="va">self</span>.nerf_model <span class="op">=</span> NeRFModel()          <span class="co"># Volume rendering</span></a>
+<a class="sourceLine" id="cb2-4" title="4">        <span class="va">self</span>.dmtet_model <span class="op">=</span> DMTetModel()        <span class="co"># Mesh extraction</span></a>
+<a class="sourceLine" id="cb2-5" title="5">        <span class="va">self</span>.texture_generator <span class="op">=</span> TextureGAN()   <span class="co"># Texture synthesis</span></a>
+<a class="sourceLine" id="cb2-6" title="6">        <span class="va">self</span>.style_transfer <span class="op">=</span> Style3DNet()      <span class="co"># Style application</span></a></code></pre></div>
+<h5 id="model-generation-workflow">Model Generation Workflow</h5>
+<ol type="1">
+<li><strong>Input Encoding:</strong> Convert text/image inputs to latent representations</li>
+<li><strong>Volume Generation:</strong> Use NeRF for initial 3D volume representation</li>
+<li><strong>Mesh Extraction:</strong> Convert volume to mesh using differentiable marching cubes</li>
+<li><strong>Texture Synthesis:</strong> Generate and apply textures using GANs</li>
+<li><strong>Quality Optimization:</strong> Refine topology and UV mapping</li>
+</ol>
+<h4 id="gpu-compute-architecture">4. GPU Compute Architecture</h4>
+<h5 id="distributed-gpu-processing">Distributed GPU Processing</h5>
+<ul>
+<li><strong>GPU Scheduler:</strong> Intelligent workload distribution across GPU clusters</li>
+<li><strong>Model Parallelism:</strong> Large models split across multiple GPUs</li>
+<li><strong>Batch Processing:</strong> Efficient batching of similar generation tasks</li>
+<li><strong>Resource Pooling:</strong> Dynamic GPU allocation based on demand</li>
+</ul>
+<h4 id="data-management-strategy">5. Data Management Strategy</h4>
+<h5 id="storage-architecture">Storage Architecture</h5>
+<ul>
+<li><strong>PostgreSQL:</strong> User data, project metadata, generation parameters</li>
+<li><strong>MongoDB:</strong> 3D model geometry data, mesh structures, materials</li>
+<li><strong>Object Storage:</strong> Large 3D assets, textures, exported models</li>
+<li><strong>Redis:</strong> Real-time collaboration state, preview cache</li>
+<li><strong>Elasticsearch:</strong> Model search, similarity matching</li>
+</ul>
+<h3 id="key-technical-components">Key Technical Components</h3>
+<h4 id="nerf-based-volume-rendering">1. NeRF-Based Volume Rendering</h4>
+<div class="sourceCode" id="cb3"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb3-1" title="1"><span class="kw">class</span> NeRFVolumeRenderer:</a>
+<a class="sourceLine" id="cb3-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>, input_encoding, density_network, color_network):</a>
+<a class="sourceLine" id="cb3-3" title="3">        <span class="va">self</span>.encoding <span class="op">=</span> input_encoding</a>
+<a class="sourceLine" id="cb3-4" title="4">        <span class="va">self</span>.density_net <span class="op">=</span> density_network</a>
+<a class="sourceLine" id="cb3-5" title="5">        <span class="va">self</span>.color_net <span class="op">=</span> color_network</a>
+<a class="sourceLine" id="cb3-6" title="6">        </a>
+<a class="sourceLine" id="cb3-7" title="7">    <span class="kw">def</span> render_volume(<span class="va">self</span>, rays, viewpoints):</a>
+<a class="sourceLine" id="cb3-8" title="8">        <span class="co"># Sample points along rays</span></a>
+<a class="sourceLine" id="cb3-9" title="9">        points <span class="op">=</span> <span class="va">self</span>.sample_points_on_rays(rays)</a>
+<a class="sourceLine" id="cb3-10" title="10">        </a>
+<a class="sourceLine" id="cb3-11" title="11">        <span class="co"># Encode 3D points</span></a>
+<a class="sourceLine" id="cb3-12" title="12">        encoded_points <span class="op">=</span> <span class="va">self</span>.encoding.encode(points)</a>
+<a class="sourceLine" id="cb3-13" title="13">        </a>
+<a class="sourceLine" id="cb3-14" title="14">        <span class="co"># Predict density and color</span></a>
+<a class="sourceLine" id="cb3-15" title="15">        density <span class="op">=</span> <span class="va">self</span>.density_net(encoded_points)</a>
+<a class="sourceLine" id="cb3-16" title="16">        colors <span class="op">=</span> <span class="va">self</span>.color_net(encoded_points, viewpoints)</a>
+<a class="sourceLine" id="cb3-17" title="17">        </a>
+<a class="sourceLine" id="cb3-18" title="18">        <span class="co"># Volume rendering equation</span></a>
+<a class="sourceLine" id="cb3-19" title="19">        rendered_image <span class="op">=</span> <span class="va">self</span>.volume_integrate(density, colors, rays)</a>
+<a class="sourceLine" id="cb3-20" title="20">        <span class="cf">return</span> rendered_image</a></code></pre></div>
+<h4 id="mesh-generation-and-optimization">2. Mesh Generation and Optimization</h4>
+<div class="sourceCode" id="cb4"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb4-1" title="1"><span class="kw">class</span> MeshGenerator:</a>
+<a class="sourceLine" id="cb4-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb4-3" title="3">        <span class="va">self</span>.marching_cubes <span class="op">=</span> DifferentiableMarchingCubes()</a>
+<a class="sourceLine" id="cb4-4" title="4">        <span class="va">self</span>.mesh_optimizer <span class="op">=</span> MeshOptimizer()</a>
+<a class="sourceLine" id="cb4-5" title="5">        </a>
+<a class="sourceLine" id="cb4-6" title="6">    <span class="kw">def</span> extract_mesh(<span class="va">self</span>, volume_representation):</a>
+<a class="sourceLine" id="cb4-7" title="7">        <span class="co"># Extract initial mesh</span></a>
+<a class="sourceLine" id="cb4-8" title="8">        vertices, faces <span class="op">=</span> <span class="va">self</span>.marching_cubes.extract(volume_representation)</a>
+<a class="sourceLine" id="cb4-9" title="9">        </a>
+<a class="sourceLine" id="cb4-10" title="10">        <span class="co"># Optimize topology</span></a>
+<a class="sourceLine" id="cb4-11" title="11">        optimized_mesh <span class="op">=</span> <span class="va">self</span>.mesh_optimizer.optimize(vertices, faces)</a>
+<a class="sourceLine" id="cb4-12" title="12">        </a>
+<a class="sourceLine" id="cb4-13" title="13">        <span class="co"># Generate UV coordinates</span></a>
+<a class="sourceLine" id="cb4-14" title="14">        uv_coords <span class="op">=</span> <span class="va">self</span>.generate_uv_mapping(optimized_mesh)</a>
+<a class="sourceLine" id="cb4-15" title="15">        </a>
+<a class="sourceLine" id="cb4-16" title="16">        <span class="cf">return</span> Mesh(</a>
+<a class="sourceLine" id="cb4-17" title="17">            vertices<span class="op">=</span>optimized_mesh.vertices,</a>
+<a class="sourceLine" id="cb4-18" title="18">            faces<span class="op">=</span>optimized_mesh.faces,</a>
+<a class="sourceLine" id="cb4-19" title="19">            uv_coordinates<span class="op">=</span>uv_coords</a>
+<a class="sourceLine" id="cb4-20" title="20">        )</a></code></pre></div>
+<h4 id="level-of-detail-generation">3. Level-of-Detail Generation</h4>
+<div class="sourceCode" id="cb5"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb5-1" title="1"><span class="kw">class</span> LODGenerator:</a>
+<a class="sourceLine" id="cb5-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb5-3" title="3">        <span class="va">self</span>.decimator <span class="op">=</span> QuadricErrorMetrics()</a>
+<a class="sourceLine" id="cb5-4" title="4">        <span class="va">self</span>.quality_assessor <span class="op">=</span> MeshQualityAssessor()</a>
+<a class="sourceLine" id="cb5-5" title="5">        </a>
+<a class="sourceLine" id="cb5-6" title="6">    <span class="kw">def</span> generate_lod_chain(<span class="va">self</span>, base_mesh, target_counts):</a>
+<a class="sourceLine" id="cb5-7" title="7">        lod_chain <span class="op">=</span> [base_mesh]</a>
+<a class="sourceLine" id="cb5-8" title="8">        </a>
+<a class="sourceLine" id="cb5-9" title="9">        <span class="cf">for</span> target_count <span class="kw">in</span> target_counts:</a>
+<a class="sourceLine" id="cb5-10" title="10">            <span class="co"># Decimate mesh while preserving important features</span></a>
+<a class="sourceLine" id="cb5-11" title="11">            decimated <span class="op">=</span> <span class="va">self</span>.decimator.decimate(</a>
+<a class="sourceLine" id="cb5-12" title="12">                base_mesh, target_poly_count<span class="op">=</span>target_count</a>
+<a class="sourceLine" id="cb5-13" title="13">            )</a>
+<a class="sourceLine" id="cb5-14" title="14">            </a>
+<a class="sourceLine" id="cb5-15" title="15">            <span class="co"># Assess quality and adjust if needed</span></a>
+<a class="sourceLine" id="cb5-16" title="16">            quality_score <span class="op">=</span> <span class="va">self</span>.quality_assessor.assess(decimated, base_mesh)</a>
+<a class="sourceLine" id="cb5-17" title="17">            <span class="cf">if</span> quality_score <span class="op">&lt;</span> <span class="fl">0.8</span>:</a>
+<a class="sourceLine" id="cb5-18" title="18">                decimated <span class="op">=</span> <span class="va">self</span>.improve_decimation(decimated, base_mesh)</a>
+<a class="sourceLine" id="cb5-19" title="19">            </a>
+<a class="sourceLine" id="cb5-20" title="20">            lod_chain.append(decimated)</a>
+<a class="sourceLine" id="cb5-21" title="21">            </a>
+<a class="sourceLine" id="cb5-22" title="22">        <span class="cf">return</span> lod_chain</a></code></pre></div>
+<h3 id="real-time-collaboration-architecture">Real-Time Collaboration Architecture</h3>
+<h4 id="websocket-based-updates">WebSocket-Based Updates</h4>
+<ul>
+<li><strong>Concurrent Editing:</strong> Multiple users editing the same 3D model</li>
+<li><strong>Change Broadcasting:</strong> Real-time synchronization of model modifications</li>
+<li><strong>Conflict Resolution:</strong> Intelligent merging of simultaneous edits</li>
+<li><strong>Version Control:</strong> Git-like versioning for 3D models</li>
+</ul>
+<h4 id="performance-optimization-strategies">Performance Optimization Strategies</h4>
+<h5 id="client-side-optimization">Client-Side Optimization</h5>
+<ul>
+<li><strong>Progressive Loading:</strong> Stream 3D models progressively</li>
+<li><strong>Level-of-Detail Streaming:</strong> Load appropriate detail levels based on view</li>
+<li><strong>Frustum Culling:</strong> Only render visible model parts</li>
+<li><strong>Texture Compression:</strong> Efficient texture formats for web delivery</li>
+</ul>
+<h5 id="server-side-optimization">Server-Side Optimization</h5>
+<ul>
+<li><strong>Model Caching:</strong> Cache frequently accessed models</li>
+<li><strong>Predictive Pre-generation:</strong> Anticipate user needs and pre-generate variants</li>
+<li><strong>Compression:</strong> Efficient 3D model compression algorithms</li>
+<li><strong>Edge Computing:</strong> Distribute processing closer to users</li>
+</ul>
+<hr />
+<h2 id="lld-low-level-design">LLD (Low Level Design)</h2>
+<h3 id="detailed-component-implementation">Detailed Component Implementation</h3>
+<h4 id="input-processing-service">1. Input Processing Service</h4>
+<h5 id="text-to-3d-processing">Text-to-3D Processing</h5>
+<div class="sourceCode" id="cb6"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb6-1" title="1"><span class="kw">class</span> TextTo3DProcessor:</a>
+<a class="sourceLine" id="cb6-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb6-3" title="3">        <span class="va">self</span>.text_encoder <span class="op">=</span> CLIPTextEncoder()</a>
+<a class="sourceLine" id="cb6-4" title="4">        <span class="va">self</span>.shape_decoder <span class="op">=</span> Shape3DDecoder()</a>
+<a class="sourceLine" id="cb6-5" title="5">        <span class="va">self</span>.category_classifier <span class="op">=</span> ObjectCategoryClassifier()</a>
+<a class="sourceLine" id="cb6-6" title="6">        </a>
+<a class="sourceLine" id="cb6-7" title="7">    <span class="cf">async</span> <span class="kw">def</span> process_text_input(<span class="va">self</span>, text_description: <span class="bu">str</span>) <span class="op">-&gt;</span> ProcessedInput:</a>
+<a class="sourceLine" id="cb6-8" title="8">        <span class="co"># Clean and normalize text</span></a>
+<a class="sourceLine" id="cb6-9" title="9">        cleaned_text <span class="op">=</span> <span class="va">self</span>.preprocess_text(text_description)</a>
+<a class="sourceLine" id="cb6-10" title="10">        </a>
+<a class="sourceLine" id="cb6-11" title="11">        <span class="co"># Extract semantic features</span></a>
+<a class="sourceLine" id="cb6-12" title="12">        text_features <span class="op">=</span> <span class="va">self</span>.text_encoder.encode(cleaned_text)</a>
+<a class="sourceLine" id="cb6-13" title="13">        </a>
+<a class="sourceLine" id="cb6-14" title="14">        <span class="co"># Classify object category</span></a>
+<a class="sourceLine" id="cb6-15" title="15">        category <span class="op">=</span> <span class="va">self</span>.category_classifier.predict(text_features)</a>
+<a class="sourceLine" id="cb6-16" title="16">        </a>
+<a class="sourceLine" id="cb6-17" title="17">        <span class="co"># Generate shape parameters</span></a>
+<a class="sourceLine" id="cb6-18" title="18">        shape_params <span class="op">=</span> <span class="va">self</span>.shape_decoder.decode(text_features, category)</a>
+<a class="sourceLine" id="cb6-19" title="19">        </a>
+<a class="sourceLine" id="cb6-20" title="20">        <span class="cf">return</span> ProcessedInput(</a>
+<a class="sourceLine" id="cb6-21" title="21">            semantic_features<span class="op">=</span>text_features,</a>
+<a class="sourceLine" id="cb6-22" title="22">            category<span class="op">=</span>category,</a>
+<a class="sourceLine" id="cb6-23" title="23">            shape_parameters<span class="op">=</span>shape_params,</a>
+<a class="sourceLine" id="cb6-24" title="24">            input_type<span class="op">=</span><span class="st">&quot;text&quot;</span></a>
+<a class="sourceLine" id="cb6-25" title="25">        )</a>
+<a class="sourceLine" id="cb6-26" title="26">    </a>
+<a class="sourceLine" id="cb6-27" title="27">    <span class="kw">def</span> preprocess_text(<span class="va">self</span>, text: <span class="bu">str</span>) <span class="op">-&gt;</span> <span class="bu">str</span>:</a>
+<a class="sourceLine" id="cb6-28" title="28">        <span class="co"># Remove special characters, normalize case</span></a>
+<a class="sourceLine" id="cb6-29" title="29">        cleaned <span class="op">=</span> re.sub(<span class="vs">r&#39;[^\w\s]&#39;</span>, <span class="st">&#39;&#39;</span>, text.lower())</a>
+<a class="sourceLine" id="cb6-30" title="30">        </a>
+<a class="sourceLine" id="cb6-31" title="31">        <span class="co"># Handle common 3D modeling terminology</span></a>
+<a class="sourceLine" id="cb6-32" title="32">        terminology_map <span class="op">=</span> {</a>
+<a class="sourceLine" id="cb6-33" title="33">            <span class="st">&#39;make&#39;</span>: <span class="st">&#39;create&#39;</span>,</a>
+<a class="sourceLine" id="cb6-34" title="34">            <span class="st">&#39;build&#39;</span>: <span class="st">&#39;create&#39;</span>,</a>
+<a class="sourceLine" id="cb6-35" title="35">            <span class="st">&#39;design&#39;</span>: <span class="st">&#39;create&#39;</span>,</a>
+<a class="sourceLine" id="cb6-36" title="36">            <span class="co"># ... more mappings</span></a>
+<a class="sourceLine" id="cb6-37" title="37">        }</a>
+<a class="sourceLine" id="cb6-38" title="38">        </a>
+<a class="sourceLine" id="cb6-39" title="39">        <span class="cf">for</span> old_term, new_term <span class="kw">in</span> terminology_map.items():</a>
+<a class="sourceLine" id="cb6-40" title="40">            cleaned <span class="op">=</span> cleaned.replace(old_term, new_term)</a>
+<a class="sourceLine" id="cb6-41" title="41">            </a>
+<a class="sourceLine" id="cb6-42" title="42">        <span class="cf">return</span> cleaned</a></code></pre></div>
+<h5 id="image-to-3d-processing">Image-to-3D Processing</h5>
+<div class="sourceCode" id="cb7"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb7-1" title="1"><span class="kw">class</span> ImageTo3DProcessor:</a>
+<a class="sourceLine" id="cb7-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb7-3" title="3">        <span class="va">self</span>.depth_estimator <span class="op">=</span> MiDaSDepthEstimator()</a>
+<a class="sourceLine" id="cb7-4" title="4">        <span class="va">self</span>.normal_estimator <span class="op">=</span> SurfaceNormalEstimator()</a>
+<a class="sourceLine" id="cb7-5" title="5">        <span class="va">self</span>.silhouette_extractor <span class="op">=</span> SilhouetteExtractor()</a>
+<a class="sourceLine" id="cb7-6" title="6">        <span class="va">self</span>.shape_from_shading <span class="op">=</span> ShapeFromShading()</a>
+<a class="sourceLine" id="cb7-7" title="7">        </a>
+<a class="sourceLine" id="cb7-8" title="8">    <span class="cf">async</span> <span class="kw">def</span> process_image_input(<span class="va">self</span>, image_data: np.ndarray) <span class="op">-&gt;</span> ProcessedInput:</a>
+<a class="sourceLine" id="cb7-9" title="9">        <span class="co"># Estimate depth map</span></a>
+<a class="sourceLine" id="cb7-10" title="10">        depth_map <span class="op">=</span> <span class="va">self</span>.depth_estimator.estimate_depth(image_data)</a>
+<a class="sourceLine" id="cb7-11" title="11">        </a>
+<a class="sourceLine" id="cb7-12" title="12">        <span class="co"># Extract surface normals</span></a>
+<a class="sourceLine" id="cb7-13" title="13">        normal_map <span class="op">=</span> <span class="va">self</span>.normal_estimator.estimate_normals(image_data)</a>
+<a class="sourceLine" id="cb7-14" title="14">        </a>
+<a class="sourceLine" id="cb7-15" title="15">        <span class="co"># Extract object silhouette</span></a>
+<a class="sourceLine" id="cb7-16" title="16">        silhouette <span class="op">=</span> <span class="va">self</span>.silhouette_extractor.extract(image_data)</a>
+<a class="sourceLine" id="cb7-17" title="17">        </a>
+<a class="sourceLine" id="cb7-18" title="18">        <span class="co"># Combine cues for 3D shape inference</span></a>
+<a class="sourceLine" id="cb7-19" title="19">        shape_cues <span class="op">=</span> <span class="va">self</span>.combine_shape_cues(depth_map, normal_map, silhouette)</a>
+<a class="sourceLine" id="cb7-20" title="20">        </a>
+<a class="sourceLine" id="cb7-21" title="21">        <span class="co"># Generate initial 3D representation</span></a>
+<a class="sourceLine" id="cb7-22" title="22">        voxel_grid <span class="op">=</span> <span class="va">self</span>.shape_from_shading.reconstruct(shape_cues)</a>
+<a class="sourceLine" id="cb7-23" title="23">        </a>
+<a class="sourceLine" id="cb7-24" title="24">        <span class="cf">return</span> ProcessedInput(</a>
+<a class="sourceLine" id="cb7-25" title="25">            depth_map<span class="op">=</span>depth_map,</a>
+<a class="sourceLine" id="cb7-26" title="26">            normal_map<span class="op">=</span>normal_map,</a>
+<a class="sourceLine" id="cb7-27" title="27">            silhouette<span class="op">=</span>silhouette,</a>
+<a class="sourceLine" id="cb7-28" title="28">            voxel_representation<span class="op">=</span>voxel_grid,</a>
+<a class="sourceLine" id="cb7-29" title="29">            input_type<span class="op">=</span><span class="st">&quot;image&quot;</span></a>
+<a class="sourceLine" id="cb7-30" title="30">        )</a></code></pre></div>
+<h4 id="neural-3d-generation-engine">2. Neural 3D Generation Engine</h4>
+<h5 id="nerf-based-generation">NeRF-Based Generation</h5>
+<div class="sourceCode" id="cb8"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb8-1" title="1"><span class="kw">class</span> NeRF3DGenerator:</a>
+<a class="sourceLine" id="cb8-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb8-3" title="3">        <span class="va">self</span>.positional_encoding <span class="op">=</span> PositionalEncoding(num_freqs<span class="op">=</span><span class="dv">10</span>)</a>
+<a class="sourceLine" id="cb8-4" title="4">        <span class="va">self</span>.density_network <span class="op">=</span> DensityMLP(hidden_dims<span class="op">=</span>[<span class="dv">256</span>, <span class="dv">256</span>, <span class="dv">256</span>])</a>
+<a class="sourceLine" id="cb8-5" title="5">        <span class="va">self</span>.color_network <span class="op">=</span> ColorMLP(hidden_dims<span class="op">=</span>[<span class="dv">128</span>, <span class="dv">128</span>, <span class="dv">128</span>])</a>
+<a class="sourceLine" id="cb8-6" title="6">        <span class="va">self</span>.volume_renderer <span class="op">=</span> VolumeRenderer()</a>
+<a class="sourceLine" id="cb8-7" title="7">        </a>
+<a class="sourceLine" id="cb8-8" title="8">    <span class="cf">async</span> <span class="kw">def</span> generate_from_text(<span class="va">self</span>, text_features: torch.Tensor) <span class="op">-&gt;</span> NeRFModel:</a>
+<a class="sourceLine" id="cb8-9" title="9">        <span class="co"># Initialize NeRF parameters from text features</span></a>
+<a class="sourceLine" id="cb8-10" title="10">        initial_params <span class="op">=</span> <span class="va">self</span>.initialize_nerf_from_text(text_features)</a>
+<a class="sourceLine" id="cb8-11" title="11">        </a>
+<a class="sourceLine" id="cb8-12" title="12">        <span class="co"># Optimize NeRF through iterative refinement</span></a>
+<a class="sourceLine" id="cb8-13" title="13">        optimized_nerf <span class="op">=</span> <span class="cf">await</span> <span class="va">self</span>.optimize_nerf(initial_params)</a>
+<a class="sourceLine" id="cb8-14" title="14">        </a>
+<a class="sourceLine" id="cb8-15" title="15">        <span class="cf">return</span> optimized_nerf</a>
+<a class="sourceLine" id="cb8-16" title="16">    </a>
+<a class="sourceLine" id="cb8-17" title="17">    <span class="kw">def</span> initialize_nerf_from_text(<span class="va">self</span>, text_features: torch.Tensor) <span class="op">-&gt;</span> <span class="bu">dict</span>:</a>
+<a class="sourceLine" id="cb8-18" title="18">        <span class="co"># Use text features to initialize NeRF network weights</span></a>
+<a class="sourceLine" id="cb8-19" title="19">        init_weights <span class="op">=</span> <span class="va">self</span>.text_to_nerf_mapper(text_features)</a>
+<a class="sourceLine" id="cb8-20" title="20">        </a>
+<a class="sourceLine" id="cb8-21" title="21">        <span class="cf">return</span> {</a>
+<a class="sourceLine" id="cb8-22" title="22">            <span class="st">&#39;density_weights&#39;</span>: init_weights[<span class="st">&#39;density&#39;</span>],</a>
+<a class="sourceLine" id="cb8-23" title="23">            <span class="st">&#39;color_weights&#39;</span>: init_weights[<span class="st">&#39;color&#39;</span>],</a>
+<a class="sourceLine" id="cb8-24" title="24">            <span class="st">&#39;scene_bounds&#39;</span>: <span class="va">self</span>.estimate_scene_bounds(text_features)</a>
+<a class="sourceLine" id="cb8-25" title="25">        }</a>
+<a class="sourceLine" id="cb8-26" title="26">    </a>
+<a class="sourceLine" id="cb8-27" title="27">    <span class="cf">async</span> <span class="kw">def</span> optimize_nerf(<span class="va">self</span>, initial_params: <span class="bu">dict</span>) <span class="op">-&gt;</span> NeRFModel:</a>
+<a class="sourceLine" id="cb8-28" title="28">        nerf_model <span class="op">=</span> NeRFModel(initial_params)</a>
+<a class="sourceLine" id="cb8-29" title="29">        optimizer <span class="op">=</span> torch.optim.Adam(nerf_model.parameters(), lr<span class="op">=</span><span class="fl">1e-4</span>)</a>
+<a class="sourceLine" id="cb8-30" title="30">        </a>
+<a class="sourceLine" id="cb8-31" title="31">        <span class="cf">for</span> iteration <span class="kw">in</span> <span class="bu">range</span>(<span class="dv">1000</span>):  <span class="co"># Optimization iterations</span></a>
+<a class="sourceLine" id="cb8-32" title="32">            <span class="co"># Sample random rays</span></a>
+<a class="sourceLine" id="cb8-33" title="33">            rays <span class="op">=</span> <span class="va">self</span>.sample_random_rays(batch_size<span class="op">=</span><span class="dv">1024</span>)</a>
+<a class="sourceLine" id="cb8-34" title="34">            </a>
+<a class="sourceLine" id="cb8-35" title="35">            <span class="co"># Render using current NeRF</span></a>
+<a class="sourceLine" id="cb8-36" title="36">            rendered_colors <span class="op">=</span> nerf_model.render(rays)</a>
+<a class="sourceLine" id="cb8-37" title="37">            </a>
+<a class="sourceLine" id="cb8-38" title="38">            <span class="co"># Compute loss (using priors and consistency constraints)</span></a>
+<a class="sourceLine" id="cb8-39" title="39">            loss <span class="op">=</span> <span class="va">self</span>.compute_loss(rendered_colors, rays)</a>
+<a class="sourceLine" id="cb8-40" title="40">            </a>
+<a class="sourceLine" id="cb8-41" title="41">            <span class="co"># Optimize</span></a>
+<a class="sourceLine" id="cb8-42" title="42">            optimizer.zero_grad()</a>
+<a class="sourceLine" id="cb8-43" title="43">            loss.backward()</a>
+<a class="sourceLine" id="cb8-44" title="44">            optimizer.step()</a>
+<a class="sourceLine" id="cb8-45" title="45">            </a>
+<a class="sourceLine" id="cb8-46" title="46">            <span class="cf">if</span> iteration <span class="op">%</span> <span class="dv">100</span> <span class="op">==</span> <span class="dv">0</span>:</a>
+<a class="sourceLine" id="cb8-47" title="47">                <span class="bu">print</span>(<span class="ss">f&quot;Iteration </span><span class="sc">{</span>iteration<span class="sc">}</span><span class="ss">, Loss: </span><span class="sc">{</span>loss<span class="sc">.</span>item()<span class="sc">}</span><span class="ss">&quot;</span>)</a>
+<a class="sourceLine" id="cb8-48" title="48">                </a>
+<a class="sourceLine" id="cb8-49" title="49">        <span class="cf">return</span> nerf_model</a></code></pre></div>
+<h5 id="mesh-extraction-and-refinement">Mesh Extraction and Refinement</h5>
+<div class="sourceCode" id="cb9"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb9-1" title="1"><span class="kw">class</span> MeshExtractor:</a>
+<a class="sourceLine" id="cb9-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb9-3" title="3">        <span class="va">self</span>.marching_cubes <span class="op">=</span> MarchingCubes(resolution<span class="op">=</span><span class="dv">128</span>)</a>
+<a class="sourceLine" id="cb9-4" title="4">        <span class="va">self</span>.mesh_simplifier <span class="op">=</span> QuadricErrorSimplifier()</a>
+<a class="sourceLine" id="cb9-5" title="5">        <span class="va">self</span>.uv_unwrapper <span class="op">=</span> AngleBasedUVUnwrapper()</a>
+<a class="sourceLine" id="cb9-6" title="6">        </a>
+<a class="sourceLine" id="cb9-7" title="7">    <span class="kw">def</span> extract_mesh_from_nerf(<span class="va">self</span>, nerf_model: NeRFModel) <span class="op">-&gt;</span> Mesh:</a>
+<a class="sourceLine" id="cb9-8" title="8">        <span class="co"># Sample density values on a 3D grid</span></a>
+<a class="sourceLine" id="cb9-9" title="9">        grid_points <span class="op">=</span> <span class="va">self</span>.generate_grid_points(resolution<span class="op">=</span><span class="dv">128</span>)</a>
+<a class="sourceLine" id="cb9-10" title="10">        density_values <span class="op">=</span> nerf_model.query_density(grid_points)</a>
+<a class="sourceLine" id="cb9-11" title="11">        </a>
+<a class="sourceLine" id="cb9-12" title="12">        <span class="co"># Extract mesh using marching cubes</span></a>
+<a class="sourceLine" id="cb9-13" title="13">        vertices, faces <span class="op">=</span> <span class="va">self</span>.marching_cubes.extract(</a>
+<a class="sourceLine" id="cb9-14" title="14">            density_values.reshape(<span class="dv">128</span>, <span class="dv">128</span>, <span class="dv">128</span>)</a>
+<a class="sourceLine" id="cb9-15" title="15">        )</a>
+<a class="sourceLine" id="cb9-16" title="16">        </a>
+<a class="sourceLine" id="cb9-17" title="17">        <span class="co"># Refine mesh topology</span></a>
+<a class="sourceLine" id="cb9-18" title="18">        refined_vertices, refined_faces <span class="op">=</span> <span class="va">self</span>.refine_mesh_topology(</a>
+<a class="sourceLine" id="cb9-19" title="19">            vertices, faces</a>
+<a class="sourceLine" id="cb9-20" title="20">        )</a>
+<a class="sourceLine" id="cb9-21" title="21">        </a>
+<a class="sourceLine" id="cb9-22" title="22">        <span class="co"># Generate UV coordinates</span></a>
+<a class="sourceLine" id="cb9-23" title="23">        uv_coordinates <span class="op">=</span> <span class="va">self</span>.uv_unwrapper.unwrap(refined_vertices, refined_faces)</a>
+<a class="sourceLine" id="cb9-24" title="24">        </a>
+<a class="sourceLine" id="cb9-25" title="25">        <span class="co"># Create mesh object</span></a>
+<a class="sourceLine" id="cb9-26" title="26">        mesh <span class="op">=</span> Mesh(</a>
+<a class="sourceLine" id="cb9-27" title="27">            vertices<span class="op">=</span>refined_vertices,</a>
+<a class="sourceLine" id="cb9-28" title="28">            faces<span class="op">=</span>refined_faces,</a>
+<a class="sourceLine" id="cb9-29" title="29">            uv_coordinates<span class="op">=</span>uv_coordinates</a>
+<a class="sourceLine" id="cb9-30" title="30">        )</a>
+<a class="sourceLine" id="cb9-31" title="31">        </a>
+<a class="sourceLine" id="cb9-32" title="32">        <span class="cf">return</span> mesh</a>
+<a class="sourceLine" id="cb9-33" title="33">    </a>
+<a class="sourceLine" id="cb9-34" title="34">    <span class="kw">def</span> refine_mesh_topology(<span class="va">self</span>, vertices: np.ndarray, faces: np.ndarray):</a>
+<a class="sourceLine" id="cb9-35" title="35">        <span class="co"># Remove duplicate vertices</span></a>
+<a class="sourceLine" id="cb9-36" title="36">        unique_vertices, vertex_map <span class="op">=</span> np.unique(vertices, axis<span class="op">=</span><span class="dv">0</span>, return_inverse<span class="op">=</span><span class="va">True</span>)</a>
+<a class="sourceLine" id="cb9-37" title="37">        updated_faces <span class="op">=</span> vertex_map[faces]</a>
+<a class="sourceLine" id="cb9-38" title="38">        </a>
+<a class="sourceLine" id="cb9-39" title="39">        <span class="co"># Remove degenerate faces</span></a>
+<a class="sourceLine" id="cb9-40" title="40">        valid_faces <span class="op">=</span> <span class="va">self</span>.filter_degenerate_faces(updated_faces)</a>
+<a class="sourceLine" id="cb9-41" title="41">        </a>
+<a class="sourceLine" id="cb9-42" title="42">        <span class="co"># Smooth mesh if needed</span></a>
+<a class="sourceLine" id="cb9-43" title="43">        <span class="cf">if</span> <span class="va">self</span>.needs_smoothing(unique_vertices, valid_faces):</a>
+<a class="sourceLine" id="cb9-44" title="44">            smoothed_vertices <span class="op">=</span> <span class="va">self</span>.laplacian_smooth(unique_vertices, valid_faces)</a>
+<a class="sourceLine" id="cb9-45" title="45">            <span class="cf">return</span> smoothed_vertices, valid_faces</a>
+<a class="sourceLine" id="cb9-46" title="46">        </a>
+<a class="sourceLine" id="cb9-47" title="47">        <span class="cf">return</span> unique_vertices, valid_faces</a></code></pre></div>
+<h4 id="texture-generation-system">3. Texture Generation System</h4>
+<h5 id="procedural-texture-generator">Procedural Texture Generator</h5>
+<div class="sourceCode" id="cb10"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb10-1" title="1"><span class="kw">class</span> TextureGenerator:</a>
+<a class="sourceLine" id="cb10-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb10-3" title="3">        <span class="va">self</span>.texture_gan <span class="op">=</span> TextureGAN(latent_dim<span class="op">=</span><span class="dv">512</span>)</a>
+<a class="sourceLine" id="cb10-4" title="4">        <span class="va">self</span>.style_transfer <span class="op">=</span> NeuralStyleTransfer()</a>
+<a class="sourceLine" id="cb10-5" title="5">        <span class="va">self</span>.material_mapper <span class="op">=</span> MaterialPropertyMapper()</a>
+<a class="sourceLine" id="cb10-6" title="6">        </a>
+<a class="sourceLine" id="cb10-7" title="7">    <span class="cf">async</span> <span class="kw">def</span> generate_texture(<span class="va">self</span>, mesh: Mesh, style_description: <span class="bu">str</span>) <span class="op">-&gt;</span> TextureSet:</a>
+<a class="sourceLine" id="cb10-8" title="8">        <span class="co"># Encode style description</span></a>
+<a class="sourceLine" id="cb10-9" title="9">        style_features <span class="op">=</span> <span class="va">self</span>.encode_style_description(style_description)</a>
+<a class="sourceLine" id="cb10-10" title="10">        </a>
+<a class="sourceLine" id="cb10-11" title="11">        <span class="co"># Generate base texture using GAN</span></a>
+<a class="sourceLine" id="cb10-12" title="12">        base_texture <span class="op">=</span> <span class="va">self</span>.texture_gan.generate(style_features)</a>
+<a class="sourceLine" id="cb10-13" title="13">        </a>
+<a class="sourceLine" id="cb10-14" title="14">        <span class="co"># Create material maps (normal, roughness, metallic)</span></a>
+<a class="sourceLine" id="cb10-15" title="15">        material_maps <span class="op">=</span> <span class="va">self</span>.generate_material_maps(base_texture, style_features)</a>
+<a class="sourceLine" id="cb10-16" title="16">        </a>
+<a class="sourceLine" id="cb10-17" title="17">        <span class="co"># Project texture onto mesh UV coordinates</span></a>
+<a class="sourceLine" id="cb10-18" title="18">        projected_texture <span class="op">=</span> <span class="va">self</span>.project_texture_to_mesh(</a>
+<a class="sourceLine" id="cb10-19" title="19">            base_texture, mesh.uv_coordinates</a>
+<a class="sourceLine" id="cb10-20" title="20">        )</a>
+<a class="sourceLine" id="cb10-21" title="21">        </a>
+<a class="sourceLine" id="cb10-22" title="22">        <span class="cf">return</span> TextureSet(</a>
+<a class="sourceLine" id="cb10-23" title="23">            albedo_map<span class="op">=</span>projected_texture,</a>
+<a class="sourceLine" id="cb10-24" title="24">            normal_map<span class="op">=</span>material_maps[<span class="st">&#39;normal&#39;</span>],</a>
+<a class="sourceLine" id="cb10-25" title="25">            roughness_map<span class="op">=</span>material_maps[<span class="st">&#39;roughness&#39;</span>],</a>
+<a class="sourceLine" id="cb10-26" title="26">            metallic_map<span class="op">=</span>material_maps[<span class="st">&#39;metallic&#39;</span>]</a>
+<a class="sourceLine" id="cb10-27" title="27">        )</a>
+<a class="sourceLine" id="cb10-28" title="28">    </a>
+<a class="sourceLine" id="cb10-29" title="29">    <span class="kw">def</span> generate_material_maps(<span class="va">self</span>, base_texture: np.ndarray, style_features: torch.Tensor):</a>
+<a class="sourceLine" id="cb10-30" title="30">        <span class="co"># Generate normal map from height information</span></a>
+<a class="sourceLine" id="cb10-31" title="31">        normal_map <span class="op">=</span> <span class="va">self</span>.generate_normal_map(base_texture)</a>
+<a class="sourceLine" id="cb10-32" title="32">        </a>
+<a class="sourceLine" id="cb10-33" title="33">        <span class="co"># Predict material properties from style</span></a>
+<a class="sourceLine" id="cb10-34" title="34">        material_properties <span class="op">=</span> <span class="va">self</span>.material_mapper.predict(style_features)</a>
+<a class="sourceLine" id="cb10-35" title="35">        </a>
+<a class="sourceLine" id="cb10-36" title="36">        <span class="co"># Generate roughness and metallic maps</span></a>
+<a class="sourceLine" id="cb10-37" title="37">        roughness_map <span class="op">=</span> <span class="va">self</span>.generate_roughness_map(</a>
+<a class="sourceLine" id="cb10-38" title="38">            base_texture, material_properties[<span class="st">&#39;roughness&#39;</span>]</a>
+<a class="sourceLine" id="cb10-39" title="39">        )</a>
+<a class="sourceLine" id="cb10-40" title="40">        metallic_map <span class="op">=</span> <span class="va">self</span>.generate_metallic_map(</a>
+<a class="sourceLine" id="cb10-41" title="41">            base_texture, material_properties[<span class="st">&#39;metallic&#39;</span>]</a>
+<a class="sourceLine" id="cb10-42" title="42">        )</a>
+<a class="sourceLine" id="cb10-43" title="43">        </a>
+<a class="sourceLine" id="cb10-44" title="44">        <span class="cf">return</span> {</a>
+<a class="sourceLine" id="cb10-45" title="45">            <span class="st">&#39;normal&#39;</span>: normal_map,</a>
+<a class="sourceLine" id="cb10-46" title="46">            <span class="st">&#39;roughness&#39;</span>: roughness_map,</a>
+<a class="sourceLine" id="cb10-47" title="47">            <span class="st">&#39;metallic&#39;</span>: metallic_map</a>
+<a class="sourceLine" id="cb10-48" title="48">        }</a></code></pre></div>
+<h4 id="level-of-detail-system">4. Level-of-Detail System</h4>
+<h5 id="adaptive-lod-generator">Adaptive LOD Generator</h5>
+<div class="sourceCode" id="cb11"><pre class="sourceCode python"><code class="sourceCode python"><a class="sourceLine" id="cb11-1" title="1"><span class="kw">class</span> AdaptiveLODGenerator:</a>
+<a class="sourceLine" id="cb11-2" title="2">    <span class="kw">def</span> <span class="fu">__init__</span>(<span class="va">self</span>):</a>
+<a class="sourceLine" id="cb11-3" title="3">        <span class="va">self</span>.mesh_decimator <span class="op">=</span> QEMDecimator()</a>
+<a class="sourceLine" id="cb11-4" title="4">        <span class="va">self</span>.quality_metrics <span class="op">=</span> MeshQualityMetrics()</a>
+<a class="sourceLine" id="cb11-5" title="5">        <span class="va">self</span>.performance_predictor <span class="op">=</span> PerformancePredictor()</a>
+<a class="sourceLine" id="cb11-6" title="6">        </a>
+<a class="sourceLine" id="cb11-7" title="7">    <span class="kw">def</span> generate_adaptive_lod(<span class="va">self</span>, base_mesh: Mesh, target_platforms: List[<span class="bu">str</span>]) <span class="op">-&gt;</span> LODChain:</a>
+<a class="sourceLine" id="cb11-8" title="8">        lod_chain <span class="op">=</span> LODChain()</a>
+<a class="sourceLine" id="cb11-9" title="9">        </a>
+<a class="sourceLine" id="cb11-10" title="10">        <span class="cf">for</span> platform <span class="kw">in</span> target_platforms:</a>
+<a class="sourceLine" id="cb11-11" title="11">            <span class="co"># Determine optimal poly count for platform</span></a>
+<a class="sourceLine" id="cb11-12" title="12">            target_polycount <span class="op">=</span> <span class="va">self</span>.performance_predictor.optimal_polycount(platform)</a>
+<a class="sourceLine" id="cb11-13" title="13">            </a>
+<a class="sourceLine" id="cb11-14" title="14">            <span class="co"># Generate LOD level</span></a>
+<a class="sourceLine" id="cb11-15" title="15">            lod_mesh <span class="op">=</span> <span class="va">self</span>.generate_lod_level(base_mesh, target_polycount)</a>
+<a class="sourceLine" id="cb11-16" title="16">            </a>
+<a class="sourceLine" id="cb11-17" title="17">            <span class="co"># Validate quality</span></a>
+<a class="sourceLine" id="cb11-18" title="18">            quality_score <span class="op">=</span> <span class="va">self</span>.quality_metrics.assess(lod_mesh, base_mesh)</a>
+<a class="sourceLine" id="cb11-19" title="19">            </a>
+<a class="sourceLine" id="cb11-20" title="20">            <span class="cf">if</span> quality_score <span class="op">&lt;</span> <span class="fl">0.7</span>:  <span class="co"># Quality threshold</span></a>
+<a class="sourceLine" id="cb11-21" title="21">                lod_mesh <span class="op">=</span> <span class="va">self</span>.improve_lod_quality(lod_mesh, base_mesh)</a>
+<a class="sourceLine" id="cb11-22" title="22">            </a>
+<a class="sourceLine" id="cb11-23" title="23">            lod_chain.add_level(platform, lod_mesh)</a>
+<a class="sourceLine" id="cb11-24" title="24">            </a>
+<a class="sourceLine" id="cb11-25" title="25">        <span class="cf">return</span> lod_chain</a>
+<a class="sourceLine" id="cb11-26" title="26">    </a>
+<a class="sourceLine" id="cb11-27" title="27">    <span class="kw">def</span> generate_lod_level(<span class="va">self</span>, base_mesh: Mesh, target_polycount: <span class="bu">int</span>) <span class="op">-&gt;</span> Mesh:</a>
+<a class="sourceLine" id="cb11-28" title="28">        <span class="co"># Calculate decimation ratio</span></a>
+<a class="sourceLine" id="cb11-29" title="29">        current_polycount <span class="op">=</span> <span class="bu">len</span>(base_mesh.faces)</a>
+<a class="sourceLine" id="cb11-30" title="30">        decimation_ratio <span class="op">=</span> target_polycount <span class="op">/</span> current_polycount</a>
+<a class="sourceLine" id="cb11-31" title="31">        </a>
+<a class="sourceLine" id="cb11-32" title="32">        <span class="cf">if</span> decimation_ratio <span class="op">&gt;=</span> <span class="fl">1.0</span>:</a>
+<a class="sourceLine" id="cb11-33" title="33">            <span class="cf">return</span> base_mesh  <span class="co"># No decimation needed</span></a>
+<a class="sourceLine" id="cb11-34" title="34">            </a>
+<a class="sourceLine" id="cb11-35" title="35">        <span class="co"># Perform quadric error metric decimation</span></a>
+<a class="sourceLine" id="cb11-36" title="36">        decimated_mesh <span class="op">=</span> <span class="va">self</span>.mesh_decimator.decimate(</a>
+<a class="sourceLine" id="cb11-37" title="37">            base_mesh, target_ratio<span class="op">=</span>decimation_ratio</a>
+<a class="sourceLine" id="cb11-38" title="38">        )</a>
+<a class="sourceLine" id="cb11-39" title="39">        </a>
+<a class="sourceLine" id="cb11-40" title="40">        <span class="co"># Preserve UV coordinates through decimation</span></a>
+<a class="sourceLine" id="cb11-41" title="41">        preserved_uvs <span class="op">=</span> <span class="va">self</span>.preserve_uv_coordinates(</a>
+<a class="sourceLine" id="cb11-42" title="42">            base_mesh, decimated_mesh</a>
+<a class="sourceLine" id="cb11-43" title="43">        )</a>
+<a class="sourceLine" id="cb11-44" title="44">        decimated_mesh.uv_coordinates <span class="op">=</span> preserved_uvs</a>
+<a class="sourceLine" id="cb11-45" title="45">        </a>
+<a class="sourceLine" id="cb11-46" title="46">        <span class="cf">return</span> decimated_mesh</a></code></pre></div>
+<h3 id="database-schema-implementation">Database Schema Implementation</h3>
+<h4 id="postgresql-schema">PostgreSQL Schema</h4>
+<div class="sourceCode" id="cb12"><pre class="sourceCode sql"><code class="sourceCode sql"><a class="sourceLine" id="cb12-1" title="1"><span class="co">-- Users and projects</span></a>
+<a class="sourceLine" id="cb12-2" title="2"><span class="kw">CREATE</span> <span class="kw">TABLE</span> users (</a>
+<a class="sourceLine" id="cb12-3" title="3">    <span class="kw">id</span> UUID <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</a>
+<a class="sourceLine" id="cb12-4" title="4">    username <span class="dt">VARCHAR</span>(<span class="dv">100</span>) <span class="kw">UNIQUE</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-5" title="5">    email <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">UNIQUE</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-6" title="6">    subscription_tier <span class="dt">VARCHAR</span>(<span class="dv">50</span>) <span class="kw">DEFAULT</span> <span class="st">&#39;free&#39;</span>,</a>
+<a class="sourceLine" id="cb12-7" title="7">    gpu_credits_remaining <span class="dt">INTEGER</span> <span class="kw">DEFAULT</span> <span class="dv">100</span>,</a>
+<a class="sourceLine" id="cb12-8" title="8">    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></a>
+<a class="sourceLine" id="cb12-9" title="9">);</a>
+<a class="sourceLine" id="cb12-10" title="10"></a>
+<a class="sourceLine" id="cb12-11" title="11"><span class="kw">CREATE</span> <span class="kw">TABLE</span> projects (</a>
+<a class="sourceLine" id="cb12-12" title="12">    <span class="kw">id</span> UUID <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</a>
+<a class="sourceLine" id="cb12-13" title="13">    user_id UUID <span class="kw">REFERENCES</span> users(<span class="kw">id</span>) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</a>
+<a class="sourceLine" id="cb12-14" title="14">    name <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-15" title="15">    description TEXT,</a>
+<a class="sourceLine" id="cb12-16" title="16">    project_type <span class="dt">VARCHAR</span>(<span class="dv">50</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- &#39;gaming&#39;, &#39;architecture&#39;, &#39;manufacturing&#39;</span></a>
+<a class="sourceLine" id="cb12-17" title="17">    status <span class="dt">VARCHAR</span>(<span class="dv">50</span>) <span class="kw">DEFAULT</span> <span class="st">&#39;active&#39;</span>,</a>
+<a class="sourceLine" id="cb12-18" title="18">    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</a>
+<a class="sourceLine" id="cb12-19" title="19">    updated_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></a>
+<a class="sourceLine" id="cb12-20" title="20">);</a>
+<a class="sourceLine" id="cb12-21" title="21"></a>
+<a class="sourceLine" id="cb12-22" title="22"><span class="co">-- 3D model generations</span></a>
+<a class="sourceLine" id="cb12-23" title="23"><span class="kw">CREATE</span> <span class="kw">TABLE</span> model_generations (</a>
+<a class="sourceLine" id="cb12-24" title="24">    <span class="kw">id</span> UUID <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</a>
+<a class="sourceLine" id="cb12-25" title="25">    project_id UUID <span class="kw">REFERENCES</span> projects(<span class="kw">id</span>) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</a>
+<a class="sourceLine" id="cb12-26" title="26">    input_type <span class="dt">VARCHAR</span>(<span class="dv">50</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>, <span class="co">-- &#39;text&#39;, &#39;image&#39;, &#39;sketch&#39;</span></a>
+<a class="sourceLine" id="cb12-27" title="27">    input_data JSONB <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-28" title="28">    generation_parameters JSONB,</a>
+<a class="sourceLine" id="cb12-29" title="29">    status <span class="dt">VARCHAR</span>(<span class="dv">50</span>) <span class="kw">DEFAULT</span> <span class="st">&#39;pending&#39;</span>, <span class="co">-- &#39;pending&#39;, &#39;processing&#39;, &#39;completed&#39;, &#39;failed&#39;</span></a>
+<a class="sourceLine" id="cb12-30" title="30">    gpu_time_used <span class="dt">INTEGER</span> <span class="kw">DEFAULT</span> <span class="dv">0</span>, <span class="co">-- in seconds</span></a>
+<a class="sourceLine" id="cb12-31" title="31">    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span>,</a>
+<a class="sourceLine" id="cb12-32" title="32">    completed_at <span class="dt">TIMESTAMP</span></a>
+<a class="sourceLine" id="cb12-33" title="33">);</a>
+<a class="sourceLine" id="cb12-34" title="34"></a>
+<a class="sourceLine" id="cb12-35" title="35"><span class="co">-- Generated 3D models</span></a>
+<a class="sourceLine" id="cb12-36" title="36"><span class="kw">CREATE</span> <span class="kw">TABLE</span> generated_models (</a>
+<a class="sourceLine" id="cb12-37" title="37">    <span class="kw">id</span> UUID <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</a>
+<a class="sourceLine" id="cb12-38" title="38">    generation_id UUID <span class="kw">REFERENCES</span> model_generations(<span class="kw">id</span>) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</a>
+<a class="sourceLine" id="cb12-39" title="39">    model_name <span class="dt">VARCHAR</span>(<span class="dv">255</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-40" title="40">    file_path TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-41" title="41">    file_size_bytes BIGINT,</a>
+<a class="sourceLine" id="cb12-42" title="42">    polygon_count <span class="dt">INTEGER</span>,</a>
+<a class="sourceLine" id="cb12-43" title="43">    vertex_count <span class="dt">INTEGER</span>,</a>
+<a class="sourceLine" id="cb12-44" title="44">    texture_resolution <span class="dt">VARCHAR</span>(<span class="dv">20</span>),</a>
+<a class="sourceLine" id="cb12-45" title="45">    quality_score <span class="dt">FLOAT</span>,</a>
+<a class="sourceLine" id="cb12-46" title="46">    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></a>
+<a class="sourceLine" id="cb12-47" title="47">);</a>
+<a class="sourceLine" id="cb12-48" title="48"></a>
+<a class="sourceLine" id="cb12-49" title="49"><span class="co">-- LOD chains</span></a>
+<a class="sourceLine" id="cb12-50" title="50"><span class="kw">CREATE</span> <span class="kw">TABLE</span> lod_chains (</a>
+<a class="sourceLine" id="cb12-51" title="51">    <span class="kw">id</span> UUID <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</a>
+<a class="sourceLine" id="cb12-52" title="52">    base_model_id UUID <span class="kw">REFERENCES</span> generated_models(<span class="kw">id</span>) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</a>
+<a class="sourceLine" id="cb12-53" title="53">    platform_target <span class="dt">VARCHAR</span>(<span class="dv">100</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-54" title="54">    lod_level <span class="dt">INTEGER</span> <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-55" title="55">    model_file_path TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-56" title="56">    polygon_count <span class="dt">INTEGER</span>,</a>
+<a class="sourceLine" id="cb12-57" title="57">    file_size_bytes BIGINT,</a>
+<a class="sourceLine" id="cb12-58" title="58">    created_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></a>
+<a class="sourceLine" id="cb12-59" title="59">);</a>
+<a class="sourceLine" id="cb12-60" title="60"></a>
+<a class="sourceLine" id="cb12-61" title="61"><span class="co">-- Export history</span></a>
+<a class="sourceLine" id="cb12-62" title="62"><span class="kw">CREATE</span> <span class="kw">TABLE</span> model_exports (</a>
+<a class="sourceLine" id="cb12-63" title="63">    <span class="kw">id</span> UUID <span class="kw">PRIMARY</span> <span class="kw">KEY</span> <span class="kw">DEFAULT</span> gen_random_uuid(),</a>
+<a class="sourceLine" id="cb12-64" title="64">    model_id UUID <span class="kw">REFERENCES</span> generated_models(<span class="kw">id</span>) <span class="kw">ON</span> <span class="kw">DELETE</span> <span class="kw">CASCADE</span>,</a>
+<a class="sourceLine" id="cb12-65" title="65">    export_format <span class="dt">VARCHAR</span>(<span class="dv">10</span>) <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-66" title="66">    export_settings JSONB,</a>
+<a class="sourceLine" id="cb12-67" title="67">    file_path TEXT <span class="kw">NOT</span> <span class="kw">NULL</span>,</a>
+<a class="sourceLine" id="cb12-68" title="68">    exported_at <span class="dt">TIMESTAMP</span> <span class="kw">DEFAULT</span> <span class="fu">CURRENT_TIMESTAMP</span></a>
+<a class="sourceLine" id="cb12-69" title="69">);</a></code></pre></div>
+<h4 id="mongodb-collections">MongoDB Collections</h4>
+<p>```javascript // Model geometry data { "_id“: ObjectId,”model_id“: String, // References generated_models.id”geometry_data“: {”vertices“: [Number], // Flattened array of vertex coordinates”faces“: [Number], // Face indices”normals“: [Number], // Vertex normals”uv_coordinates“: [Number] // UV mapping coordinates },”material_data“: {”textures“: {”albedo“: String, // File path to albedo texture”normal“: String, // File path to normal map”roughness“: String, // File path to roughness map”metallic“: String // File path to metallic map },”material_properties“: {”base_color“: [Number], // RGB values”metallic_factor“: Number,”roughness_factor“: Number,”transparency": Number</p>

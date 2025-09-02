@@ -1,0 +1,5 @@
+services:
+  db:
+    # Do not publish Postgres to the host; containers resolve 'db:5432' internally
+    ports: []
+

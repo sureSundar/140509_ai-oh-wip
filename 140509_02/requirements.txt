@@ -1,0 +1,51 @@
+# Core
+numpy>=1.21.0
+pandas>=1.3.0
+opencv-python>=4.5.0
+Pillow>=8.3.1
+python-dotenv>=0.19.0
+pydantic>=1.9.0
+pytz>=2022.1
+python-dateutil>=2.8.2
+
+# Deep Learning
+tensorflow>=2.10.0
+torch>=1.12.0
+torchvision>=0.13.0
+transformers>=4.20.0
+
+# API & Web
+fastapi>=0.78.0
+uvicorn>=0.17.0
+python-multipart>=0.0.5
+python-jose[cryptography]>=3.3.0
+passlib[bcrypt]>=1.7.4
+
+# Database
+SQLAlchemy>=1.4.0
+alembic>=1.7.6
+psycopg2-binary>=2.9.3
+SQLAlchemy-Utils>=0.41.1
+
+# Data Processing
+scikit-learn>=1.0.2
+scikit-image>=0.19.0
+imgaug>=0.4.0
+
+# Development
+pytest>=7.0.0
+pytest-cov>=3.0.0
+black>=22.3.0
+isort>=5.10.1
+flake8>=4.0.1
+mypy>=0.941
+pre-commit>=2.19.0
+pytest-asyncio>=0.18.3
+httpx>=0.23.0
+pytest-mock>=3.10.0
+
+# Utilities
+tqdm>=4.64.0
+matplotlib>=3.5.0
+seaborn>=0.11.2
+mlflow>=1.28.0

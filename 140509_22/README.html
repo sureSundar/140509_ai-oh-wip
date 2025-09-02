@@ -1,0 +1,204 @@
+<h1 id="md">140509_22.md</h1>
+<h2 id="readme">README</h2>
+<ol start="22" type="1">
+<li>Multi-Step Research Assistant Agent</li>
+</ol>
+<p><strong>Summary</strong>: Build an autonomous AI agent that plans, executes, and synthesizes multi-step research tasks by coordinating web searches, document analysis, and report generation.</p>
+<p><strong>Problem Statement</strong>: Complex research tasks require coordination across multiple information sources and analytical steps, which is time-consuming and error-prone. Your task is to create an agentic AI system that decomposes research queries into sub-tasks, retrieves information from diverse sources (web, documents, databases), analyzes findings, and generates comprehensive reports with source attribution. The system must demonstrate reasoning, adaptive execution, and maintain factual accuracy with credibility assessments.</p>
+<p><strong>Steps</strong>: - Design task decomposition and planning algorithms for research workflows. - Implement multi-source information retrieval (web search, database queries, document analysis). - Create reasoning chains for connecting disparate information. - Build synthesis and report generation with source attribution. - Develop fact-checking and credibility assessment mechanisms. - Include interactive refinement and follow-up question capabilities.</p>
+<p><strong>Suggested Data Requirements</strong>: - Sample research questions across domains (e.g., science, history). - Diverse information sources (web pages, academic papers, databases). - Fact-checking datasets (e.g., FEVER) and credibility scoring criteria. - Report templates and evaluation criteria.</p>
+<p><strong>Themes</strong>: Agentic AI, Agents &amp; APIs</p>
+<p>The steps and data requirements outlined above are intended solely as reference points to assist you in conceptualizing your solution.</p>
+<h2 id="prd-product-requirements-document">PRD (Product Requirements Document)</h2>
+<h3 id="product-vision-and-goals">Product Vision and Goals</h3>
+<p>The Multi-Step Research Assistant Agent aims to streamline complex research by automating task planning, information retrieval, and synthesis, reducing research time by 60% while ensuring high factual accuracy and transparency. Goals include supporting diverse domains (e.g., academia, journalism), delivering reports with traceable reasoning, and enabling users to refine outputs interactively, fostering trust and utility in professional and educational settings.</p>
+<h3 id="target-audience-and-stakeholders">Target Audience and Stakeholders</h3>
+<ul>
+<li><strong>Primary Users</strong>: Students, researchers, journalists, policy analysts.</li>
+<li><strong>Stakeholders</strong>: Content providers (for source access), educators (for teaching tools), AI ethicists (for fact-checking).</li>
+<li><strong>Personas</strong>:
+<ul>
+<li>A graduate student researching climate policy impacts across countries.</li>
+<li>A journalist investigating corporate financial scandals with source verification.</li>
+</ul></li>
+</ul>
+<h3 id="key-features-and-functionality">Key Features and Functionality</h3>
+<ul>
+<li><strong>Task Decomposition</strong>: Break down complex queries into actionable sub-tasks.</li>
+<li><strong>Multi-Source Retrieval</strong>: Access web (via APIs), documents (PDFs), and databases.</li>
+<li><strong>Reasoning Chains</strong>: Connect findings using chain-of-thought (CoT) reasoning.</li>
+<li><strong>Report Synthesis</strong>: Generate structured reports with citations and summaries.</li>
+<li><strong>Fact-Checking</strong>: Verify claims against reliable sources with credibility scores.</li>
+<li><strong>Interactive Refinement</strong>: Allow users to adjust queries or focus areas dynamically.</li>
+<li><strong>Analytics</strong>: Track popular research paths and user engagement metrics.</li>
+</ul>
+<h3 id="business-requirements">Business Requirements</h3>
+<ul>
+<li>Integration with APIs (e.g., Google Search, Arxiv, Wikipedia).</li>
+<li>Freemium model: Basic research free, premium for advanced sources (e.g., paywalled journals).</li>
+<li>Export reports in PDF/Markdown for integration with tools like Notion or Overleaf.</li>
+</ul>
+<h3 id="success-metrics">Success Metrics</h3>
+<ul>
+<li><strong>Accuracy</strong>: &gt;90% fact verification rate against FEVER dataset.</li>
+<li><strong>Engagement</strong>: Average session time &gt;10 minutes, &gt;5 sub-tasks per query.</li>
+<li><strong>User Satisfaction</strong>: NPS &gt;70.</li>
+<li><strong>Efficiency</strong>: Full research cycle &lt;8 minutes for typical queries.</li>
+</ul>
+<h3 id="assumptions-risks-and-dependencies">Assumptions, Risks, and Dependencies</h3>
+<ul>
+<li><strong>Assumptions</strong>: Access to open LLMs (e.g., Llama) and search APIs.</li>
+<li><strong>Risks</strong>: Inconsistent source reliability; mitigate with credibility scoring and fallback sources.</li>
+<li><strong>Dependencies</strong>: Public datasets (FEVER, MultiWOZ), APIs (Google, SerpAPI).</li>
+</ul>
+<h3 id="out-of-scope">Out of Scope</h3>
+<ul>
+<li>Real-time collaboration with human researchers.</li>
+<li>Multilingual source processing initially.</li>
+</ul>
+<h2 id="frd-functional-requirements-document">FRD (Functional Requirements Document)</h2>
+<h3 id="system-modules-and-requirements">System Modules and Requirements</h3>
+<ol type="1">
+<li><strong>Task Decomposition Module (FR-001)</strong>:
+<ul>
+<li><strong>Input</strong>: Natural language research query (e.g., “Impact of renewable energy policies in Europe”).</li>
+<li><strong>Functionality</strong>: Use LLM to break into sub-tasks (e.g., “search policies,” “analyze adoption rates”) via prompt engineering (“Decompose query into steps: {query}”).</li>
+<li><strong>Output</strong>: List of sub-tasks with priorities and dependencies.</li>
+<li><strong>Validation</strong>: Ensure sub-tasks cover query intent; validate via user feedback.</li>
+</ul></li>
+<li><strong>Retrieval Module (FR-002)</strong>:
+<ul>
+<li><strong>Input</strong>: Sub-task (e.g., “search policies”).</li>
+<li><strong>Functionality</strong>: Execute web searches (SerpAPI), parse PDFs (PyPDF2), query DBs (SQL/NoSQL); rank results by relevance.</li>
+<li><strong>Output</strong>: Structured data (e.g., JSON with text snippets, URLs, metadata).</li>
+<li><strong>Validation</strong>: Filter low-relevance results using embeddings (e.g., Sentence Transformers).</li>
+</ul></li>
+<li><strong>Reasoning Chain Module (FR-003)</strong>:
+<ul>
+<li><strong>Input</strong>: Retrieved data across sub-tasks.</li>
+<li><strong>Functionality</strong>: Apply CoT prompting in LLM to link findings (e.g., “Policy X led to Y% increase in solar adoption”).</li>
+<li><strong>Output</strong>: Reasoning paths as text or JSON (e.g., {“step”: “policy X”, “effect”: “Y% increase”}).</li>
+<li><strong>Validation</strong>: Check logical consistency using rule-based checks.</li>
+</ul></li>
+<li><strong>Synthesis and Report Module (FR-004)</strong>:
+<ul>
+<li><strong>Input</strong>: Reasoning paths, raw data.</li>
+<li><strong>Functionality</strong>: Generate formatted report with sections (intro, findings, conclusion), include citations (APA/ML format).</li>
+<li><strong>Output</strong>: Markdown/PDF report with embedded sources.</li>
+<li><strong>Validation</strong>: Ensure all claims are sourced; flag uncited claims.</li>
+</ul></li>
+<li><strong>Fact-Checking Module (FR-005)</strong>:
+<ul>
+<li><strong>Input</strong>: Report claims.</li>
+<li><strong>Functionality</strong>: Cross-verify against reliable sources (e.g., Wikipedia, FEVER dataset) using embeddings; assign credibility scores (0-1 based on source rank).</li>
+<li><strong>Output</strong>: Annotated report with credibility flags (e.g., “Claim X: 0.9 confidence”).</li>
+<li><strong>Validation</strong>: Manual override for flagged low-confidence claims.</li>
+</ul></li>
+<li><strong>Interactive Refinement Module (FR-006)</strong>:
+<ul>
+<li><strong>Input</strong>: User feedback (e.g., “focus on Germany”).</li>
+<li><strong>Functionality</strong>: Adjust sub-tasks or re-run retrieval; update report dynamically.</li>
+<li><strong>Output</strong>: Revised report and session state.</li>
+<li><strong>Validation</strong>: Track feedback loops to prevent infinite iterations.</li>
+</ul></li>
+</ol>
+<h3 id="interfaces-and-integrations">Interfaces and Integrations</h3>
+<ul>
+<li><strong>UI</strong>: Web-based conversational interface (React, chat-style) for query input, feedback, and report viewing.</li>
+<li><strong>API</strong>: RESTful endpoints (e.g., POST /research, POST /refine) with JSON payloads.</li>
+<li><strong>Data Flow</strong>: Query -&gt; Decompose -&gt; Retrieve -&gt; Reason -&gt; Synthesize -&gt; Fact-check -&gt; Output/Refine.</li>
+<li><strong>Integrations</strong>: SerpAPI for web, Arxiv API for papers, MongoDB for caching results.</li>
+</ul>
+<h3 id="error-handling-and-validation">Error Handling and Validation</h3>
+<ul>
+<li><strong>Invalid Query</strong>: Return clarification prompt (e.g., “Please specify region”).</li>
+<li><strong>Unreliable Source</strong>: Flag and seek alternatives (e.g., skip low-ranked sites).</li>
+<li><strong>Tests</strong>: Unit tests for decomposition (90% coverage), E2E for full cycle.</li>
+</ul>
+<h2 id="nfrd-non-functional-requirements-document">NFRD (Non-Functional Requirements Document)</h2>
+<h3 id="performance-requirements">Performance Requirements</h3>
+<ul>
+<li><strong>Latency</strong>: Full research cycle &lt;8 minutes for queries with &lt;10 sub-tasks.</li>
+<li><strong>Throughput</strong>: Handle 100 concurrent users on standard cloud infra (16GB RAM, 4 vCPUs).</li>
+</ul>
+<h3 id="scalability-and-availability">Scalability and Availability</h3>
+<ul>
+<li><strong>Scalability</strong>: Containerized (Docker) with Kubernetes for load balancing.</li>
+<li><strong>Availability</strong>: 99.9% uptime; redundant API servers.</li>
+</ul>
+<h3 id="security-and-privacy">Security and Privacy</h3>
+<ul>
+<li><strong>Data Privacy</strong>: Avoid storing sensitive queries; encrypt cached results.</li>
+<li><strong>Authentication</strong>: OAuth2 for user access; API key for external integrations.</li>
+<li><strong>Compliance</strong>: GDPR for user data, audit logs for query tracking.</li>
+</ul>
+<h3 id="reliability-and-maintainability">Reliability and Maintainability</h3>
+<ul>
+<li><strong>Error Rate</strong>: &lt;1% failure rate for retrieval tasks.</li>
+<li><strong>Code Quality</strong>: Modular design, 85% test coverage, CI/CD with GitHub Actions.</li>
+<li><strong>Monitoring</strong>: Prometheus for API latency, retrieval success rates.</li>
+</ul>
+<h3 id="usability-and-accessibility">Usability and Accessibility</h3>
+<ul>
+<li><strong>UI/UX</strong>: Responsive design, WCAG 2.1 AA compliance (e.g., keyboard navigation).</li>
+<li><strong>Documentation</strong>: API docs via Swagger, user guides with examples.</li>
+</ul>
+<h3 id="environmental-constraints">Environmental Constraints</h3>
+<ul>
+<li><strong>Deployment</strong>: Cloud-agnostic (AWS/GCP) or on-prem.</li>
+<li><strong>Cost</strong>: Optimize for &lt;0.05 USD per research query.</li>
+</ul>
+<h2 id="ad-architecture-diagram">AD (Architecture Diagram)</h2>
+<h2 id="pseudocode">Pseudocode</h2>
+<p>```python class ResearchAgent: def <strong>init</strong>(self): self.llm = LangChainLLM(“meta-llama/Llama-3-8b”) self.retriever = Retriever(serpapi_key, mongo_uri) self.fact_checker = FactChecker(fever_dataset) self.state = RedisClient()</p>
+<pre><code>def decompose(self, query):
+    prompt = f&quot;Decompose into sub-tasks: {query}&quot;
+    sub_tasks = self.llm.generate_json(prompt)
+    return sorted(sub_tasks, key=lambda x: x[&quot;priority&quot;])
+
+def retrieve(self, task):
+    if &quot;search&quot; in task:
+        results = self.retriever.web_search(task[&quot;query&quot;])
+    elif &quot;analyze&quot; in task:
+        results = self.retriever.doc_extract(task[&quot;file&quot;])
+    else:
+        results = self.retriever.db_query(task[&quot;query&quot;])
+    ranked = rank_results(results, embeddings_model)
+    return ranked[:5]  # Top 5 results
+
+def reason(self, findings):
+    prompt = f&quot;CoT: Given facts {findings}, reason to answer {task}&quot;
+    reasoning = self.llm.generate_json(prompt)
+    return reasoning
+
+def synthesize(self, reasoning, findings):
+    report = &quot;# Research Report\n&quot;
+    for step in reasoning:
+        report += f&quot;## {step[&#39;step&#39;]}\n{step[&#39;evidence&#39;]}\n&quot;
+    return report
+
+def fact_check(self, report):
+    claims = extract_claims(report)
+    for claim in claims:
+        score = self.fact_checker.verify(claim)
+        report = annotate(report, claim, score)
+    return report
+
+def refine(self, report, feedback):
+    state = self.state.load(report_id)
+    state[&quot;focus&quot;] = feedback
+    new_tasks = self.decompose(f&quot;Refined query: {state[&#39;query&#39;]} with {feedback}&quot;)
+    return self.run(new_tasks, state)
+
+def run(self, query):
+    tasks = self.decompose(query)
+    findings = []
+    for task in tasks:
+        results = self.retrieve(task)
+        findings.append(results)
+    reasoning = self.reason(findings)
+    report = self.synthesize(reasoning, findings)
+    checked_report = self.fact_check(report)
+    state_id = self.state.save({&quot;query&quot;: query, &quot;report&quot;: checked_report})
+    analytics.log_path(state_id, tasks)
+    return checked_report, state_id</code></pre>

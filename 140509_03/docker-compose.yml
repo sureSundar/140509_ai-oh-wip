@@ -1,0 +1,36 @@
+version: "3.9"
+
+services:
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: fraud-mvp-api:local
+    container_name: fraud_mvp_api
+    ports:
+      - "8000:8000"
+    environment:
+      - TZ=UTC
+      # Placeholders if/when DB integration is added
+      - DATABASE_URL=postgresql://fraud:fraud@db:5432/fraud
+    depends_on:
+      - db
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    container_name: fraud_mvp_db
+    environment:
+      - POSTGRES_DB=fraud
+      - POSTGRES_USER=fraud
+      - POSTGRES_PASSWORD=fraud
+      - TZ=UTC
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    restart: unless-stopped
+
+volumes:
+  pgdata:
+

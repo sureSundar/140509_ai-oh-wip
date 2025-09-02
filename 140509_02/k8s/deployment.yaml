@@ -1,0 +1,107 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: retailai-app
+  namespace: retailai
+  labels:
+    app: retailai-app
+    version: v1
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: retailai-app
+  template:
+    metadata:
+      labels:
+        app: retailai-app
+        version: v1
+    spec:
+      containers:
+      - name: retailai-app
+        image: ghcr.io/retailai/retailai-inventory-optimizer:latest
+        ports:
+        - containerPort: 8000
+        env:
+        - name: DATABASE_URL
+          value: "sqlite:///./data/retail_inventory.db"
+        - name: JWT_SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: retailai-secrets
+              key: jwt-secret
+        - name: CORS_ORIGINS
+          value: "http://localhost:3000,https://retailai.example.com"
+        resources:
+          requests:
+            memory: "256Mi"
+            cpu: "250m"
+          limits:
+            memory: "512Mi"
+            cpu: "500m"
+        livenessProbe:
+          httpGet:
+            path: /api/inventory
+            port: 8000
+          initialDelaySeconds: 30
+          periodSeconds: 10
+        readinessProbe:
+          httpGet:
+            path: /api/inventory
+            port: 8000
+          initialDelaySeconds: 5
+          periodSeconds: 5
+        volumeMounts:
+        - name: data-volume
+          mountPath: /app/data
+        - name: logs-volume
+          mountPath: /app/logs
+      volumes:
+      - name: data-volume
+        persistentVolumeClaim:
+          claimName: retailai-data-pvc
+      - name: logs-volume
+        persistentVolumeClaim:
+          claimName: retailai-logs-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: retailai-service
+  namespace: retailai
+  labels:
+    app: retailai-app
+spec:
+  selector:
+    app: retailai-app
+  ports:
+  - name: http
+    port: 80
+    targetPort: 8000
+  type: ClusterIP
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: retailai-ingress
+  namespace: retailai
+  annotations:
+    kubernetes.io/ingress.class: nginx
+    cert-manager.io/cluster-issuer: letsencrypt-prod
+    nginx.ingress.kubernetes.io/rate-limit: "100"
+spec:
+  tls:
+  - hosts:
+    - retailai.example.com
+    secretName: retailai-tls
+  rules:
+  - host: retailai.example.com
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: retailai-service
+            port:
+              number: 80
