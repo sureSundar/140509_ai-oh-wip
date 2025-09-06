@@ -1,0 +1,23 @@
+# Large files
+*.tar.gz
+**/sales_transactions.json
+files_over_50MB/
+
+# Node modules  
+node_modules/
+
+# Environment files
+.env
+.env.*
+
+# Log files
+*.log
+logs/
+
+# Cache files
+__pycache__/
+.cache/
+
+# Build directories
+dist/
+build/
