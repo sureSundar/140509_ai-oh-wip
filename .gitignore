@@ -1,23 +1,13 @@
-# Large files
+# Large files only
 *.tar.gz
 **/sales_transactions.json
-files_over_50MB/
 
-# Virtual environments (but allow them to be added if needed)
-venv/
-
-# Node modules  
-node_modules/
-
-# Log files
-*.log
-logs/
-
-# Cache files
+# Only exclude Python cache files
 __pycache__/
 *.pyc
-.cache/
 
-# Build directories
-dist/
-build/
+# Only exclude specific large node_modules if present
+**/node_modules/
+
+# Only exclude log files, not log directories with content
+*.log
