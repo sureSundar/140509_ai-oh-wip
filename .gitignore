@@ -3,12 +3,11 @@
 **/sales_transactions.json
 files_over_50MB/
 
+# Virtual environments (but allow them to be added if needed)
+venv/
+
 # Node modules  
 node_modules/
-
-# Environment files
-.env
-.env.*
 
 # Log files
 *.log
@@ -16,6 +15,7 @@ logs/
 
 # Cache files
 __pycache__/
+*.pyc
 .cache/
 
 # Build directories
